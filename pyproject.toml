@@ -1,0 +1,52 @@
+# PEP-518 https://peps.python.org/pep-0518/
+[build-system]
+# Minimum requirements for the build system to execute.
+requires = ["setuptools>=65.5.1"]  # PEP 518 specifications
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "bedrock-python"
+version = "0.0.1a"
+authors = [{name = "Bedrock Systems"}]
+description = "Bedrock helps you work with geotechnical data"
+readme = "README.md"
+requires-python = ">=3.9"
+dependencies = [
+    "pandas"
+]
+keywords = [
+    "bedrock",
+    "geotechnical data",
+    "ags",
+    "geotechnical engineering",
+    "engineering geology",
+    "ground engineering",
+]
+license = {text = "Apache Software License (Apache 2.0)"}
+classifiers = [
+    "Development Status :: 2 - Pre-Alpha",
+    "License :: OSI Approved :: Apache Software License",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+]
+
+[project.optional-dependencies]
+dev = ["ruff", "mypy", "bumpver", "pip-tools", "pytest"]
+
+[project.urls]
+Homepage = "https://bedrock.streamlit.app/"
+Source = "https://github.com/bedrock-systems/bedrockpy"
+Documentation = "https://github.com/bedrock-systems/bedrockpy"
+Tracker = "https://github.com/bedrock-systems/bedrockpy/issues"
+
+[tool.bumpver]
+current_version = "0.0.1a"
+version_pattern = "MAJOR.MINOR.PATCH"
+commit_message  = "Bump version {old_version} -> {new_version}"
+commit          = true
+tag             = true
+push            = false
+
+[tool.bumpver.file_patterns]
+"pyproject.toml" = ['current_version = "{version}"', 'version = "{version}"']
+"src/bedrockpy/__init__.py" = ["{version}"]

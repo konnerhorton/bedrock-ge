@@ -1,2 +1,2 @@
-# bedrockpy
-Python package for working with geotechnical data
+# Bedrock
+Bedrock helps you work with geotechnical data
