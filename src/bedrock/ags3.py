@@ -2,7 +2,7 @@ from typing import Dict
 import pandas as pd
 
 
-def ags3_to_df(ags_data: str) -> Dict[str, pd.DataFrame]:
+def ags3_to_dfs(ags_data: str) -> Dict[str, pd.DataFrame]:
     """Convert AGS 3 data to a dictionary of pandas DataFrames.
 
     Args:
@@ -32,6 +32,9 @@ def ags3_to_df(ags_data: str) -> Dict[str, pd.DataFrame]:
             new_headers = [h.strip(' "*') for h in new_headers]
 
             # Some groups have headers that span multiple lines
+            # new_headers[-2] is used because:
+            #   1. the first columns in AGS tables are mostly foreign keys
+            #   2. the last column in AGS table is often FILE_FSET
             if new_headers[-2].split("_")[0] == headers[-2].split("_")[0]:
                 headers = headers + new_headers
             else:
