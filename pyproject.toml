@@ -1,52 +1,60 @@
-# PEP-518 https://peps.python.org/pep-0518/
-[build-system]
-# Minimum requirements for the build system to execute.
-requires = ["setuptools>=65.5.1"]  # PEP 518 specifications
-build-backend = "setuptools.build_meta"
-
 [project]
-name = "bedrock-systems"
-version = "0.0.1a"
-authors = [{name = "Bedrock Systems"}]
-description = "Bedrock helps you work with geotechnical data"
+name = "bedrock-gi"
+version = "0.0.1"
+description = "Bedrock, the open-source foundation for ground investigation data, subsurface modelling and Geo-BIM."
+authors = [
+    {name = "Bedrock", email = "info@bedrock.engineer"}
+]
+license = {text = "Apache Software License (Apache 2.0)"}
 readme = "README.md"
 requires-python = ">=3.9"
 dependencies = [
-    "pandas"
+    "geopandas>=1.0.1",
 ]
 keywords = [
     "bedrock",
+    "ground investigation",
+    "ground investigation data",
+    "gi data",
     "geotechnical data",
     "ags",
+    "geotech",
     "geotechnical engineering",
-    "engineering geology",
     "ground engineering",
+    "engineering geology",
+    "aec",
+    "bim",
+    "gis",
+    "geo-bim"
 ]
-license = {text = "Apache Software License (Apache 2.0)"}
 classifiers = [
     "Development Status :: 2 - Pre-Alpha",
-    "License :: OSI Approved :: Apache Software License",
-    "Programming Language :: Python",
     "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: Apache Software License",
+    "Operating System :: OS Independent",
 ]
 
-[project.optional-dependencies]
-dev = ["ruff", "mypy", "bumpver", "pip-tools", "pytest"]
+[project.scripts]
+hey-plot = "bedrock.plot:hello_plt"
 
 [project.urls]
-Homepage = "https://bedrock.streamlit.app/"
-Source = "https://github.com/bedrock-systems/bedrockpy"
-Documentation = "https://github.com/bedrock-systems/bedrockpy"
-Tracker = "https://github.com/bedrock-systems/bedrockpy/issues"
+Homepage = "https://bedrock.engineer/"
+Source = "https://github.com/bedrock-gi/bedrock-gi"
+Documentation = "https://bedrock.engineer/docs/"
+Tracker = "https://github.com/bedrock-gi/bedrock-gi/issues"
 
-[tool.bumpver]
-current_version = "0.0.1a"
-version_pattern = "MAJOR.MINOR.PATCH"
-commit_message  = "Bump version {old_version} -> {new_version}"
-commit          = true
-tag             = true
-push            = false
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
 
-[tool.bumpver.file_patterns]
-"pyproject.toml" = ['current_version = "{version}"', 'version = "{version}"']
-"src/bedrockpy/__init__.py" = ["{version}"]
+[tool.hatch.build.targets.wheel]
+packages = ["src/bedrock"]
+
+[tool.uv]
+dev-dependencies = [
+    "jupyter>=1.1.1",
+    "mypy>=1.11.2",
+    "pandas-stubs>=2.2.2.240807",
+    "pytest>=8.3.3",
+    "ruff>=0.6.7",
+]
