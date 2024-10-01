@@ -1,9 +1,10 @@
+import warnings
 from typing import Dict
 
 import pandas as pd
 
 
-def ags3_to_dfs(ags_data: str) -> Dict[str, pd.DataFrame]:
+def ags3_to_pandas(ags_data: str) -> Dict[str, pd.DataFrame]:
     """Convert AGS 3 data to a dictionary of pandas DataFrames.
 
     Args:
@@ -13,8 +14,9 @@ def ags3_to_dfs(ags_data: str) -> Dict[str, pd.DataFrame]:
         Dict[str, pd.DataFrame]: A dictionary of pandas DataFrames, where each key represents a group name from AGS 3 data,
         and the corresponding value is a DataFrame containing the data for that group.
     """
+
     ags_dfs = {}
-    group = None
+    group = ""
     headers = ["", "", ""]
     data_rows = [["", "", ""], ["", "", ""], ["", "", ""]]
 
@@ -27,12 +29,13 @@ def ags3_to_dfs(ags_data: str) -> Dict[str, pd.DataFrame]:
             group = line.strip(' "*')
             data_rows = []
 
-        # In AGS 3.1 header names are prefixed with *
+        # In AGS 3 header names are prefixed with "*
         elif line.startswith('"*'):
             new_headers = line.split('","')
             new_headers = [h.strip(' "*') for h in new_headers]
 
-            # Some groups have headers that span multiple lines
+            # Some groups have so many headers that they span multiple lines.
+            #
             # new_headers[-2] is used because:
             #   1. the first columns in AGS tables are mostly foreign keys
             #   2. the last column in AGS table is often FILE_FSET
@@ -41,7 +44,7 @@ def ags3_to_dfs(ags_data: str) -> Dict[str, pd.DataFrame]:
             else:
                 headers = new_headers
 
-        # Skip lines where group units are defined, these are defined in the AGS 3.1 data dictionary
+        # Skip lines where group units are defined, these are defined in the AGS 3 data dictionary.
         elif line.startswith('"<UNITS>"'):
             continue
 
@@ -52,8 +55,7 @@ def ags3_to_dfs(ags_data: str) -> Dict[str, pd.DataFrame]:
                 print(f"No data was found on line {i}. Last Group: {group}")
                 continue
             elif len(data_row) != len(headers):
-                # TODO: This should be a warning
-                print(
+                warnings.warn(
                     f"The number of columns on line {i} doesn't match the number of columns of group {group}"
                 )
                 continue
@@ -70,5 +72,8 @@ def ags3_to_dfs(ags_data: str) -> Dict[str, pd.DataFrame]:
 
     # Also add the last group's df to the dictionary of AGS dfs
     ags_dfs[group] = pd.DataFrame(data_rows, columns=headers)
+
+    if not group:
+        warnings.warn("The provided AGS 3 data does not contain any groups.")
 
     return ags_dfs
