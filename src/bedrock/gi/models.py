@@ -11,7 +11,7 @@ class Project(SQLModel, table=True):
 class Location(SQLModel, table=True):
     location_uid: str = Field(primary_key=True)
     project_uid: str = Field(foreign_key="project.project_uid")
-    location_source_id: str
+    source_id: str
     location_type: str
     easting: float
     northing: float
@@ -33,7 +33,7 @@ class Sample(DepthInformation, table=True):
     sample_uid: Optional[int] = Field(default=None, primary_key=True)
     project_uid: str = Field(foreign_key="project.project_uid")
     location_uid: str = Field(foreign_key="location.location_uid")
-    sample_source_id: str
+    source_id: str
 
 
 class InSitu(DepthInformation):
