@@ -139,3 +139,145 @@ class Ags4GEOL(BaseGEOL):
         description="Location identifier",
         # example="327/16A",
     )
+
+
+class BaseISPT(pa.DataFrameModel):
+    ISPT_TOP: Series[float] = pa.Field(
+        coerce=True,
+        description="Depth to top of test",
+        # example=13.50,
+        metadata={"unit": "m"},
+    )
+    ISPT_NVAL: Series[int] = pa.Field(
+        coerce=True,
+        description="Depth to the base of description",
+        # example=35,
+        ge=0,
+    )
+
+
+class Ags3ISPT(BaseISPT):
+    HOLE_ID: Series[str] = pa.Field(
+        # foreign_key="Ags3HOLE.HOLE_ID",
+        coerce=True,
+        description="Exploratory hole or location equivalent",
+        # example="6421/A",
+    )
+
+
+class Ags4ISPT(BaseISPT):
+    LOCA_ID: Series[str] = pa.Field(
+        # foreign_key="Ags4LOCA.LOCA_ID",
+        coerce=True,
+        description="Location identifier",
+        # example="327/16A",
+    )
+
+
+class BaseCORE(pa.DataFrameModel):
+    CORE_TOP: Series[float] = pa.Field(
+        coerce=True,
+        description="Depth to TOP of core run",
+        # example=2.54,
+        metadata={"unit": "m"},
+    )
+    CORE_PREC: Series[int] = pa.Field(
+        coerce=True,
+        nullable=True,
+        description="Percentage of core recovered in core run (TCR)",
+        # example="32",
+        metadata={"unit": "%"},
+        ge=0,
+        le=100,
+    )
+    CORE_SREC: Series[int] = pa.Field(
+        coerce=True,
+        nullable=True,
+        description="Percentage of solid core recovered in core run (SCR)",
+        # example="23",
+        metadata={"unit": "%"},
+        ge=0,
+        le=100,
+    )
+    CORE_RQD: Series[int] = pa.Field(
+        coerce=True,
+        nullable=True,
+        description="Rock Quality Designation for core run (RQD)",
+        # example="20",
+        metadata={"unit": "%"},
+        ge=0,
+        le=100,
+    )
+
+
+class Ags3CORE(BaseCORE):
+    HOLE_ID: Series[str] = pa.Field(
+        # foreign_key="Ags3HOLE.HOLE_ID",
+        coerce=True,
+        description="Exploratory hole or location equivalent",
+        # example="6421/A",
+    )
+    CORE_BOT: Series[float] = pa.Field(
+        coerce=True,
+        description="Depth to BOTTOM of core run",
+        # example=3.54,
+        metadata={"unit": "m"},
+    )
+
+
+class Ags4CORE(BaseCORE):
+    LOCA_ID: Series[str] = pa.Field(
+        # foreign_key="Ags4LOCA.LOCA_ID",
+        coerce=True,
+        description="Location identifier",
+        # example="327/16A",
+    )
+    CORE_BASE: Series[float] = pa.Field(
+        coerce=True,
+        description="Depth to BASE of core run",
+        # example=3.54,
+        metadata={"unit": "m"},
+    )
+
+
+class BaseWETH(pa.DataFrameModel):
+    WETH_TOP: Series[float] = pa.Field(
+        coerce=True,
+        description="Depth to top of weathering subdivision",
+        # example=3.50,
+        metadata={"unit": "m"},
+    )
+    WETH_BASE: Series[float] = pa.Field(
+        coerce=True,
+        description="Depth to base of weathering subdivision",
+        # example=3.95,
+        metadata={"unit": "m"},
+    )
+
+
+class Ags3WETH(BaseWETH):
+    HOLE_ID: Series[str] = pa.Field(
+        # foreign_key="Ags3HOLE.HOLE_ID",
+        coerce=True,
+        description="Exploratory hole or location equivalent",
+        # example="6421/A",
+    )
+    WETH_GRAD: Series[str] = pa.Field(
+        coerce=True,
+        description="Weather Gradient",
+        # example="IV",
+    )
+
+
+class Ags4WETH(BaseWETH):
+    LOCA_ID: Series[str] = pa.Field(
+        # foreign_key="Ags4LOCA.LOCA_ID",
+        coerce=True,
+        description="Location identifier",
+        # example="327/16A",
+    )
+    WETH_WETH: Series[str] = pa.Field(
+        coerce=True,
+        description="Weathering classifier for WETH_SCH and WETH_SYS",
+        # example="IV",
+    )
