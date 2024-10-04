@@ -24,6 +24,9 @@ The Data Package, Data Resource, Table Schema hierarchy:
 └─[Data Resource](https://datapackage.org/standard/data-resource/)  
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└─[Table Schema](https://datapackage.org/standard/table-schema)
 
+An example Data Package JSON with data originating from a relational database:
+[Schleswig-Holstein outdoor swimming waters | opendata.schleswig-holstein.de/data/frictionless/badegewaesser.json](https://opendata.schleswig-holstein.de/data/frictionless/badegewaesser.json)
+
 ## Why I like the Data Package Standard
 
 - Open
