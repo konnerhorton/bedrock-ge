@@ -23,3 +23,12 @@ The Data Package, Data Resource, Table Schema hierarchy:
 [Data Package](https://datapackage.org/standard/data-package/)  
 └─[Data Resource](https://datapackage.org/standard/data-resource/)  
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└─[Table Schema](https://datapackage.org/standard/table-schema)
+
+## Why I like the Data Package Standard
+
+- Open
+- Active community and backed by the [Open Knowledge Foundation](https://okfn.org/en/)
+- JSON → much more readable than XML-based standards
+- Ecosystem of [Open Source Software compatible with the Data Package Standard](https://datapackage.org/overview/software/)
+  - [Open Data Editor](https://opendataeditor.okfn.org/): The Open Data Editor (ODE) is an open source tool for non-technical data practitioners to explore and detect errors in tables.
+  - Python package: [`frictionless-py](https://framework.frictionlessdata.io/)
