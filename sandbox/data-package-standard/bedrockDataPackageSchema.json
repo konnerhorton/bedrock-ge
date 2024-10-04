@@ -82,6 +82,7 @@
       }
     },
     {
+      "name": "Samples",
       "data": "This Data Resource describes a Table Schema for a relational database. Therefore, the Data Resource data and path properties are empty.",
       "schema": {
         "fields": [
