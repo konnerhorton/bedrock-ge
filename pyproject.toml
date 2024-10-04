@@ -9,7 +9,7 @@ license = {text = "Apache Software License (Apache 2.0)"}
 readme = "README.md"
 requires-python = ">=3.9"
 dependencies = [
-    "pandera[geopandas]>=0.20.4",
+    "pandera[geopandas,io]>=0.20.4",
     "sqlmodel>=0.0.22",
 ]
 keywords = [
