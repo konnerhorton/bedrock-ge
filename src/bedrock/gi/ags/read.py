@@ -1,11 +1,11 @@
-from typing import Dict, List, Optional, Union
+from typing import Dict, List, Optional
 
 import pandas as pd
 
 from bedrock.gi.ags.validate import check_ags_proj_group
 
 
-def ags_to_dfs(ags_data: str) -> Dict[str, Union[int, pd.DataFrame]]:
+def ags_to_dfs(ags_data: str) -> Dict[str, pd.DataFrame]:
     """
     Convert AGS 3 or AGS 4 data to a dictionary of pandas DataFrames.
 
@@ -16,8 +16,8 @@ def ags_to_dfs(ags_data: str) -> Dict[str, Union[int, pd.DataFrame]]:
         ValueError: If the data does not match AGS 3 or AGS 4 format.
 
     Returns:
-        Dict[str, Union[int, pd.DataFrame]]: A dictionary where 'ags_version' indicates the version
-        of AGS (3 or 4), and other keys represent group names with corresponding DataFrames.
+        Dict[str, pd.DataFrame]]: A dictionary where keys represent AGS group
+        names with corresponding DataFrames for the corresponding group data.
     """
     # Process each line to find the AGS version and delegate parsing
     for line in ags_data.splitlines():
@@ -42,7 +42,7 @@ def ags_to_dfs(ags_data: str) -> Dict[str, Union[int, pd.DataFrame]]:
             f"AGS {ags_version} data was read for Project {project_id}\nThis Ground Investigation data contains groups:\n{list(ags_dfs.keys())}\n"
         )
 
-    return {"ags_version": ags_version, **ags_dfs}
+    return ags_dfs
 
 
 def ags3_to_dfs(ags3_data: str) -> Dict[str, pd.DataFrame]:
