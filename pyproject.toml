@@ -9,6 +9,7 @@ license = {text = "Apache Software License (Apache 2.0)"}
 readme = "README.md"
 requires-python = ">=3.9"
 dependencies = [
+    "openpyxl>=3.1.5",
     "pandera[geopandas,io]>=0.20.4",
     "sqlmodel>=0.0.22",
 ]
