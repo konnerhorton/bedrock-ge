@@ -1,7 +1,8 @@
-import warnings
-from typing import Dict, Union
+from typing import Dict, List, Optional, Union
 
 import pandas as pd
+
+from bedrock.gi.ags.validate import check_ags_proj_group
 
 
 def ags_to_dfs(ags_data: str) -> Dict[str, Union[int, pd.DataFrame]]:
@@ -22,19 +23,26 @@ def ags_to_dfs(ags_data: str) -> Dict[str, Union[int, pd.DataFrame]]:
     for line in ags_data.splitlines():
         stripped_line = line.strip()  # Remove leading/trailing whitespace
         if stripped_line:  # Skip empty lines at the start of the file
-            if stripped_line.startswith("**"):
-                # AGS version 3 data
-                ags3_dfs = ags3_to_dfs(ags_data)
-                return {"ags_version": 3, **ags3_dfs}
-            elif stripped_line.startswith("GROUP"):
-                # AGS version 4 data
-                ags4_dfs = ags4_to_dfs(ags_data)
-                return {"ags_version": 4, **ags4_dfs}
+            if stripped_line.startswith('"**'):
+                ags_version = 3
+                ags_dfs = ags3_to_dfs(ags_data)
+                break
+            elif stripped_line.startswith('"GROUP"'):
+                ags_version = 4
+                ags_dfs = ags4_to_dfs(ags_data)
+                break
             else:
                 # If first non-empty line doesn't match AGS 3 or AGS 4 format
                 raise ValueError("The data provided is not valid AGS 3 or AGS 4 data.")
 
-    raise ValueError(f"The string provided ({ags_data}) is empty.")
+    is_proj_group_correct = check_ags_proj_group(ags_dfs["PROJ"])
+    if is_proj_group_correct:
+        project_id = ags_dfs["PROJ"]["PROJ_ID"].iloc[0]
+        print(
+            f"AGS {ags_version} data was read for Project {project_id}\nThis Ground Investigation data contains groups:\n{list(ags_dfs.keys())}\n"
+        )
+
+    return {"ags_version": ags_version, **ags_dfs}
 
 
 def ags3_to_dfs(ags3_data: str) -> Dict[str, pd.DataFrame]:
@@ -48,19 +56,20 @@ def ags3_to_dfs(ags3_data: str) -> Dict[str, pd.DataFrame]:
         and the corresponding value is a pandas DataFrame containing the data for that group.
     """
 
+    # Initialize dictionary and variables used in the AGS 3 read loop
     ags3_dfs = {}
     group = ""
-    headers = ["", "", ""]
-    data_rows = [["", "", ""], ["", "", ""], ["", "", ""]]
+    headers: List[str] = ["", "", ""]
+    group_data: List[List[Optional[str]]] = [[], [], []]
 
     for i, line in enumerate(ags3_data.splitlines()):
         # In AGS 3.1 group names are prefixed with **
         if line.startswith('"**'):
             if group:
-                ags3_dfs[group] = pd.DataFrame(data_rows, columns=headers)
+                ags3_dfs[group] = pd.DataFrame(group_data, columns=headers)
 
             group = line.strip(' "*')
-            data_rows = []
+            group_data = []
 
         # In AGS 3 header names are prefixed with "*
         elif line.startswith('"*'):
@@ -68,9 +77,9 @@ def ags3_to_dfs(ags3_data: str) -> Dict[str, pd.DataFrame]:
             new_headers = [h.strip(' "*') for h in new_headers]
 
             # Some groups have so many headers that they span multiple lines.
-            #
-            # new_headers[-2] is used because:
-            #   1. the first columns in AGS tables are mostly foreign keys
+            # Therefore we need to check whether the new headers are a continuation of the previous headers.
+            # new_headers[-2] (the second to last header) is used because:
+            #   1. the first columns in AGS 3 tables are mostly foreign keys
             #   2. the last column in AGS table is often FILE_FSET
             if new_headers[-2].split("_")[0] == headers[-2].split("_")[0]:
                 headers = headers + new_headers
@@ -81,33 +90,45 @@ def ags3_to_dfs(ags3_data: str) -> Dict[str, pd.DataFrame]:
         elif line.startswith('"<UNITS>"'):
             continue
 
-        # The rest of the lines contain data, "<CONT>" lines, or are worthless
+        # The rest of the lines contain:
+        # 1. GI data
+        # 2. a continuation of the previous line. These lines contain "<CONT>" in the first column.
+        # 3. are empty or contain worthless data
         else:
             data_row = line.split('","')
             if len("".join(data_row)) == 0:
-                print(f"No data was found on line {i}. Last Group: {group}")
+                # print(f"Line {i} is empty. Last Group: {group}")
                 continue
             elif len(data_row) != len(headers):
-                warnings.warn(
-                    f"The number of columns on line {i} doesn't match the number of columns of group {group}"
+                print(
+                    f"CAUTION: The number of columns on line {i} doesn't match the number of columns of group {group}"
                 )
                 continue
             # Append continued lines (<CONT>) to the last data_row
             elif data_row[0] == '"<CONT>':
-                data_row = [d.strip(' "') for d in data_row]
-                last_data_row = data_rows[-1]
-                for j, datum in enumerate(data_row):
-                    if datum and datum != "<CONT>":
-                        last_data_row[j] += datum
+                last_data_row = group_data[-1]
+                for j, data in enumerate(data_row):
+                    data = data.strip(' "')
+                    if data and data != "<CONT>":
+                        # Last data row didn't contain data for this column
+                        if last_data_row[j] is None:
+                            last_data_row[j] = data
+                        else:
+                            last_data_row[j] = str(last_data_row[j]) + data
+            # Lines that are assumed to contain valid data are added to the group data
             else:
-                data_row = [d.strip(' "') for d in data_row]
-                data_rows.append(data_row)
+                cleaned_data_row = []
+                for data in data_row:
+                    cleaned_data_row.append(data.strip(' "') or None)
+                group_data.append(cleaned_data_row)
 
     # Also add the last group's df to the dictionary of AGS dfs
-    ags3_dfs[group] = pd.DataFrame(data_rows, columns=headers)
+    ags3_dfs[group] = pd.DataFrame(group_data, columns=headers)
 
     if not group:
-        warnings.warn("The provided AGS 3 data does not contain any groups.")
+        print(
+            'ERROR: The provided AGS 3 data does not contain any groups, i.e. lines starting with "**'
+        )
 
     return ags3_dfs
 
