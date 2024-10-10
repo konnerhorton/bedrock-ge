@@ -6,7 +6,6 @@ class Ags3HOLE(pa.DataFrameModel):
     HOLE_ID: Series[str] = pa.Field(
         # primary_key=True,
         unique=True,
-        coerce=True,
         description="Exploratory hole or location equivalent",
         # example="327/16A",
     )
@@ -42,7 +41,6 @@ class BaseSAMP(pa.DataFrameModel):
         metadata={"unit": "m"},
     )
     SAMP_TYPE: Series[str] = pa.Field(
-        coerce=True,
         nullable=True,
         description="Sample type",
         # example="U (See Appendix 1)",
@@ -50,16 +48,14 @@ class BaseSAMP(pa.DataFrameModel):
 
 
 class Ags3SAMP(BaseSAMP):
-    SAMP_REF: Series[str] = pa.Field(
+    sample_id: Series[str] = pa.Field(
         # primary_key=True,
         unique=True,
-        coerce=True,
         description="Sample reference number",
         # example="24",
     )
     HOLE_ID: Series[str] = pa.Field(
         # foreign_key="Ags3HOLE.HOLE_ID",
-        coerce=True,
         description="Exploratory hole or location equivalent",
         # example="327/16A",
     )
@@ -69,20 +65,13 @@ class Ags4SAMP(BaseSAMP):
     SAMP_ID: Series[str] = pa.Field(
         # primary_key=True,
         unique=True,
-        coerce=True,
         description="Sample unique identifier",
         # example="ABC121415010",
     )
     LOCA_ID: Series[str] = pa.Field(
         # foreign_key="Ags4LOCA.LOCA_ID",
-        coerce=True,
         description="Location identifier",
         # example="327/16A",
-    )
-    SAMP_REF: Series[str] = pa.Field(
-        coerce=True,
-        description="Sample reference",
-        # example="24",
     )
 
 
@@ -100,23 +89,19 @@ class BaseGEOL(pa.DataFrameModel):
         metadata={"unit": "m"},
     )
     GEOL_DESC: Series[str] = pa.Field(
-        coerce=True,
         description="General description of stratum",
         # example="Stiff grey silty CLAY",
     )
     GEOL_LEG: Series[str] = pa.Field(
-        coerce=True,
         nullable=True,
         description="Legend code",
         # example="102",
     )
     GEOL_GEOL: Series[str] = pa.Field(
-        coerce=True,
         description="Geology code",
         # example="LC",
     )
     GEOL_GEO2: Series[str] = pa.Field(
-        coerce=True,
         nullable=True,
         description="Second geology code",
         # example="SAND",
