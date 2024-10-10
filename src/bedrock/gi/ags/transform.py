@@ -6,7 +6,7 @@ from pandera.typing import DataFrame
 from pyproj import CRS
 
 from bedrock.gi.ags.schemas import Ags3HOLE, Ags3SAMP, BaseSAMP
-from bedrock.gi.schemas import BaseLocation, Project
+from bedrock.gi.schemas import BaseLocation, BaseSample, Project
 
 
 @pa.check_types(lazy=True)
@@ -34,10 +34,11 @@ def ags3_hole_to_brgi_location(
     return ags3_hole
 
 
+@pa.check_types(lazy=True)
 def ags3_samp_to_brgi_sample(
     ags3_samp: DataFrame[Ags3SAMP],
     project_uid: str,
-) -> DataFrame[BaseLocation]:
+) -> DataFrame[BaseSample]:
     brgi_sample = ags3_samp
     brgi_sample["project_uid"] = project_uid
     brgi_sample["location_source_id"] = ags3_samp["HOLE_ID"]
