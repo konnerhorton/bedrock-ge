@@ -54,3 +54,36 @@ class Sample(BaseSample):
     elevation_at_top: Series[float]
     elevation_at_base: Series[float] = pa.Field(nullable=True)
     geometry: GeoSeries
+
+
+class BaseInSitu(pa.DataFrameModel):
+    project_uid: Series[str] = pa.Field(
+        # foreign_key="project.project_uid"
+    )
+    location_uid: Series[str] = pa.Field(
+        # foreign_key="location.location_uid"
+    )
+    depth_to_top: Series[float]
+
+
+class InSitu(BaseInSitu):
+    elevation_at_top: Series[float]
+    geometry: GeoSeries
+
+
+class BaseLab(pa.DataFrameModel):
+    project_uid: Series[str] = pa.Field(
+        # foreign_key="project.project_uid"
+    )
+    location_uid: Series[str] = pa.Field(
+        # foreign_key="location.location_uid"
+    )
+    sample_uid: Series[str] = pa.Field(
+        # foreign_key="sample.sample_uid"
+    )
+
+
+class Lab(BaseLab):
+    geometry: GeoSeries = pa.Field(
+        description="GIS geometry of the sample on which this lab test was performed."
+    )

@@ -41,7 +41,7 @@ class InSitu(DepthInformation):
     location_uid: str = Field(foreign_key="location.location_uid")
 
 
-class Lab(DepthInformation):
+class Lab(SQLModel):
     project_uid: str = Field(foreign_key="project.project_uid")
     location_uid: str = Field(foreign_key="location.location_uid")
     sample_uid: str = Field(foreign_key="sample.sample_uid")

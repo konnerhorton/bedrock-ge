@@ -43,9 +43,6 @@ def check_ags3_hole_ids_exist(
         bool: Returns True if the HOLE_IDs in the group exist in the AGS 3 HOLE group.
     """
 
-    # Get the name of the group
-    group = ags3_group_with_hole_id.columns[-2].split("_")[0]
-
     # Get the HOLE_IDs that are missing in the HOLE group
     missing_hole_ids = ags3_group_with_hole_id[
         ~ags3_group_with_hole_id["HOLE_ID"].isin(ags3_hole["HOLE_ID"])
@@ -54,7 +51,7 @@ def check_ags3_hole_ids_exist(
     # Raise an error if there are missing HOLE_IDs
     if len(missing_hole_ids) > 0:
         raise ValueError(
-            f"Group '{group}' contains HOLE_IDs that don't occur in the AGS 3 HOLE group:\n{missing_hole_ids}"
+            f"This AGS 3 group contains HOLE_IDs that don't occur in the AGS 3 HOLE group:\n{missing_hole_ids}"
         )
 
     return True
@@ -76,8 +73,6 @@ def check_ags3_sample_ids_exists(
     Returns:
         bool: Returns True if the sample_id in the group exist in the AGS 3 SAMP group.
     """
-    # Get the name of the group
-    group = ags3_group_with_sample_id.columns[-2].split("_")[0]
 
     # Get the sample_id that are missing in the SAMP group
     missing_sample_ids = ags3_group_with_sample_id[
@@ -87,7 +82,7 @@ def check_ags3_sample_ids_exists(
     # Raise an error if there are missing sample_id
     if len(missing_sample_ids) > 0:
         raise ValueError(
-            f"Group '{group}' contains samples that don't occur in the AGS 3 SAMP group:\n{missing_sample_ids}"
+            f"This AGS 3 group contains samples that don't occur in the AGS 3 SAMP group:\n{missing_sample_ids}"
         )
 
     return True

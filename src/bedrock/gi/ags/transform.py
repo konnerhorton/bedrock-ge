@@ -1,12 +1,63 @@
 """Transforms, i.e. maps, AGS data to Bedrock's schema"""
 
+from typing import Dict
+
 import pandas as pd
 import pandera as pa
 from pandera.typing import DataFrame
 from pyproj import CRS
 
 from bedrock.gi.ags.schemas import Ags3HOLE, Ags3SAMP, BaseSAMP
-from bedrock.gi.schemas import BaseLocation, BaseSample, Project
+from bedrock.gi.ags.validate import check_ags3_hole_ids_exist
+from bedrock.gi.schemas import BaseInSitu, BaseLocation, BaseSample, Project
+
+
+def ags3_to_brgi(ags3_db: Dict[str, pd.DataFrame], crs: CRS) -> Dict[str, pd.DataFrame]:
+    print("Transforming AGS 3 groups to Bedrock tables...\n")
+    # Instantiate Bedrock dictionary of pd.DataFrames
+    brgi_db = {}
+
+    # Project
+    brgi_db["Project"] = ags_proj_to_brgi_project(ags3_db["PROJ"], crs)
+    project_uid = brgi_db["Project"]["project_uid"].item()
+    del ags3_db["PROJ"]
+    print("'Project' table was created successfully.\n")
+
+    # Locations
+    if "HOLE" in ags3_db.keys():
+        brgi_db["Location"] = ags3_hole_to_brgi_location(ags3_db["HOLE"], project_uid)
+        del ags3_db["HOLE"]
+        print("'Location' table was created successfully.\n")
+    else:
+        print(
+            "Your AGS 3 data doesn't contain a HOLE group, i.e. Ground Investigation locations."
+        )
+
+    # Samples
+    if "SAMP" in ags3_db.keys():
+        check_ags3_hole_ids_exist(brgi_db["Location"], ags3_db["SAMP"])
+        ags3_db["SAMP"] = generate_sample_ids_for_ags3(ags3_db["SAMP"])
+        brgi_db["Sample"] = ags3_samp_to_brgi_sample(ags3_db["SAMP"], project_uid)
+        del ags3_db["SAMP"]
+        print("'Sample' table was created successfully.\n")
+    else:
+        print("Your AGS 3 data doesn't contain a SAMP group, i.e. samples.")
+
+    # The rest of the tables: 1. Lab Tests 2. In-Situ Tests 3. Other tables
+    for group, group_df in ags3_db.items():
+        if "SAMP_REF" in ags3_db[group].columns:
+            print(f"Project {project_uid} has lab test data: {group}.")
+            brgi_db[group] = group_df
+        elif "HOLE_ID" in ags3_db[group].columns:
+            check_ags3_hole_ids_exist(brgi_db["Location"], group_df)
+            brgi_db[f"InSitu_{group}"] = ags3_in_situ_to_brgi_in_situ(
+                group, group_df, project_uid
+            )
+            print(f"'InSitu_{group}' table was created successfully.\n")
+        else:
+            brgi_db[group] = ags3_db[group]
+
+    return brgi_db
 
 
 @pa.check_types(lazy=True)
@@ -48,6 +99,44 @@ def ags3_samp_to_brgi_sample(
     brgi_sample["depth_to_top"] = ags3_samp["SAMP_TOP"]
     brgi_sample["depth_to_base"] = ags3_samp["SAMP_BASE"]
     return brgi_sample
+
+
+def ags3_in_situ_to_brgi_in_situ(
+    group_name: str, ags3_in_situ: pd.DataFrame, project_uid: str
+) -> DataFrame[BaseInSitu]:
+    """Transform, i.e. map, AGS 3 in-situ test data to Bedrock's in-situ data schema.
+
+    Args:
+        group_name (str): The AGS 3 group name.
+        ags3_data (pd.DataFrame): The AGS 3 data.
+        project_uid (str): The project uid.
+
+    Returns:
+        DataFrame[BaseInSitu]: The Bedrock in-situ data.
+    """
+    brgi_in_situ = ags3_in_situ.copy()
+    brgi_in_situ["project_uid"] = project_uid
+    brgi_in_situ["location_uid"] = ags3_in_situ["HOLE_ID"] + "_" + project_uid
+
+    top_depth = f"{group_name}_TOP"
+    base_depth = f"{group_name}_BASE"
+
+    if group_name == "CDIA":
+        top_depth = "CDIA_CDEP"
+    elif group_name == "FLSH":
+        top_depth = "FLSH_FROM"
+        base_depth = "FLSH_TO"
+    elif group_name == "CORE":
+        base_depth = "CORE_BOT"
+    elif group_name == "HDIA":
+        top_depth = "HDIA_HDEP"
+    elif group_name == "PTIM":
+        top_depth = "PTIM_DEP"
+
+    brgi_in_situ["depth_to_top"] = ags3_in_situ[top_depth]
+    brgi_in_situ["depth_to_base"] = ags3_in_situ.get(base_depth)
+
+    return brgi_in_situ
 
 
 @pa.check_types(lazy=True)
