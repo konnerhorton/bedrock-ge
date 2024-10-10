@@ -27,6 +27,16 @@ class Ags3HOLE(pa.DataFrameModel):
 
 
 class BaseSAMP(pa.DataFrameModel):
+    SAMP_REF: Series[str] = pa.Field(
+        nullable=True,
+        description="Sample reference number",
+        # example="24",
+    )
+    SAMP_TYPE: Series[str] = pa.Field(
+        nullable=True,
+        description="Sample type",
+        # example="U (See Appendix 1)",
+    )
     SAMP_TOP: Series[float] = pa.Field(
         coerce=True,
         description="Depth to TOP of sample",
@@ -40,19 +50,14 @@ class BaseSAMP(pa.DataFrameModel):
         # example=24.55,
         metadata={"unit": "m"},
     )
-    SAMP_TYPE: Series[str] = pa.Field(
-        nullable=True,
-        description="Sample type",
-        # example="U (See Appendix 1)",
-    )
 
 
 class Ags3SAMP(BaseSAMP):
     sample_id: Series[str] = pa.Field(
         # primary_key=True,
         unique=True,
-        description="Sample reference number",
-        # example="24",
+        description="Sample unique identifier",
+        # example="REF_TYPE_TOP_HOLE_ID",
     )
     HOLE_ID: Series[str] = pa.Field(
         # foreign_key="Ags3HOLE.HOLE_ID",
