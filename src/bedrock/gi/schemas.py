@@ -1,3 +1,5 @@
+"""pandera schemas for Bedrock GI data. Base schemas refer to schemas that have no calculated GIS geometry or values."""
+
 import pandera as pa
 from pandera.typing import Series
 from pandera.typing.geopandas import GeoSeries
