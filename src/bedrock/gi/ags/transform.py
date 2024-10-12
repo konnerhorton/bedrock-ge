@@ -12,8 +12,14 @@ from bedrock.gi.schemas import BaseInSitu, BaseLocation, BaseSample, Project
 from bedrock.gi.validate import check_foreign_key
 
 
-def ags3_to_brgi(ags3_db: Dict[str, pd.DataFrame], crs: CRS) -> Dict[str, pd.DataFrame]:
+def ags3_db_to_no_gis_brgi_db(
+    ags3_db: Dict[str, pd.DataFrame], crs: CRS
+) -> Dict[str, pd.DataFrame]:
+    # Make sure that the AGS 3 database is not changed outside this function.
+    ags3_db = ags3_db.copy()
+
     print("Transforming AGS 3 groups to Bedrock tables...\n")
+
     # Instantiate Bedrock dictionary of pd.DataFrames
     brgi_db = {}
 
