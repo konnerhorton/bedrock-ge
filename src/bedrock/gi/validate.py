@@ -33,7 +33,7 @@ def check_brgi_database(brgi_db: Dict):
     return True
 
 
-def check_brgi_base_database(brgi_db: Dict):
+def check_no_gis_brgi_database(brgi_db: Dict):
     for table_name, table in brgi_db.items():
         if table_name == "Project":
             Project.validate(table)
