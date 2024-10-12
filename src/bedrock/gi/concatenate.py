@@ -1,10 +1,12 @@
-from typing import Dict
+from typing import Dict, Union
 
+import geopandas as gpd
 import pandas as pd
 
 
 def concatenate_databases(
-    db1: Dict[str, pd.DataFrame], db2: Dict[str, pd.DataFrame]
+    db1: Dict[str, Union[pd.DataFrame, gpd.GeoDataFrame]],
+    db2: Dict[str, Union[pd.DataFrame, gpd.GeoDataFrame]],
 ) -> Dict[str, pd.DataFrame]:
     """
     Concatenate two dictionaries of pandas dataframes into one dict of dfs.
