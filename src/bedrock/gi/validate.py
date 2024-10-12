@@ -1,6 +1,6 @@
 from typing import Dict, Union
 
-import geopandas as gpd
+import geopandas as gpd  # type: ignore
 import pandas as pd
 
 from bedrock.gi.schemas import (

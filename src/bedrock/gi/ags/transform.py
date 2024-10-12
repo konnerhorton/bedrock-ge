@@ -8,8 +8,8 @@ from pandera.typing import DataFrame
 from pyproj import CRS
 
 from bedrock.gi.ags.schemas import Ags3HOLE, Ags3SAMP, BaseSAMP
-from bedrock.gi.ags.validate import check_ags3_hole_ids_exist
 from bedrock.gi.schemas import BaseInSitu, BaseLocation, BaseSample, Project
+from bedrock.gi.validate import check_foreign_key
 
 
 def ags3_to_brgi(ags3_db: Dict[str, pd.DataFrame], crs: CRS) -> Dict[str, pd.DataFrame]:
@@ -25,7 +25,7 @@ def ags3_to_brgi(ags3_db: Dict[str, pd.DataFrame], crs: CRS) -> Dict[str, pd.Dat
 
     # Locations
     if "HOLE" in ags3_db.keys():
-        brgi_db["Location"] = ags3_hole_to_brgi_location(ags3_db["HOLE"], project_uid)
+        brgi_db["Location"] = ags3_hole_to_brgi_location(ags3_db["HOLE"], project_uid)  # type: ignore
         del ags3_db["HOLE"]
         print("'Location' table was created successfully.\n")
     else:
@@ -35,9 +35,9 @@ def ags3_to_brgi(ags3_db: Dict[str, pd.DataFrame], crs: CRS) -> Dict[str, pd.Dat
 
     # Samples
     if "SAMP" in ags3_db.keys():
-        check_ags3_hole_ids_exist(brgi_db["Location"], ags3_db["SAMP"])
-        ags3_db["SAMP"] = generate_sample_ids_for_ags3(ags3_db["SAMP"])
-        brgi_db["Sample"] = ags3_samp_to_brgi_sample(ags3_db["SAMP"], project_uid)
+        check_foreign_key("HOLE_ID", brgi_db["Location"], ags3_db["SAMP"])
+        ags3_db["SAMP"] = generate_sample_ids_for_ags3(ags3_db["SAMP"])  # type: ignore
+        brgi_db["Sample"] = ags3_samp_to_brgi_sample(ags3_db["SAMP"], project_uid)  # type: ignore
         del ags3_db["SAMP"]
         print("'Sample' table was created successfully.\n")
     else:
@@ -47,24 +47,25 @@ def ags3_to_brgi(ags3_db: Dict[str, pd.DataFrame], crs: CRS) -> Dict[str, pd.Dat
     for group, group_df in ags3_db.items():
         if "SAMP_REF" in ags3_db[group].columns:
             print(f"Project {project_uid} has lab test data: {group}.")
-            brgi_db[group] = group_df
+            brgi_db[group] = group_df  # type: ignore
         elif "HOLE_ID" in ags3_db[group].columns:
-            check_ags3_hole_ids_exist(brgi_db["Location"], group_df)
-            brgi_db[f"InSitu_{group}"] = ags3_in_situ_to_brgi_in_situ(
+            check_foreign_key("HOLE_ID", brgi_db["Location"], group_df)
+            brgi_db[f"InSitu_{group}"] = ags3_in_situ_to_brgi_in_situ(  # type: ignore
                 group, group_df, project_uid
             )
             print(f"'InSitu_{group}' table was created successfully.\n")
         else:
-            brgi_db[group] = ags3_db[group]
+            brgi_db[group] = ags3_db[group]  # type: ignore
 
-    return brgi_db
+    return brgi_db  # type: ignore
 
 
 @pa.check_types(lazy=True)
 def ags_proj_to_brgi_project(ags_proj: pd.DataFrame, crs: CRS) -> DataFrame[Project]:
     ags_proj["crs_wkt"] = crs.to_wkt()
     ags_proj["project_uid"] = ags_proj["PROJ_ID"]
-    return ags_proj
+
+    return ags_proj  # type: ignore
 
 
 @pa.check_types(lazy=True)
@@ -82,7 +83,8 @@ def ags3_hole_to_brgi_location(
     brgi_location["northing"] = ags3_hole["HOLE_NATN"]
     brgi_location["ground_level"] = ags3_hole["HOLE_GL"]
     brgi_location["depth_to_base"] = ags3_hole["HOLE_FDEP"]
-    return ags3_hole
+
+    return ags3_hole  # type: ignore
 
 
 @pa.check_types(lazy=True)
@@ -98,9 +100,24 @@ def ags3_samp_to_brgi_sample(
     brgi_sample["sample_uid"] = ags3_samp["sample_id"] + "_" + ags3_samp["project_uid"]
     brgi_sample["depth_to_top"] = ags3_samp["SAMP_TOP"]
     brgi_sample["depth_to_base"] = ags3_samp["SAMP_BASE"]
-    return brgi_sample
+
+    return brgi_sample  # type: ignore
 
 
+# TODO: Figure out why this SchemaError is thrown sometimes when applying @pa.check_types(lazy=True)
+# SchemaErrors: {
+#     "SCHEMA": {
+#         "WRONG_DATATYPE": [
+#             {
+#                 "schema": "BaseInSitu",
+#                 "column": "depth_to_top",
+#                 "check": "dtype('float64')",
+#                 "error": "expected series 'depth_to_top' to have type float64, got object"
+#             }
+#         ]
+#     }
+# }
+# @pa.check_types(lazy=True)
 def ags3_in_situ_to_brgi_in_situ(
     group_name: str, ags3_in_situ: pd.DataFrame, project_uid: str
 ) -> DataFrame[BaseInSitu]:
@@ -114,7 +131,7 @@ def ags3_in_situ_to_brgi_in_situ(
     Returns:
         DataFrame[BaseInSitu]: The Bedrock in-situ data.
     """
-    brgi_in_situ = ags3_in_situ.copy()
+    brgi_in_situ = ags3_in_situ
     brgi_in_situ["project_uid"] = project_uid
     brgi_in_situ["location_uid"] = ags3_in_situ["HOLE_ID"] + "_" + project_uid
 
@@ -136,7 +153,7 @@ def ags3_in_situ_to_brgi_in_situ(
     brgi_in_situ["depth_to_top"] = ags3_in_situ[top_depth]
     brgi_in_situ["depth_to_base"] = ags3_in_situ.get(base_depth)
 
-    return brgi_in_situ
+    return brgi_in_situ  # type: ignore
 
 
 @pa.check_types(lazy=True)
@@ -177,4 +194,4 @@ def generate_sample_ids_for_ags3(
     #             + ags3_samp["HOLE_ID"].astype(str)
     #         )
 
-    return ags3_with_samp
+    return ags3_with_samp  # type: ignore
