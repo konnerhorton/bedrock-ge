@@ -7,6 +7,8 @@ from pyproj import Transformer
 from pyproj.crs import CRS
 from shapely.geometry import LineString, Point
 
+# TODO: change function type hints, such that pandera checks the dataframes against the Bedrock schemas
+
 
 def calculate_gis_geometry(
     no_gis_brgi_db: Dict[str, Union[pd.DataFrame, gpd.GeoDataFrame]],
@@ -27,64 +29,36 @@ def calculate_gis_geometry(
 
     crs = CRS.from_wkt(brgi_db["Project"]["crs_wkt"].iloc[0])
 
+    # Calculate GIS geometry for the 'Location' table
     brgi_db["Location"] = calculate_location_gis_geometry(brgi_db["Location"], crs)
     print("'Location' GIS geometry was calculated successfully.")
 
-    brgi_db["LonLatHeight"] = gpd.GeoDataFrame(
-        brgi_db["Location"][
-            [
-                "project_uid",
-                "location_uid",
-            ]
-        ],
-        geometry=brgi_db["Location"].apply(
-            lambda row: Point(
-                row["longitude"], row["latitude"], row["wgs84_ground_level_height"]
-            ),
-            axis=1,
-        ),
-        crs=4326,
-    )
+    # Create the 'LonLatHeight' table.
+    # The 'LonLatHeight' table makes it easier to visualize the GIS geometry on 2D maps,
+    # because vertical lines are often very small or completely hidden in 2D.
+    # This table only contains the 3D of the GI locations at ground level,
+    # in WGS84 (Longitude, Latitude, Height) coordinates.
+    brgi_db["LonLatHeight"] = create_lon_lat_height_table(brgi_db["Location"], crs)
     print("'LonLatHeight' table with GI location points was created successfully.")
     print(
         "    Points have WGS84 (Longitude, Latitude, Ground Level Ellipsoidal Height) coordinates."
     )
 
-    location_child = brgi_db["Sample"].copy()
-    location_child = pd.merge(
-        location_child,
-        brgi_db["Location"][
-            ["location_uid", "easting", "northing", "ground_level_elevation"]
-        ],
-        on="location_uid",
-        how="left",
-    )
-    location_child["elevation_at_top"] = (
-        location_child["ground_level_elevation"] - location_child["depth_to_top"]
-    )
-    brgi_db["Sample"]["elevation_at_top"] = location_child["elevation_at_top"]
-    location_child["elevation_at_base"] = (
-        location_child["ground_level_elevation"] - location_child["depth_to_base"]
-    )
-    brgi_db["Sample"]["elevation_at_base"] = location_child["elevation_at_base"]
-    brgi_db["Sample"] = gpd.GeoDataFrame(
-        brgi_db["Sample"],
-        geometry=location_child.apply(
-            lambda row: LineString(
-                [
-                    (row["easting"], row["northing"], row["ground_level_elevation"]),
-                    (row["easting"], row["northing"], row["elevation_at_base"]),
-                ]
-            )
-            if not np.isnan(row["elevation_at_base"])
-            else Point(
-                (row["easting"], row["northing"], row["ground_level_elevation"])
-            ),
-            axis=1,
-        ),
-        crs=crs,
+    # Create GIS geometry for tables that have In-Situ GIS geometry.
+    # These are the 'Sample' table and 'InSitu_...' tables.
+    # These tables are children of the Location table,
+    # i.e. have the 'Location' table as the parent table.
+    brgi_db["Sample"] = calculate_in_situ_gis_geometry(
+        brgi_db["Sample"], brgi_db["Location"], crs
     )
     print("'Sample' GIS geometry was calculated successfully.")
+
+    for table_name, table in brgi_db.items():
+        if table_name.startswith("InSitu_"):
+            brgi_db[table_name] = calculate_in_situ_gis_geometry(
+                table, brgi_db["Location"], crs
+            )
+            print(f"'{table_name}' GIS geometry was calculated successfully.")
 
     return brgi_db
 
@@ -130,7 +104,7 @@ def calculate_location_gis_geometry(
     # Calculate WGS84 geodetic coordinates
     brgi_location[["longitude", "latitude", "wgs84_ground_level_height"]] = (
         brgi_location.apply(
-            lambda row: calculate_wgs84_location(
+            lambda row: calculate_wgs84_coordinates(
                 from_crs=crs,
                 easting=row["easting"],
                 northing=row["northing"],
@@ -144,7 +118,7 @@ def calculate_location_gis_geometry(
     return brgi_location
 
 
-def calculate_wgs84_location(
+def calculate_wgs84_coordinates(
     from_crs: CRS, easting: float, northing: float, elevation: Union[float, None] = None
 ) -> Tuple:
     """Transform coordinates from an arbitrary Coordinate Reference System (CRS) to
@@ -170,3 +144,91 @@ def calculate_wgs84_location(
         wgs84_height = None
 
     return lon, lat, wgs84_height
+
+
+def create_lon_lat_height_table(
+    brgi_location: gpd.GeoDataFrame, crs: CRS
+) -> gpd.GeoDataFrame:
+    """Create a GeoDataFrame with GI locations in WGS84 (lon, lat, height) coordinates.
+
+    The 'LonLatHeight' table makes it easier to visualize the GIS geometry on 2D maps,
+    because vertical lines are often very small or completely hidden in 2D. This table
+    only contains the 3D point of the GI locations at ground level, in WGS84 (Longitude,
+    Latitude, Height) coordinates. Other attributes, such as the location type, sample
+    type, geology description, etc., can be attached to this table by joining, i.e.
+    merging those tables on the location_uid key.
+
+    Args:
+        brgi_location (GeoDataFrame): The GeoDataFrame with the GI locations.
+        crs (CRS): The Coordinate Reference System of the GI locations.
+
+    Returns:
+        GeoDataFrame: The 'LonLatHeight' GeoDataFrame.
+    """
+    lon_lat_height = gpd.GeoDataFrame(
+        brgi_location[
+            [
+                "project_uid",
+                "location_uid",
+            ]
+        ],
+        geometry=brgi_location.apply(
+            lambda row: Point(
+                row["longitude"], row["latitude"], row["wgs84_ground_level_height"]
+            ),
+            axis=1,
+        ),
+        crs=4326,
+    )
+    return lon_lat_height
+
+
+def calculate_in_situ_gis_geometry(
+    brgi_in_situ: Union[pd.DataFrame, gpd.GeoDataFrame],
+    brgi_location: Union[pd.DataFrame, gpd.GeoDataFrame],
+    crs: CRS,
+) -> gpd.GeoDataFrame:
+    location_child = brgi_in_situ.copy()
+
+    # Merge the location data into the in-situ data to get the location coordinates
+    location_child = pd.merge(
+        location_child,
+        brgi_location[
+            ["location_uid", "easting", "northing", "ground_level_elevation"]
+        ],
+        on="location_uid",
+        how="left",
+    )
+
+    # Calculate the elevation at the top of the Sample or in-situ test
+    location_child["elevation_at_top"] = (
+        location_child["ground_level_elevation"] - location_child["depth_to_top"]
+    )
+    brgi_in_situ["elevation_at_top"] = location_child["elevation_at_top"]
+
+    # Calculate the elevation at the base of the Sample or in-situ test
+    location_child["elevation_at_base"] = (
+        location_child["ground_level_elevation"] - location_child["depth_to_base"]
+    )
+    brgi_in_situ["elevation_at_base"] = location_child["elevation_at_base"]
+
+    # Create the in-situ data as a GeoDataFrame with LineString GIS geometry for
+    # Samples or in-situ tests that have an elevation at the base of the Sample or in-situ test.
+    brgi_in_situ = gpd.GeoDataFrame(
+        brgi_in_situ,
+        geometry=location_child.apply(
+            lambda row: LineString(
+                [
+                    (row["easting"], row["northing"], row["ground_level_elevation"]),
+                    (row["easting"], row["northing"], row["elevation_at_base"]),
+                ]
+            )
+            if not np.isnan(row["elevation_at_base"])
+            else Point(
+                (row["easting"], row["northing"], row["ground_level_elevation"])
+            ),
+            axis=1,
+        ),
+        crs=crs,
+    )
+    return brgi_in_situ
