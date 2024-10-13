@@ -113,20 +113,7 @@ def ags3_samp_to_brgi_sample(
     return brgi_sample  # type: ignore
 
 
-# TODO: Figure out why this SchemaError is thrown sometimes when applying @pa.check_types(lazy=True)
-# SchemaErrors: {
-#     "SCHEMA": {
-#         "WRONG_DATATYPE": [
-#             {
-#                 "schema": "BaseInSitu",
-#                 "column": "depth_to_top",
-#                 "check": "dtype('float64')",
-#                 "error": "expected series 'depth_to_top' to have type float64, got object"
-#             }
-#         ]
-#     }
-# }
-# @pa.check_types(lazy=True)
+@pa.check_types(lazy=True)
 def ags3_in_situ_to_brgi_in_situ(
     group_name: str, ags3_in_situ: pd.DataFrame, project_uid: str
 ) -> DataFrame[BaseInSitu]:

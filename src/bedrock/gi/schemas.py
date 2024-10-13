@@ -24,9 +24,10 @@ class BaseLocation(pa.DataFrameModel):
     )
     location_source_id: Series[str]
     location_type: Series[str]
-    easting: Series[float]
-    northing: Series[float]
+    easting: Series[float] = pa.Field(coerce=True)
+    northing: Series[float] = pa.Field(coerce=True)
     ground_level_elevation: Series[float] = pa.Field(
+        coerce=True,
         description="Elevation w.r.t. a local datum. Usually the orthometric height from the geoid, i.e. mean sea level, to the ground level.",
     )
     depth_to_base: Series[float]
@@ -43,28 +44,6 @@ class Location(BaseLocation):
     geometry: GeoSeries
 
 
-class BaseSample(pa.DataFrameModel):
-    sample_uid: Series[str] = pa.Field(
-        # primary_key=True,
-        unique=True,
-    )
-    project_uid: Series[str] = pa.Field(
-        # foreign_key="project.project_uid"
-    )
-    location_uid: Series[str] = pa.Field(
-        # foreign_key="location.location_uid"
-    )
-    sample_source_id: Series[str]
-    depth_to_top: Series[float]
-    depth_to_base: Series[float] = pa.Field(nullable=True)
-
-
-class Sample(BaseSample):
-    elevation_at_top: Series[float]
-    elevation_at_base: Series[float] = pa.Field(nullable=True)
-    geometry: GeoSeries
-
-
 class BaseInSitu(pa.DataFrameModel):
     project_uid: Series[str] = pa.Field(
         # foreign_key="project.project_uid"
@@ -72,7 +51,22 @@ class BaseInSitu(pa.DataFrameModel):
     location_uid: Series[str] = pa.Field(
         # foreign_key="location.location_uid"
     )
-    depth_to_top: Series[float]
+    depth_to_top: Series[float] = pa.Field(coerce=True)
+    depth_to_base: Series[float] = pa.Field(coerce=True, nullable=True)
+
+
+class BaseSample(BaseInSitu):
+    sample_uid: Series[str] = pa.Field(
+        # primary_key=True,
+        unique=True,
+    )
+    sample_source_id: Series[str]
+
+
+class Sample(BaseSample):
+    elevation_at_top: Series[float]
+    elevation_at_base: Series[float] = pa.Field(nullable=True)
+    geometry: GeoSeries
 
 
 class InSitu(BaseInSitu):
