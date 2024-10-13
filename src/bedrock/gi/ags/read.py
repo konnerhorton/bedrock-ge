@@ -38,9 +38,9 @@ def ags_to_dfs(ags_data: str) -> Dict[str, pd.DataFrame]:
     is_proj_group_correct = check_ags_proj_group(ags_dfs["PROJ"])
     if is_proj_group_correct:
         project_id = ags_dfs["PROJ"]["PROJ_ID"].iloc[0]
-        print(
-            f"AGS {ags_version} data was read for Project {project_id}\nThis Ground Investigation data contains groups:\n{list(ags_dfs.keys())}\n"
-        )
+        print(f"AGS {ags_version} data was read for Project {project_id}")
+        print("This Ground Investigation data contains groups:")
+        print(list(ags_dfs.keys()), "\n")
 
     return ags_dfs
 

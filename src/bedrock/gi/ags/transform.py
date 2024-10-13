@@ -18,7 +18,7 @@ def ags3_db_to_no_gis_brgi_db(
     # Make sure that the AGS 3 database is not changed outside this function.
     ags3_db = ags3_db.copy()
 
-    print("Transforming AGS 3 groups to Bedrock tables...\n")
+    print("Transforming AGS 3 groups to Bedrock tables...")
 
     # Instantiate Bedrock dictionary of pd.DataFrames
     brgi_db = {}
@@ -27,13 +27,13 @@ def ags3_db_to_no_gis_brgi_db(
     brgi_db["Project"] = ags_proj_to_brgi_project(ags3_db["PROJ"], crs)
     project_uid = brgi_db["Project"]["project_uid"].item()
     del ags3_db["PROJ"]
-    print("'Project' table was created successfully.\n")
+    print("'Project' table was created successfully.")
 
     # Locations
     if "HOLE" in ags3_db.keys():
         brgi_db["Location"] = ags3_hole_to_brgi_location(ags3_db["HOLE"], project_uid)  # type: ignore
         del ags3_db["HOLE"]
-        print("'Location' table was created successfully.\n")
+        print("'Location' table was created successfully.")
     else:
         print(
             "Your AGS 3 data doesn't contain a HOLE group, i.e. Ground Investigation locations."
@@ -45,7 +45,7 @@ def ags3_db_to_no_gis_brgi_db(
         ags3_db["SAMP"] = generate_sample_ids_for_ags3(ags3_db["SAMP"])  # type: ignore
         brgi_db["Sample"] = ags3_samp_to_brgi_sample(ags3_db["SAMP"], project_uid)  # type: ignore
         del ags3_db["SAMP"]
-        print("'Sample' table was created successfully.\n")
+        print("'Sample' table was created successfully.")
     else:
         print("Your AGS 3 data doesn't contain a SAMP group, i.e. samples.")
 
@@ -59,10 +59,13 @@ def ags3_db_to_no_gis_brgi_db(
             brgi_db[f"InSitu_{group}"] = ags3_in_situ_to_brgi_in_situ(  # type: ignore
                 group, group_df, project_uid
             )
-            print(f"'InSitu_{group}' table was created successfully.\n")
+            print(f"'InSitu_{group}' table was created successfully.")
         else:
             brgi_db[group] = ags3_db[group]  # type: ignore
 
+    print("Done")
+    print("The Bedrock database contains the following tables:")
+    print(list(brgi_db.keys()), "\n")
     return brgi_db  # type: ignore
 
 
@@ -87,7 +90,7 @@ def ags3_hole_to_brgi_location(
     brgi_location["location_type"] = ags3_hole["HOLE_TYPE"]
     brgi_location["easting"] = ags3_hole["HOLE_NATE"]
     brgi_location["northing"] = ags3_hole["HOLE_NATN"]
-    brgi_location["ground_level"] = ags3_hole["HOLE_GL"]
+    brgi_location["ground_level_elevation"] = ags3_hole["HOLE_GL"]
     brgi_location["depth_to_base"] = ags3_hole["HOLE_FDEP"]
 
     return ags3_hole  # type: ignore
