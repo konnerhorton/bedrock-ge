@@ -11,6 +11,7 @@ class Project(pa.DataFrameModel):
         unique=True,
     )
     crs_wkt: Series[str] = pa.Field(description="Coordinate Reference System")
+    # datum: Series[str] = pa.Field(description="Datum used for measurement of the ground level elevation.")
 
 
 class BaseLocation(pa.DataFrameModel):
@@ -25,14 +26,20 @@ class BaseLocation(pa.DataFrameModel):
     location_type: Series[str]
     easting: Series[float]
     northing: Series[float]
-    ground_level: Series[float]
+    ground_level_elevation: Series[float] = pa.Field(
+        description="Elevation w.r.t. a local datum. Usually the orthometric height from the geoid, i.e. mean sea level, to the ground level.",
+    )
     depth_to_base: Series[float]
 
 
 class Location(BaseLocation):
     elevation_at_base: Series[float]
-    latitude: Series[float]
     longitude: Series[float]
+    latitude: Series[float]
+    wgs84_ground_level_height: Series[float] = pa.Field(
+        description="Ground level height w.r.t. the WGS84 (World Geodetic System 1984) ellipsoid.",
+        nullable=True,
+    )
     geometry: GeoSeries
 
 
