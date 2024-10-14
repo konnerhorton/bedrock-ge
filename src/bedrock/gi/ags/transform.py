@@ -24,16 +24,16 @@ def ags3_db_to_no_gis_brgi_db(
     brgi_db = {}
 
     # Project
+    print("Transforming AGS 3 group 'PROJ' to Bedrock GI 'Project' table...")
     brgi_db["Project"] = ags_proj_to_brgi_project(ags3_db["PROJ"], crs)
     project_uid = brgi_db["Project"]["project_uid"].item()
     del ags3_db["PROJ"]
-    print("'Project' table was created successfully.")
 
     # Locations
     if "HOLE" in ags3_db.keys():
+        print("Transforming AGS 3 group 'HOLE' to Bedrock GI 'Location' table...")
         brgi_db["Location"] = ags3_hole_to_brgi_location(ags3_db["HOLE"], project_uid)  # type: ignore
         del ags3_db["HOLE"]
-        print("'Location' table was created successfully.")
     else:
         print(
             "Your AGS 3 data doesn't contain a HOLE group, i.e. Ground Investigation locations."
@@ -41,11 +41,11 @@ def ags3_db_to_no_gis_brgi_db(
 
     # Samples
     if "SAMP" in ags3_db.keys():
+        print("Transforming AGS 3 group 'SAMP' to Bedrock GI 'Sample' table...")
         check_foreign_key("HOLE_ID", brgi_db["Location"], ags3_db["SAMP"])
         ags3_db["SAMP"] = generate_sample_ids_for_ags3(ags3_db["SAMP"])  # type: ignore
         brgi_db["Sample"] = ags3_samp_to_brgi_sample(ags3_db["SAMP"], project_uid)  # type: ignore
         del ags3_db["SAMP"]
-        print("'Sample' table was created successfully.")
     else:
         print("Your AGS 3 data doesn't contain a SAMP group, i.e. samples.")
 
@@ -55,11 +55,13 @@ def ags3_db_to_no_gis_brgi_db(
             print(f"Project {project_uid} has lab test data: {group}.")
             brgi_db[group] = group_df  # type: ignore
         elif "HOLE_ID" in ags3_db[group].columns:
+            print(
+                f"Transforming AGS 3 group '{group}' to Bedrock GI 'InSitu_{group}' table..."
+            )
             check_foreign_key("HOLE_ID", brgi_db["Location"], group_df)
             brgi_db[f"InSitu_{group}"] = ags3_in_situ_to_brgi_in_situ(  # type: ignore
                 group, group_df, project_uid
             )
-            print(f"'InSitu_{group}' table was created successfully.")
         else:
             brgi_db[group] = ags3_db[group]  # type: ignore
 

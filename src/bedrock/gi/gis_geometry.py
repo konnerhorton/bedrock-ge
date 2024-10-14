@@ -16,9 +16,7 @@ def calculate_gis_geometry(
     # Make sure that the Bedrock database is not changed outside this function.
     brgi_db = no_gis_brgi_db.copy()
 
-    print(
-        "Calculating GIS geometry for the Bedrock 'Location', 'Sample', 'InSitu_' and 'Lab_' database tables..."
-    )
+    print("Calculating GIS geometry for the Bedrock GI database tables...")
 
     # Check if all projects have the same CRS
     if not brgi_db["Project"]["crs_wkt"].nunique() == 1:
@@ -30,35 +28,39 @@ def calculate_gis_geometry(
     crs = CRS.from_wkt(brgi_db["Project"]["crs_wkt"].iloc[0])
 
     # Calculate GIS geometry for the 'Location' table
+    print("Calculating GIS geometry for the Bedrock GI 'Location' table...")
     brgi_db["Location"] = calculate_location_gis_geometry(brgi_db["Location"], crs)
-    print("'Location' GIS geometry was calculated successfully.")
 
     # Create the 'LonLatHeight' table.
     # The 'LonLatHeight' table makes it easier to visualize the GIS geometry on 2D maps,
     # because vertical lines are often very small or completely hidden in 2D.
     # This table only contains the 3D of the GI locations at ground level,
     # in WGS84 (Longitude, Latitude, Height) coordinates.
-    brgi_db["LonLatHeight"] = create_lon_lat_height_table(brgi_db["Location"], crs)
-    print("'LonLatHeight' table with GI location points was created successfully.")
     print(
-        "    Points have WGS84 (Longitude, Latitude, Ground Level Ellipsoidal Height) coordinates."
+        "Creating 'LonLatHeight' table with GI locations in WGS84 geodetic coordinates..."
     )
+    print(
+        "    WGS84 geodetic coordinates: (Longitude, Latitude, Ground Level Ellipsoidal Height)"
+    )
+    brgi_db["LonLatHeight"] = create_lon_lat_height_table(brgi_db["Location"], crs)
 
     # Create GIS geometry for tables that have In-Situ GIS geometry.
     # These are the 'Sample' table and 'InSitu_...' tables.
     # These tables are children of the Location table,
     # i.e. have the 'Location' table as the parent table.
+    print("Calculating GIS geometry for the Bedrock GI 'Sample' table...")
     brgi_db["Sample"] = calculate_in_situ_gis_geometry(
         brgi_db["Sample"], brgi_db["Location"], crs
     )
-    print("'Sample' GIS geometry was calculated successfully.")
 
     for table_name, table in brgi_db.items():
         if table_name.startswith("InSitu_"):
+            print(
+                f"Calculating GIS geometry for the Bedrock GI '{table_name}' table..."
+            )
             brgi_db[table_name] = calculate_in_situ_gis_geometry(
                 table, brgi_db["Location"], crs
             )
-            print(f"'{table_name}' GIS geometry was calculated successfully.")
 
     return brgi_db
 
