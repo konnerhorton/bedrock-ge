@@ -100,7 +100,7 @@ def check_foreign_key(
     # Raise an error if there are missing foreign keys
     if len(missing_foreign_keys) > 0:
         raise ValueError(
-            f"The table with the foreign key contains foreign keys that don't occur in the parent table:\n{missing_foreign_keys}"
+            f"This table contains '{foreign_key}'s that don't occur in the parent table:\n{missing_foreign_keys}"
         )
 
     return True
