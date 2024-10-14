@@ -101,7 +101,7 @@ def ags3_to_dfs(ags3_data: str) -> Dict[str, pd.DataFrame]:
                 continue
             elif len(data_row) != len(headers):
                 print(
-                    f"CAUTION: The number of columns on line {i} doesn't match the number of columns of group {group}"
+                    f"\nCAUTION: The number of columns on line {i} doesn't match the number of columns of group {group}!\n"
                 )
                 continue
             # Append continued lines (<CONT>) to the last data_row
