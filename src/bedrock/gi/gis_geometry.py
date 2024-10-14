@@ -221,14 +221,12 @@ def calculate_in_situ_gis_geometry(
         geometry=location_child.apply(
             lambda row: LineString(
                 [
-                    (row["easting"], row["northing"], row["ground_level_elevation"]),
+                    (row["easting"], row["northing"], row["elevation_at_top"]),
                     (row["easting"], row["northing"], row["elevation_at_base"]),
                 ]
             )
             if not np.isnan(row["elevation_at_base"])
-            else Point(
-                (row["easting"], row["northing"], row["ground_level_elevation"])
-            ),
+            else Point((row["easting"], row["northing"], row["elevation_at_top"])),
             axis=1,
         ),
         crs=crs,
