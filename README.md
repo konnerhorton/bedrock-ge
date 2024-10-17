@@ -39,6 +39,7 @@
 | Excel       | ✅  | ✅    |
 | CSV         | ✅  | ✅    |
 | JSON        | ✅  | ✅    |
+| GeoJSON     | ✅  | ✅    |
 
 What do you need? [DIGGS](https://diggsml.org/)? [NADAG](https://www.ngu.no/geologisk-kartlegging/om-nadag-nasjonal-database-grunnundersokelser)? [GEF](https://publicwiki.deltares.nl/display/STREAM/Dutch+National+GEF+Standards)?  Something else?  
 Let us know by creating an [issue](https://github.com/bedrock-gi/bedrock-gi/issues) or starting a [discussion](https://github.com/orgs/bedrock-gi/discussions) 💭
@@ -47,9 +48,9 @@ Also, if you have a project with publicly available GI data, please share that i
 
 ### ✅ Validate your GI data
 
-### 🗺️ Put your GI data into a 3D GIS database
+### 🗺️ Put your GI data from multiple files into a single 3D GIS database
 
-For example a [GeoPackage](https://en.wikipedia.org/wiki/GeoPackage) ([like a Shapefile, but then waaay better](http://switchfromshapefile.org/)).
+For example, you can take GI data from 100 AGS files and combine them into a single a [GeoPackage](https://en.wikipedia.org/wiki/GeoPackage) ([like a Shapefile, but then waaay better](http://switchfromshapefile.org/)).
 
 ### 🟦 Put your GI data into Speckle
 
@@ -64,19 +65,33 @@ And your GI data becomes available in all the software that Speckle has connecto
 
 ### 🔓 Free and Open Source Software
 
-<!-- ## ℹ️ Overview -->
+## ℹ️ Overview
 
-## 🤔 Things to Consider
+With Bedrock you can get your data from any format into a GIS database. The purpose of Bedrock is NOT to become THE standard for geotechnical data, because we don't need 15 instead of 14 competing standards:
 
-### GIS Data, Projected vs Geodetic CRS's and Heights / Elevations
+<p align="center">
+  <img src="./resources/images/14Become15Standards.png" alt="14 competing standards become 15 competing standards | xkcd.com/927" width="40%"/>
+  <br>
+  Source: <a href="https://xkcd.com/927/" target="_blank">https://xkcd.com/927</a>
+</p>  
 
-Ground investigation data is initially measured in Easting, Northing, z-coordinate, i.e. in a projected Coordinate Reference System (CRS).
+For example, us geotechnical engineers who are used to working with AGS data know that the "ISPT group" is a table that describes an In-Situ Standard Penetration Test and we know what headings, i.e. columns that AGS group, i.e. table has. Therefore, Bedrock doesn't change that the naming of those columns. Bedrock just makes sure that the data is structured in a sensible way, such that multiple Ground Investigation data from multiple sources can be converted into GIS databases.
 
-If you want your ground investigation data to go into a GIS database, all GIS geometry needs to use the same CRS.
+A GIS database with Ground Investigation data contains tables that describe the Ground Investigation `'Project'`, the `'Location'`s where GI data was collected, the `'Sample'`s and `'InSitu'` measurements that taken at these `'Location'`s, and the `'Lab'` tests that were performed on the collected `'Sample'`s.
 
-Therefore, if you are dealing with GI data collected using different projected CRS's, you'll have to convert the Easting, Northing, z-coordinates to global longitude, latitude, ellipsoidal height coordinates in a geodetic CRS. ([Further reading](https://clover-animantarx-a3a.notion.site/Geomatics-36dfece2dece4358b44c44d08c9cded6))
+The `'Project'`, `'Location'`, `'Sample'`, `'InSitu'` test and `'Lab'` test tables are related to each other, because each lab test belongs to a sample, which belongs to a GI location, which belongs to a project. These relationships can be visualized in a hierarchy like this:
 
-Please start a [discussion](https://github.com/orgs/bedrock-gi/discussions) or create an issue if want to be able to put data that were collected in different projected CRS's into a single GIS database. This is pretty easy with [`geopandas`](https://geopandas.org/en/stable/) / [`pyproj`](https://pyproj4.github.io/pyproj/stable/) transformations, but hasn't been necessary yet.
+```bash
+'Project'
+ └───'Location'
+     ├───'InSitu'
+     └───'Sample'
+          └───'Lab'
+```
+
+These relationships are represented in the database tables with so-called "foreign keys". For example, the results of an Atterberg Limits Lab test, i.e. Liquid Limit and Plastic Limit tests, that originated from an AGS file would be in stored in the `'Lab_LLPL'` table. Each row in this table represents the Atterberg Limit test results performed on a specific sample. Each row also knows to which project, GI location and sample it belongs through its `project_uid`, `location_uid` and `sample_uid` respectively.
+
+This relational database ([linked tables](https://en.wikipedia.org/wiki/Relational_database)) with Ground Investigation data becomes a GIS database by assigning a (3D) GIS geometry to each of the rows in each of the database tables (except for the `'Project'` table).
 
 ## ⬇️ Installation
 
@@ -136,6 +151,18 @@ Contributing isn't just about writing code:
 
 - If you would like to contribute code, AWESOME! 💖  
   Please create an issue for what you'd like to contribute. If you don't know how to get started, please indicate this in your issue, and we'll help you out.
+
+## 🤔 Things to Consider
+
+### GIS Data, Projected vs Geodetic CRS's and Heights / Elevations
+
+Ground investigation data is initially measured in Easting, Northing, z-coordinate, i.e. in a projected Coordinate Reference System (CRS).
+
+If you want your ground investigation data to go into a GIS database, all GIS geometry needs to use the same CRS.
+
+Therefore, if you are dealing with GI data collected using different projected CRS's, you'll have to convert the Easting, Northing, z-coordinates to global longitude, latitude, ellipsoidal height coordinates in a geodetic CRS. ([Further reading](https://clover-animantarx-a3a.notion.site/Geomatics-36dfece2dece4358b44c44d08c9cded6))
+
+Please start a [discussion](https://github.com/orgs/bedrock-gi/discussions) or create an issue if want to be able to put data that were collected in different projected CRS's into a single GIS database. This is pretty easy with [`geopandas`](https://geopandas.org/en/stable/) / [`pyproj`](https://pyproj4.github.io/pyproj/stable/) transformations, but hasn't been necessary yet.
 
 ## ✍️ Author
 
