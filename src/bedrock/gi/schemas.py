@@ -1,5 +1,7 @@
 """pandera schemas for Bedrock GI data. Base schemas refer to schemas that have no calculated GIS geometry or values."""
 
+from typing import Optional
+
 import pandera as pa
 from pandera.typing import Series
 from pandera.typing.geopandas import GeoSeries
@@ -52,7 +54,7 @@ class BaseInSitu(pa.DataFrameModel):
         # foreign_key="location.location_uid"
     )
     depth_to_top: Series[float] = pa.Field(coerce=True)
-    depth_to_base: Series[float] = pa.Field(coerce=True, nullable=True)
+    depth_to_base: Optional[Series[float]] = pa.Field(coerce=True, nullable=True)
 
 
 class BaseSample(BaseInSitu):
@@ -65,12 +67,13 @@ class BaseSample(BaseInSitu):
 
 class Sample(BaseSample):
     elevation_at_top: Series[float]
-    elevation_at_base: Series[float] = pa.Field(nullable=True)
+    elevation_at_base: Optional[Series[float]] = pa.Field(nullable=True)
     geometry: GeoSeries
 
 
 class InSitu(BaseInSitu):
     elevation_at_top: Series[float]
+    elevation_at_base: Optional[Series[float]] = pa.Field(nullable=True)
     geometry: GeoSeries
 
 
