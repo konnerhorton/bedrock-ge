@@ -49,7 +49,7 @@ def ags3_db_to_no_gis_brgi_db(
     else:
         print("Your AGS 3 data doesn't contain a SAMP group, i.e. samples.")
 
-    # The rest of the tables: 1. Lab Tests 2. In-Situ Tests 3. Other tables
+    # The rest of the tables: 1. Lab Tests 2. In-Situ Measurements 3. Other tables
     for group, group_df in ags3_db.items():
         if "SAMP_REF" in ags3_db[group].columns:
             print(f"Project {project_uid} has lab test data: {group}.")
@@ -65,9 +65,13 @@ def ags3_db_to_no_gis_brgi_db(
         else:
             brgi_db[group] = ags3_db[group]  # type: ignore
 
-    print("Done")
-    print("The Bedrock database contains the following tables:")
-    print(list(brgi_db.keys()), "\n")
+    print(
+        "Done",
+        "The Bedrock database contains the following tables:",
+        list(brgi_db.keys()),
+        sep="\n",
+        end="\n\n",
+    )
     return brgi_db  # type: ignore
 
 
@@ -119,7 +123,7 @@ def ags3_samp_to_brgi_sample(
 def ags3_in_situ_to_brgi_in_situ(
     group_name: str, ags3_in_situ: pd.DataFrame, project_uid: str
 ) -> DataFrame[BaseInSitu]:
-    """Transform, i.e. map, AGS 3 in-situ test data to Bedrock's in-situ data schema.
+    """Transform, i.e. map, AGS 3 in-situ measurement data to Bedrock's in-situ data schema.
 
     Args:
         group_name (str): The AGS 3 group name.
@@ -147,6 +151,26 @@ def ags3_in_situ_to_brgi_in_situ(
         top_depth = "HDIA_HDEP"
     elif group_name == "PTIM":
         top_depth = "PTIM_DEP"
+    elif group_name == "IVAN":
+        top_depth = "IVAN_DPTH"
+    elif group_name == "STCN":
+        top_depth = "STCN_DPTH"
+    elif group_name == "POBS" or group_name == "PREF":
+        top_depth = "PREF_TDEP"
+    elif group_name == "DREM":
+        top_depth = "DREM_DPTH"
+    elif group_name == "PRTD" or group_name == "PRTG" or group_name == "PRTL":
+        top_depth = "PRTD_DPTH"
+    elif group_name == "IPRM":
+        if top_depth not in ags3_in_situ.columns:
+            print(
+                "\n🚨 CAUTION: The IPRM group in this AGS 3 file does not contain a 'IPRM_TOP' heading!",
+                "🚨 CAUTION: Making the 'IPRM_BASE' heading the 'depth_to_top'...",
+                sep="\n",
+                end="\n\n",
+            )
+            top_depth = "IPRM_BASE"
+            base_depth = "None"
 
     brgi_in_situ["depth_to_top"] = ags3_in_situ[top_depth]
     brgi_in_situ["depth_to_base"] = ags3_in_situ.get(base_depth)
@@ -178,7 +202,7 @@ def generate_sample_ids_for_ags3(
     #         ags3_samp["SAMP_REF"].astype(str) + "_" + ags3_samp["HOLE_ID"].astype(str)
     #     )
     # except pa.errors.SchemaError as exc:
-    #     print(f"CAUTION: The AGS 3 SAMP group contains rows without SAMP_REF:\n{exc}")
+    #     print(f"🚨 CAUTION: The AGS 3 SAMP group contains rows without SAMP_REF:\n{exc}")
 
     #     if "non-nullable series 'SAMP_REF'" in str(exc):
     #         print(
