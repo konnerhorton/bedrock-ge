@@ -37,10 +37,9 @@ def calculate_gis_geometry(
     # This table only contains the 3D of the GI locations at ground level,
     # in WGS84 (Longitude, Latitude, Height) coordinates.
     print(
-        "Creating 'LonLatHeight' table with GI locations in WGS84 geodetic coordinates..."
-    )
-    print(
-        "    WGS84 geodetic coordinates: (Longitude, Latitude, Ground Level Ellipsoidal Height)"
+        "Creating 'LonLatHeight' table with GI locations in WGS84 geodetic coordinates...",
+        "    WGS84 geodetic coordinates: (Longitude, Latitude, Ground Level Ellipsoidal Height)",
+        sep="\n",
     )
     brgi_db["LonLatHeight"] = create_lon_lat_height_table(brgi_db["Location"], crs)
 
@@ -209,10 +208,11 @@ def calculate_in_situ_gis_geometry(
     brgi_in_situ["elevation_at_top"] = location_child["elevation_at_top"]
 
     # Calculate the elevation at the base of the Sample or in-situ test
-    location_child["elevation_at_base"] = (
-        location_child["ground_level_elevation"] - location_child["depth_to_base"]
-    )
-    brgi_in_situ["elevation_at_base"] = location_child["elevation_at_base"]
+    if "depth_to_base" in location_child.columns:
+        location_child["elevation_at_base"] = (
+            location_child["ground_level_elevation"] - location_child["depth_to_base"]
+        )
+        brgi_in_situ["elevation_at_base"] = location_child["elevation_at_base"]
 
     # Create the in-situ data as a GeoDataFrame with LineString GIS geometry for
     # Samples or in-situ tests that have an elevation at the base of the Sample or in-situ test.
@@ -225,7 +225,7 @@ def calculate_in_situ_gis_geometry(
                     (row["easting"], row["northing"], row["elevation_at_base"]),
                 ]
             )
-            if not np.isnan(row["elevation_at_base"])
+            if "elevation_at_base" in row and not np.isnan(row["elevation_at_base"])
             else Point((row["easting"], row["northing"], row["elevation_at_top"])),
             axis=1,
         ),
