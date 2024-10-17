@@ -18,17 +18,27 @@ def check_brgi_database(brgi_db: Dict):
     for table_name, table in brgi_db.items():
         if table_name == "Project":
             Project.validate(table)
+            print("'Project' table aligns with Bedrock's 'Project' table schema.")
         elif table_name == "Location":
             Location.validate(table)
             check_foreign_key("project_uid", brgi_db["Project"], table)
+            print("'Location' table aligns with Bedrock's 'Location' table schema.")
         elif table_name == "Sample":
             Sample.validate(table)
             check_foreign_key("project_uid", brgi_db["Project"], table)
             check_foreign_key("location_uid", brgi_db["Location"], table)
+            print("'Sample' table aligns with Bedrock's 'Sample' table schema.")
         elif table_name == "InSitu":
             InSitu.validate(table)
             check_foreign_key("project_uid", brgi_db["Project"], table)
             check_foreign_key("location_uid", brgi_db["Location"], table)
+            print(
+                f"'{table_name}' table aligns with Bedrock's table schema for In-Situ measurements."
+            )
+        elif table_name.startswith("Lab_"):
+            print(
+                "🚨 !NOT IMPLEMENTED! We haven't come across Lab data yet. !NOT IMPLEMENTED!"
+            )
 
     return True
 
@@ -60,7 +70,7 @@ def check_no_gis_brgi_database(brgi_db: Dict):
             )
         elif table_name.startswith("Lab_"):
             print(
-                "!NOT IMPLEMENTED! We haven't come across Lab data yet. !NOT IMPLEMENTED!"
+                "🚨 !NOT IMPLEMENTED! We haven't come across Lab data yet. !NOT IMPLEMENTED!"
             )
 
     return True
