@@ -23,10 +23,11 @@ def concatenate_databases(
     """
 
     # Create a new dict to store the concatenated dataframes
-    concatenated_dict = {key: value for key, value in db1.items()}
+    concatenated_dict = {key: df.dropna(axis=1, how="all") for key, df in db1.items()}
 
     # Iterate over the keys in the second dict
     for key, df in db2.items():
+        df = df.dropna(axis=1, how="all")
         # If the key is also in the first dict, concatenate the dataframes
         if key in db1:
             concatenated_dict[key] = pd.concat([db1[key], df], ignore_index=True)
