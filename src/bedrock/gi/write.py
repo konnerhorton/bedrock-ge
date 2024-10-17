@@ -25,9 +25,15 @@ def write_brgi_db_to_gpkg(
 
     # Create a GeoDataFrame from the dictionary of DataFrames
     for sheet_name, brgi_table in brgi_db.items():
-        sanitized_sheet_name = sanitize_sheet_name(sheet_name)
+        sanitized_table_name = sanitize_table_name(sheet_name)
+
+        if isinstance(brgi_table, pd.DataFrame):
+            brgi_table = gpd.GeoDataFrame(brgi_table)
+
         if isinstance(brgi_table, gpd.GeoDataFrame):
-            brgi_table.to_file(gpkg_path, driver="GPKG", layer=sheet_name)
+            brgi_table.to_file(
+                gpkg_path, driver="GPKG", layer=sanitized_table_name, overwrite=True
+            )
 
     print(f"Ground Investigation data has been written to '{gpkg_path}'.")
 
@@ -53,41 +59,48 @@ def write_gi_db_to_excel(
     # Create an Excel writer object
     with pd.ExcelWriter(excel_path, engine="openpyxl") as writer:
         for sheet_name, df in gi_db.items():
-            sanitized_sheet_name = sanitize_sheet_name(sheet_name)
+            sanitized_sheet_name = sanitize_table_name(sheet_name)
             if isinstance(df, pd.DataFrame) or isinstance(df, gpd.GeoDataFrame):
                 df.to_excel(writer, sheet_name=sanitized_sheet_name, index=False)
 
     print(f"Ground Investigation data has been written to '{excel_path}'.")
 
 
-# TODO: generalize this to work for GeoPackage layers and SQL table names etc.
-def sanitize_sheet_name(sheet_name):
+def sanitize_table_name(sheet_name):
     """
-    Replace invalid characters in Excel sheet names with an underscore.
+    Replace invalid characters and spaces in GI table names with underscores,
+    such that the name is consistent with SQL, GeoPackage and Excel naming conventions.
 
     Args:
         sheet_name (str): The original sheet name.
 
     Returns:
-        str: A sanitized sheet name with invalid characters replaced.
+        str: A sanitized sheet name with invalid characters and spaces replaced.
     """
     # Trim to a maximum length of 31 characters
     trimmed_name = sheet_name.strip()[:31]
 
-    if trimmed_name != sheet_name:
-        print(
-            f"Excel sheet names cannot be longer than 31 characters. Replaced '{sheet_name}' with '{trimmed_name}'."
-        )
-
-    # Replace invalid characters with an underscore
+    # Define invalid characters and replace with underscores
     invalid_chars = [":", "/", "\\", "?", "*", "[", "]"]
     sanitized_name = trimmed_name
     for char in invalid_chars:
         sanitized_name = sanitized_name.replace(char, "_")
 
+    # Replace spaces with underscores
+    sanitized_name = sanitized_name.replace(" ", "_")
+
+    # Collapse multiple underscores to one
+    sanitized_name = "_".join(filter(None, sanitized_name.split("_")))
+
     if trimmed_name != sanitized_name:
         print(
-            f"Excel sheet names cannot contain {invalid_chars}. Replaced '{sheet_name}' with '{sanitized_name}'"
+            f"Table names shouldn't contain {invalid_chars} or spaces and shouldn't be longer than 31 characters.\n",
+            f"Replaced '{sheet_name}' with '{sanitized_name}'.",
         )
+
+    # Ensure name isn't empty after sanitization
+    if not sanitized_name:
+        sanitized_name = "Table1"
+        print("The table name was completely invalid or empty. Replaced with 'Table1'.")
 
     return sanitized_name
