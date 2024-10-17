@@ -6,6 +6,7 @@ class Ags3HOLE(pa.DataFrameModel):
     HOLE_ID: Series[str] = pa.Field(
         # primary_key=True,
         unique=True,
+        coerce=True,
         description="Exploratory hole or location equivalent",
         # example="327/16A",
     )
@@ -28,11 +29,13 @@ class Ags3HOLE(pa.DataFrameModel):
 
 class BaseSAMP(pa.DataFrameModel):
     SAMP_REF: Series[str] = pa.Field(
+        coerce=True,
         nullable=True,
         description="Sample reference number",
         # example="24",
     )
     SAMP_TYPE: Series[str] = pa.Field(
+        coerce=True,
         nullable=True,
         description="Sample type",
         # example="U (See Appendix 1)",
@@ -56,6 +59,7 @@ class Ags3SAMP(BaseSAMP):
     sample_id: Series[str] = pa.Field(
         # primary_key=True,
         unique=True,
+        coerce=True,
         description="Sample unique identifier",
         # example="REF_TYPE_TOP_HOLE_ID",
     )
@@ -70,11 +74,13 @@ class Ags4SAMP(BaseSAMP):
     SAMP_ID: Series[str] = pa.Field(
         # primary_key=True,
         unique=True,
+        coerce=True,
         description="Sample unique identifier",
         # example="ABC121415010",
     )
     LOCA_ID: Series[str] = pa.Field(
         # foreign_key="Ags4LOCA.LOCA_ID",
+        coerce=True,
         description="Location identifier",
         # example="327/16A",
     )
@@ -94,6 +100,7 @@ class BaseGEOL(pa.DataFrameModel):
         metadata={"unit": "m"},
     )
     GEOL_DESC: Series[str] = pa.Field(
+        coerce=True,
         description="General description of stratum",
         # example="Stiff grey silty CLAY",
     )
@@ -103,10 +110,12 @@ class BaseGEOL(pa.DataFrameModel):
         # example="102",
     )
     GEOL_GEOL: Series[str] = pa.Field(
+        coerce=True,
         description="Geology code",
         # example="LC",
     )
     GEOL_GEO2: Series[str] = pa.Field(
+        coerce=True,
         nullable=True,
         description="Second geology code",
         # example="SAND",
