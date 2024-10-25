@@ -1,6 +1,6 @@
 [project]
 name = "bedrock-gi"
-version = "0.0.1"
+version = "0.1.0"
 description = "Bedrock, the open-source foundation for ground investigation data, subsurface modelling and Geo-BIM."
 authors = [
     {name = "Bedrock", email = "info@bedrock.engineer"}
@@ -9,7 +9,8 @@ license = {text = "Apache Software License (Apache 2.0)"}
 readme = "README.md"
 requires-python = ">=3.9"
 dependencies = [
-    "geopandas>=1.0.1",
+    "openpyxl>=3.1.5",
+    "pandera[geopandas,io]>=0.20.4",
     "sqlmodel>=0.0.22",
 ]
 keywords = [
@@ -53,7 +54,11 @@ packages = ["src/bedrock"]
 
 [tool.uv]
 dev-dependencies = [
+    "folium>=0.17.0",
+    "frictionless[excel]>=4.40.8",
     "jupyter>=1.1.1",
+    "mapclassify>=2.8.1",
+    "matplotlib>=3.9.2",
     "mypy>=1.11.2",
     "pandas-stubs>=2.2.2.240807",
     "pytest>=8.3.3",
