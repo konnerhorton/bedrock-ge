@@ -16,15 +16,15 @@
 
 ---
 
-📃 **Documentation:** https://bedrock.engineer/docs
+📃 **Documentation:** <https://bedrock.engineer/docs>
 
-🖥️ **Source Code:** https://github.com/bedrock-gi/bedrock-gi
+🖥️ **Source Code:** <https://github.com/bedrock-gi/bedrock-gi>
 
-🐍 **`bedrock-gi` on PyPI:** https://pypi.org/project/bedrock-gi/
+🐍 **`bedrock-gi` on PyPI:** <https://pypi.org/project/bedrock-gi/>
 
-🌐 **Website:** https://bedrock.engineer/
+🌐 **Website:** <https://bedrock.engineer/>
 
-🔗 **LinkedIn:** https://www.linkedin.com/company/bedrock-gi
+🔗 **LinkedIn:** <https://www.linkedin.com/company/bedrock-gi>
 
 ---
 
