@@ -21,7 +21,7 @@ Update `CHANGELOG.md` with details about the new release. Include any new featur
 
 Ensure that all tests pass by running your test suite.
 
-- If applicable, run your CI pipeline to confirm everything works on multiple environments (e.g., `GitHub Actions`, `Travis CI`, etc.).
+To automate this, it's possible to set up a CI (Continuous Integration) pipeline to confirm everything works in multiple environments, e.g. with `GitHub Actions`.
 
 ## 4. Commit the Changes
 
@@ -66,8 +66,11 @@ Upload the new version to PyPI (Python Package Index):
 twine upload dist/*
 ```
 
-> ⚠️ **Attention:**  
-> Ensure you have the correct credentials for PyPI in your environment.
+> ⚠️ **Attention:**
+>
+> You might have to delete previous distributions of the Python package in `dist/*`
+>
+> Ensure you have the correct credentials for PyPI in your environment. These should be in `~/.pypirc`
 
 ## 10. Verify the Release
 
