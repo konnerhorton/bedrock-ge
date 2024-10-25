@@ -48,22 +48,36 @@ Also, if you have a project with publicly available GI data, please share that i
 
 ### ✅ Validate your GI data
 
+`bedrock-gi` comes with data validation to make sure that you can combine Ground Investigation data from multiple files into a single GIS database with consistent relationships between GI locations, samples, in-situ measurements and lab tests.
+
+This data validation mechanism (based on [`pandera`](https://pandera.readthedocs.io/en/stable/)) is easily extensible, giving you the power to add your own data validation criteria 💪
+
 ### 🗺️ Put your GI data from multiple files into a single 3D GIS database
 
-For example, you can take GI data from 100 AGS files and combine them into a single a [GeoPackage](https://en.wikipedia.org/wiki/GeoPackage) ([like a Shapefile, but then waaay better](http://switchfromshapefile.org/)).
+For example, you can take GI data from 100 AGS files and combine them into a single a [GeoPackage](https://en.wikipedia.org/wiki/GeoPackage) ([like a Shapefile, but then waaay better](http://switchfromshapefile.org/)). Such a GeoPackage can then be loaded into ArcGIS, such that you can visualize your GI data in 3D:
+
+<p align="center">
+  <img src="./resources/images/KaiTak_BrGI_ArcGIS.gif" alt="Edit this page on GitHub button on bedrock.engineer" width="90%"/>
+</p>
 
 ### 🟦 Put your GI data into Speckle
 
 Once you have your GI data inside [Speckle](https://speckle.systems/), it's super easy to visualize your GI data together with your civil engineering designs:
 
 <p align="center">
-  <img src="./resources/images/KaiTak.jpg" alt="Kai Tak, Hong Kong, data from many sources." width="54%" />
-  <img src="./resources/images/BPFoundation.png" alt="Bored Pile foundation design." width="42%" />
+  <img src="./resources/images/KaiTak_BrGI_Speckle.png" alt="Kai Tak, Hong Kong, data from many sources." width="56%" />
+  <img src="./resources/images/BPFoundation.png" alt="Bored Pile foundation design." width="40%" />
 </p>
 
-And your GI data becomes available in all the software that Speckle has connectors for.
+And your GI data becomes available in all the software that [Speckle has connectors](https://app.speckle.systems/downloads) for.
 
 ### 🔓 Free and Open Source Software
+
+Free and Open Source Software (FOSS) gives you full access to the code, which means you can customize `bedrock-gi` to integrate with other tools and fit your workflows & project needs.
+
+As the name implies, FOSS is free to use, so you're not tied to expensive software licenses or locked into a specific software vendor ⛓️‍💥
+
+You can give [feedback](#-feedback) and [contribute](#-contributing), such that together we together can build the tools we've always wanted and needed 🤝
 
 ## ℹ️ Overview
 
