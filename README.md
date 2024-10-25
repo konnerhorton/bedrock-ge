@@ -82,19 +82,19 @@ You can give [feedback](#-feedback) and [contribute](#-contributing), such that 
 
 ## ℹ️ Overview
 
-With Bedrock you can get your data from any format into a GIS database. The purpose of Bedrock is NOT to become THE standard for geotechnical data, because we don't need 15 instead of 14 competing standards:
+With Bedrock you can get your data from any Ground Investigation data format into a GIS database. The purpose of Bedrock is NOT to become THE standard for geotechnical data, because we don't need 15 instead of 14 competing standards:
 
 <p align="center">
-  <img src="./resources/images/14Become15Standards.png" alt="14 competing standards become 15 competing standards | xkcd.com/927" width="40%"/>
+  <img src="./resources/images/14Become15Standards.png" alt="14 competing standards become 15 competing standards | xkcd.com/927" width="60%"/>
   <br>
   Source: <a href="https://xkcd.com/927/" target="_blank">https://xkcd.com/927</a>
 </p>  
 
-For example, us geotechnical engineers who are used to working with AGS data know that the "ISPT group" is a table that describes an In-Situ Standard Penetration Test and we know what headings, i.e. columns that AGS group, i.e. table has. Therefore, Bedrock doesn't change that the naming of those columns. Bedrock just makes sure that the data is structured in a sensible way, such that multiple Ground Investigation data from multiple sources can be converted into GIS databases.
+For example, us geotechnical engineers who are used to working with AGS data know that the "ISPT group" is a table that describes an In-Situ Standard Penetration Test and we know what headings, i.e. columns that AGS group, i.e. table has. Therefore, Bedrock doesn't change that the naming of those columns. Bedrock just makes sure that the data is structured in a sensible way, such that Ground Investigation data from multiple sources can be converted into a GIS database.
 
-A GIS database with Ground Investigation data contains tables that describe the Ground Investigation `'Project'`, the `'Location'`s where GI data was collected, the `'Sample'`s and `'InSitu'` measurements that taken at these `'Location'`s, and the `'Lab'` tests that were performed on the collected `'Sample'`s.
+A GIS database with Ground Investigation data contains tables that describe the Ground Investigation `'Project'`, the `'Location'`s where GI data was collected, the `'Sample'`s and `'InSitu'` measurements taken at these `'Location'`s, and the `'Lab'` tests that were performed on the collected `'Sample'`s.
 
-The `'Project'`, `'Location'`, `'Sample'`, `'InSitu'` test and `'Lab'` test tables are related to each other, because each lab test belongs to a sample, which belongs to a GI location, which belongs to a project. These relationships can be visualized in a hierarchy like this:
+The `'Project'`, `'Location'`, `'Sample'`, `'InSitu'` measurement and `'Lab'` test tables are related to each other: each lab test belongs to a sample, which belongs to a GI location, which belongs to a project. These relationships can be visualized in a hierarchy like this:
 
 ```bash
 'Project'
@@ -104,7 +104,7 @@ The `'Project'`, `'Location'`, `'Sample'`, `'InSitu'` test and `'Lab'` test tabl
           └───'Lab'
 ```
 
-These relationships are represented in the database tables with so-called "foreign keys". For example, the results of an Atterberg Limits Lab test, i.e. Liquid Limit and Plastic Limit tests, that originated from an AGS file would be in stored in the `'Lab_LLPL'` table. Each row in this table represents the Atterberg Limit test results performed on a specific sample. Each row also knows to which project, GI location and sample it belongs through its `project_uid`, `location_uid` and `sample_uid` respectively.
+These relationships are represented in the database tables with so-called "foreign keys". For example, the results of an Atterberg Limits Lab test, i.e. Liquid Limit and Plastic Limit tests, that originated from an AGS file would be in stored in the `'Lab_LLPL'` table. Each row in this table represents the Atterberg Limit test results performed on a specific sample. Each row knows to which project, GI location and sample it belongs through its `project_uid`, `location_uid` and `sample_uid` respectively.
 
 This relational database ([linked tables](https://en.wikipedia.org/wiki/Relational_database)) with Ground Investigation data becomes a GIS database by assigning a (3D) GIS geometry to each of the rows in each of the database tables (except for the `'Project'` table).
 
