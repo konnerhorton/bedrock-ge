@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://bedrock.engineer/public/Bedrock_TextRight.png" alt="Edit this page on GitHub button on bedrock.engineer" width="75%"/>
+  <img src="https://bedrock.engineer/public/Bedrock_TextRight.png" alt="Bedrock logo" width="75%"/>
 </p>
 
 <h3 align="center">Bedrock, the open source foundation for ground investigation data, subsurface modelling and Geo-BIM.</h3>
@@ -47,7 +47,7 @@ This data validation mechanism (based on [`pandera`](https://pandera.readthedocs
 For example, you can take GI data from 100 AGS files and combine them into a single a [GeoPackage](https://en.wikipedia.org/wiki/GeoPackage) ([like a Shapefile, but then waaay better](http://switchfromshapefile.org/)). Such a GeoPackage can then be loaded into ArcGIS, such that you can visualize your GI data in 3D:
 
 <p align="center">
-  <img src="https://bedrock.engineer/public/images/KaiTak_BrGI_ArcGIS.gif" alt="Edit this page on GitHub button on bedrock.engineer" width="90%"/>
+  <img src="https://bedrock.engineer/public/images/KaiTak_BrGI_ArcGIS.gif" alt="GI data visualization .gif in 3D in ArcGIS" width="90%"/>
 </p>
 
 ### 🟦 Put your GI data into Speckle
@@ -189,5 +189,5 @@ During my time at Arup I worked a lot on bringing computational design into the 
 
 Bedrock is the Free and Open Source Software (FOSS) that I wish existed when I worked as a geotechnical engineer at Arup.
 
-> Computational design is a field that involves the use of computer algorithms, simulations, and data analysis to support and enhance the design process. It enables designers to explore vast design spaces, to find solutions to complex design problems, and to make informed decisions based on data-driven insights.   
+> Computational design is a field that involves the use of computer algorithms, simulations, and data analysis to support and enhance the design process. It enables designers to explore vast design spaces, to find solutions to complex design problems, and to make informed decisions based on data-driven insights.  
 > Source: [Computational design | Arup](https://www.arup.com/services/computational-and-parametric-design/)
