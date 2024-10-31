@@ -1,6 +1,6 @@
 [project]
 name = "bedrock-gi"
-version = "0.1.1"
+version = "0.1.2"
 description = "Bedrock, the Open Source Foundation for Ground Investigation Data"
 authors = [
     {name = "Bedrock", email = "info@bedrock.engineer"}

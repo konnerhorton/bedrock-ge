@@ -1,3 +1,3 @@
 """Bedrock, the open source foundation for ground investigation data"""
 
-__version__ = "0.1.1"
+__version__ = "0.1.2"
