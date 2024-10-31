@@ -1,3 +1,3 @@
-"""Bedrock, the open source foundation for ground investigation data, subsurface modelling and Geo-BIM."""
+"""Bedrock, the open source foundation for ground investigation data"""
 
 __version__ = "0.1.1"

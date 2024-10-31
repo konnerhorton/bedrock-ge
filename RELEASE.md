@@ -46,8 +46,8 @@ Create a Git tag for the new version:
 
 ```bash
 git checkout main
-git tag vX.Y.Z
-git push origin vX.Y.Z
+git tag X.Y.Z
+git push origin X.Y.Z
 ```
 
 ## 8. Build the Distribution
@@ -63,7 +63,7 @@ uv build
 Upload the new version to PyPI (Python Package Index):
 
 ```bash
-twine upload dist/*
+uvx twine upload dist/*
 ```
 
 > ⚠️ **Attention:**
