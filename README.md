@@ -183,7 +183,7 @@ Please start a [discussion](https://github.com/orgs/bedrock-gi/discussions) or c
 
 Hi, I'm Joost Gevaert 👋
 
-I studied geotechnical engineering and applied geophysics and then worked for [Arup](https://www.arup.com/) for 4 as a geotechnical engineer an computational designer.
+I studied geotechnical engineering and applied geophysics and then worked for [Arup](https://www.arup.com/) for 4 years as a geotechnical engineer and computational designer.
 
 During my time at Arup I worked a lot on bringing computational design into the world of geotechnical engineering, and on [bridging the gaps between geotechnical engineering and structural engineering](https://www.linkedin.com/posts/joost-gevaert_lightbim-lightbim-lightbim-activity-7234726439835549697-3xdO).
 
