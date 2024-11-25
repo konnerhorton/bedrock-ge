@@ -5,7 +5,7 @@ import geopandas as gpd
 import pandas as pd
 
 
-def write_brgi_db_to_gpkg(
+def write_gi_db_to_gpkg(
     brgi_db: Dict[str, gpd.GeoDataFrame],
     gpkg_path: Union[str, Path],
 ) -> None:
@@ -13,10 +13,9 @@ def write_brgi_db_to_gpkg(
     Write a database, i.e. a dictionary of DataFrames, with Bedrock Ground Investigation data to a GeoPackage file.
 
     Each DataFrame will be saved in a separate table named after the keys of the dictionary.
-    Function can be used on any BRGI database, whether in AGS, Bedrock, or another format.
 
     Args:
-        brgi_dfs (dict): A dictionary where keys are BRGI table names and values are DataFrames with BRGI data.
+        brgi_dfs (dict): A dictionary where keys are brgi table names and values are DataFrames with brgi data.
         gpkg_path (str): The name of the output GeoPackage file.
 
     Returns:
