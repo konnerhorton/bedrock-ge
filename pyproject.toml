@@ -62,5 +62,6 @@ dev-dependencies = [
     "mypy>=1.11.2",
     "pandas-stubs>=2.2.2.240807",
     "pytest>=8.3.3",
+    "python-ags4>=1.0.0",
     "ruff>=0.6.7",
 ]
