@@ -11,6 +11,7 @@ requires-python = ">=3.9"
 dependencies = [
     "openpyxl>=3.1.5",
     "pandera[geopandas,io]>=0.20.4",
+    "python-ags4>=1.0.0",
     "sqlmodel>=0.0.22",
 ]
 keywords = [

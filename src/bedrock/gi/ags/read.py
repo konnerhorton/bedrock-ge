@@ -1,6 +1,8 @@
+import io
 from typing import Any, Dict, List, Union
 
 import pandas as pd
+from python_ags4 import AGS4
 
 from bedrock.gi.ags.validate import check_ags_proj_group
 
@@ -159,13 +161,15 @@ def ags4_to_dfs(ags4_data: str) -> Dict[str, pd.DataFrame]:
         Dict[str, pd.DataFrame]: A dictionary of pandas DataFrames, where each key represents a group name from AGS 4 data,
         and the corresponding value is a pandas DataFrame containing the data for that group.
     """
-    # ! THIS IS DUMMY CODE !
-    # TODO: IMPLEMENT AGS 4
-    ags4_dfs = {
-        "PROJ": pd.DataFrame(),
-        "LOCA": pd.DataFrame(),
-        "SAMP": pd.DataFrame(),
-    }
+    # AGS4.AGS4_to_dataframe accepts the file, not the data string
+    ags4_file = io.StringIO(ags4_data)
+
+    ags4_tups = AGS4.AGS4_to_dataframe(ags4_file)
+
+    ags4_dfs = {}
+    for group, df in ags4_tups[0].items():
+        df = df.loc[2:].drop(columns=["HEADING"]).reset_index(drop=True)
+        ags4_dfs[group] = df
 
     return ags4_dfs
 
