@@ -59,6 +59,7 @@ dev-dependencies = [
     "frictionless[excel]>=4.40.8",
     "jupyter>=1.1.1",
     "mapclassify>=2.8.1",
+    "marimo>=0.12.5",
     "matplotlib>=3.9.2",
     "mypy>=1.11.2",
     "pandas-stubs>=2.2.2.240807",
