@@ -1,3 +1,6 @@
+# Outputs
+**/output
+
 # SQLite Databases
 *.sqlite
 *.db
