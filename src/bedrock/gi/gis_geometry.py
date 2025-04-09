@@ -47,10 +47,11 @@ def calculate_gis_geometry(
     # These are the 'Sample' table and 'InSitu_...' tables.
     # These tables are children of the Location table,
     # i.e. have the 'Location' table as the parent table.
-    print("Calculating GIS geometry for the Bedrock GI 'Sample' table...")
-    brgi_db["Sample"] = calculate_in_situ_gis_geometry(
-        brgi_db["Sample"], brgi_db["Location"], crs
-    )
+    if "Sample" in brgi_db.keys():
+        print("Calculating GIS geometry for the Bedrock GI 'Sample' table...")
+        brgi_db["Sample"] = calculate_in_situ_gis_geometry(
+            brgi_db["Sample"], brgi_db["Location"], crs
+        )
 
     for table_name, table in brgi_db.items():
         if table_name.startswith("InSitu_"):
