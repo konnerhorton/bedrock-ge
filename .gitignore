@@ -1,3 +1,9 @@
+# marimo
+__marimo__/
+
+# Outputs
+**/output
+
 # SQLite Databases
 *.sqlite
 *.db
