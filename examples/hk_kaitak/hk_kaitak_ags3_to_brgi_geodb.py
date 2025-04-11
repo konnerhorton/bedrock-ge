@@ -1,7 +1,20 @@
+# /// script
+# requires-python = ">=3.9"
+# dependencies = [
+#     "chardet==5.2.0",
+#     "geopandas==1.0.1",
+#     "marimo",
+#     "pandas==2.2.3",
+#     "pyproj==3.6.1",
+#     "requests==2.32.3",
+# ]
+# ///
 import marimo
 
 __generated_with = "0.12.5"
-app = marimo.App(app_title="Kai Tak, HK AGS 3 data to bedrock.gi geodatabase")
+app = marimo.App(
+    app_title="Kai Tak, HK AGS 3 data to bedrock.gi geodatabase",
+)
 
 
 @app.cell(hide_code=True)
@@ -211,7 +224,9 @@ def _(mo):
 
 @app.cell
 def _(Path, brgi_geodb, write_gi_db_to_gpkg):
-    write_gi_db_to_gpkg(brgi_geodb, Path.cwd() / "examples" / "output" / "kaitak_gi.gpkg")
+    write_gi_db_to_gpkg(
+        brgi_geodb, Path.cwd() / "examples" / "output" / "kaitak_gi.gpkg"
+    )
     return
 
 
@@ -267,6 +282,7 @@ def _(io, requests):
             return
 
         return io.BytesIO(response.content)
+
     return (read_github_raw_url_into_memory,)
 
 
@@ -303,9 +319,7 @@ def _(
                         del ags3_db["STCN"]
                     # Create GI data tables with bedrock-gi names and add columns (project_uid, location_uid, sample_uid),
                     # such that data from multiple AGS files can be combined
-                    brgi_db_from_1_ags3_file = ags3_db_to_no_gis_brgi_db(
-                        ags3_db, crs
-                    )
+                    brgi_db_from_1_ags3_file = ags3_db_to_no_gis_brgi_db(ags3_db, crs)
                     print(
                         f"🧐 Validating the Bedrock GI database from AGS file {file_name}..."
                     )
@@ -316,9 +330,7 @@ def _(
                     print(
                         f"🧵 Concatenating Bedrock GI database for {file_name} to existing Bedrock GI database...\n"
                     )
-                    brgi_db = concatenate_databases(
-                        brgi_db, brgi_db_from_1_ags3_file
-                    )
+                    brgi_db = concatenate_databases(brgi_db, brgi_db_from_1_ags3_file)
 
                     # Drop all rows that have completely duplicate rows in the Project table
                     brgi_db["Project"] = brgi_db["Project"].drop_duplicates()
@@ -327,21 +339,21 @@ def _(
                         subset="project_uid", keep="first"
                     )
         return brgi_db
+
     return (zip_of_ags3s_to_bedrock_gi_database,)
 
 
 @app.cell
 def _():
-    import marimo as mo
-
-    from pathlib import Path
-    import requests
     import io
     import zipfile
-    import chardet
+    from pathlib import Path
 
-    import pandas as pd
+    import chardet
     import geopandas as gpd
+    import marimo as mo
+    import pandas as pd
+    import requests
     from pyproj import CRS
 
     from bedrock.gi.ags.read import ags_to_dfs
@@ -350,6 +362,7 @@ def _():
     from bedrock.gi.gis_geometry import calculate_gis_geometry
     from bedrock.gi.validate import check_brgi_database, check_no_gis_brgi_database
     from bedrock.gi.write import write_gi_db_to_excel, write_gi_db_to_gpkg
+
     return (
         CRS,
         Path,
