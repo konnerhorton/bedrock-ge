@@ -58,19 +58,19 @@ Create source and wheel distributions:
 uv build
 ```
 
-## 9. Upload to PyPI
+## 9. Publish to PyPI
 
-Upload the new version to PyPI (Python Package Index):
+1. Set the `UV_PUBLISH_TOKEN` environment variable. Copy from `.env`.
+2. Publish the new version to PyPI (Python Package Index):
 
 ```bash
-uvx twine upload dist/*
+set UV_PUBLISH_TOKEN=pypi-blablabla
+uv publish
 ```
 
 > ⚠️ **Attention:**
 >
 > You might have to delete previous distributions of the Python package in `dist/*`
->
-> Ensure you have the correct credentials for PyPI in your environment. These should be in `~/.pypirc`
 
 ## 10. Verify the Release
 
@@ -80,11 +80,10 @@ Check that the new version is available on PyPI:
 Install the new Python package version in a clean environment to verify it works:
 
 ```bash
-mkdir check-bedrock-gi-release
-uv init
-uv add bedrock-gi
+uv run --with bedrock-gi --no-project -- python -c "import bedrock; print(f'bedrock-gi version: {bedrock.__version__}')"
+
 ```
 
 ## 11. Create a GitHub Release
 
-Create a new release based on the tag.
+Create a new release based on the tag: [github.com/bedrock-gi/bedrock-gi/releases](https://github.com/bedrock-gi/bedrock-gi/releases).
