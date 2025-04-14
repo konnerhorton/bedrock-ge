@@ -1,7 +1,7 @@
 [project]
-name = "bedrock-gi"
-version = "0.1.4"
-description = "Bedrock, the Open Source Foundation for Ground Investigation Data"
+name = "bedrock-ge"
+version = "0.2.0"
+description = "Bedrock, the Open Source Foundation for Ground Engineering"
 authors = [
     {name = "Bedrock", email = "info@bedrock.engineer"}
 ]
@@ -19,15 +19,15 @@ dependencies = [
 ]
 keywords = [
     "bedrock",
+    "ground engineering",
+    "geotechnical engineering",
+    "geotech",
+    "engineering geology",
     "ground investigation",
     "ground investigation data",
     "gi data",
     "geotechnical data",
     "ags",
-    "geotech",
-    "geotechnical engineering",
-    "ground engineering",
-    "engineering geology",
     "aec",
     "bim",
     "gis",
@@ -40,14 +40,11 @@ classifiers = [
     "Operating System :: OS Independent",
 ]
 
-[project.scripts]
-hey-plot = "bedrock.plot:hello_plt"
-
 [project.urls]
 Homepage = "https://bedrock.engineer/"
-Source = "https://github.com/bedrock-gi/bedrock-gi"
+Source = "https://github.com/bedrock-engineer/bedrock-ge"
 Documentation = "https://bedrock.engineer/docs/"
-Tracker = "https://github.com/bedrock-gi/bedrock-gi/issues"
+Tracker = "https://github.com/bedrock-engineer/bedrock-ge/issues"
 
 [build-system]
 requires = ["hatchling"]

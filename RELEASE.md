@@ -81,7 +81,6 @@ Install the new Python package version in a clean environment to verify it works
 
 ```bash
 uv run --with bedrock-gi --no-project -- python -c "import bedrock; print(f'bedrock-gi version: {bedrock.__version__}')"
-
 ```
 
 ## 11. Create a GitHub Release
