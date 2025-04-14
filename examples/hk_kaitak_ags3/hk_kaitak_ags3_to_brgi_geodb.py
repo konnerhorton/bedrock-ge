@@ -1,10 +1,13 @@
 # /// script
 # requires-python = ">=3.9"
 # dependencies = [
-#     "bedrock-ge==0.2.0",
+#     "bedrock-ge==0.2.1",
 #     "chardet==5.2.0",
+#     "folium==0.19.5",
 #     "geopandas==1.0.1",
+#     "mapclassify==2.8.1",
 #     "marimo",
+#     "matplotlib==3.9.4",
 #     "pandas==2.2.3",
 #     "pyproj==3.6.1",
 #     "requests==2.32.3",
@@ -14,7 +17,9 @@
 import marimo
 
 __generated_with = "0.12.8"
-app = marimo.App(app_title="Kai Tak, HK AGS 3 data to bedrock_ge.gi geodatabase")
+app = marimo.App(
+    app_title="Kai Tak, HK AGS 3 data to bedrock_ge.gi geodatabase",
+)
 
 
 @app.cell(hide_code=True)
@@ -97,33 +102,11 @@ def _(mo):
 
 
 @app.cell
-def _(mo):
-    mo.notebook_dir()
-    return
-
-
-@app.cell
-def _(mo, zipfile):
-    with zipfile.ZipFile(mo.notebook_dir() / "kaitak_ags3.zip") as zip_ref:
-        # Iterate over files and directories in the .zip archive
-        for file_name in zip_ref.namelist():
-            print(file_name)
-    return file_name, zip_ref
-
-
-@app.cell
-def _(
-    CRS,
-    read_github_raw_url_into_memory,
-    zip_of_ags3s_to_bedrock_gi_database,
-):
-    raw_url = (
-        "https://github.com/bedrock-gi/bedrock-gi/raw/main/data/ags3/hk/kaitak.zip"
-    )
-    zip_buffer = read_github_raw_url_into_memory(raw_url)
-    brgi_db = zip_of_ags3s_to_bedrock_gi_database(zip_buffer, CRS("EPSG:2326"))
+def _(CRS, mo, zip_of_ags3s_to_bedrock_gi_database):
+    zip = mo.notebook_dir() / "kaitak_ags3.zip"
+    brgi_db = zip_of_ags3s_to_bedrock_gi_database(zip, CRS("EPSG:2326"))
     brgi_db
-    return brgi_db, raw_url, zip_buffer
+    return brgi_db, zip
 
 
 @app.cell(hide_code=True)
@@ -238,11 +221,14 @@ def _(mo):
 
 
 @app.cell
-def _(Path, brgi_geodb, write_gi_db_to_gpkg):
+def _(brgi_geodb, mo, write_gi_db_to_gpkg):
+    output_dir = mo.notebook_dir() / "output"
+    if not output_dir.exists():
+            output_dir.mkdir(parents=True, exist_ok=True)
     write_gi_db_to_gpkg(
-        brgi_geodb, Path.cwd() / "examples" / "output" / "kaitak_gi.gpkg"
+        brgi_geodb, output_dir / "kaitak_gi.gpkg"
     )
-    return
+    return (output_dir,)
 
 
 @app.cell(hide_code=True)
@@ -284,21 +270,6 @@ def _(mo):
         """
     )
     return
-
-
-@app.cell
-def _(io, requests):
-    def read_github_raw_url_into_memory(github_raw_url):
-        """Read a file stored on GitHub into memory using the GitHub raw URL"""
-        response = requests.get(github_raw_url)
-
-        if response.status_code != 200:
-            print(f"Error downloading file: {response.status_code}")
-            return
-
-        return io.BytesIO(response.content)
-
-    return (read_github_raw_url_into_memory,)
 
 
 @app.cell
@@ -354,7 +325,6 @@ def _(
                         subset="project_uid", keep="first"
                     )
         return brgi_db
-
     return (zip_of_ags3s_to_bedrock_gi_database,)
 
 
@@ -377,7 +347,6 @@ def _():
     from bedrock_ge.gi.gis_geometry import calculate_gis_geometry
     from bedrock_ge.gi.validate import check_brgi_database, check_no_gis_brgi_database
     from bedrock_ge.gi.write import write_gi_db_to_excel, write_gi_db_to_gpkg
-
     return (
         CRS,
         Path,
