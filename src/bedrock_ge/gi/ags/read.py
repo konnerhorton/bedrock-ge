@@ -4,7 +4,7 @@ from typing import Any, Dict, List, Union
 import pandas as pd
 from python_ags4 import AGS4
 
-from bedrock.gi.ags.validate import check_ags_proj_group
+from bedrock_ge.gi.ags.validate import check_ags_proj_group
 
 
 def ags_to_dfs(ags_data: str) -> Dict[str, pd.DataFrame]:

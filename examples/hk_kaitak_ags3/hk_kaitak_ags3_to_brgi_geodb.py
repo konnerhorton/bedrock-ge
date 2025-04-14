@@ -1,7 +1,7 @@
 # /// script
 # requires-python = ">=3.9"
 # dependencies = [
-#     "bedrock-gi==0.1.4",
+#     "bedrock-ge==0.1.4",
 #     "chardet==5.2.0",
 #     "geopandas==1.0.1",
 #     "marimo",
@@ -14,7 +14,7 @@
 import marimo
 
 __generated_with = "0.12.8"
-app = marimo.App(app_title="Kai Tak, HK AGS 3 data to bedrock.gi geodatabase")
+app = marimo.App(app_title="Kai Tak, HK AGS 3 data to bedrock_ge.gi geodatabase")
 
 
 @app.cell(hide_code=True)
@@ -297,6 +297,7 @@ def _(io, requests):
             return
 
         return io.BytesIO(response.content)
+
     return (read_github_raw_url_into_memory,)
 
 
@@ -353,6 +354,7 @@ def _(
                         subset="project_uid", keep="first"
                     )
         return brgi_db
+
     return (zip_of_ags3s_to_bedrock_gi_database,)
 
 
@@ -369,12 +371,13 @@ def _():
     import requests
     from pyproj import CRS
 
-    from bedrock.gi.ags.read import ags_to_dfs
-    from bedrock.gi.ags.transform import ags3_db_to_no_gis_brgi_db
-    from bedrock.gi.concatenate import concatenate_databases
-    from bedrock.gi.gis_geometry import calculate_gis_geometry
-    from bedrock.gi.validate import check_brgi_database, check_no_gis_brgi_database
-    from bedrock.gi.write import write_gi_db_to_excel, write_gi_db_to_gpkg
+    from bedrock_ge.gi.ags.read import ags_to_dfs
+    from bedrock_ge.gi.ags.transform import ags3_db_to_no_gis_brgi_db
+    from bedrock_ge.gi.concatenate import concatenate_databases
+    from bedrock_ge.gi.gis_geometry import calculate_gis_geometry
+    from bedrock_ge.gi.validate import check_brgi_database, check_no_gis_brgi_database
+    from bedrock_ge.gi.write import write_gi_db_to_excel, write_gi_db_to_gpkg
+
     return (
         CRS,
         Path,

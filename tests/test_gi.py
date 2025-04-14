@@ -7,7 +7,7 @@ sys.path.insert(0, str(src_path))
 
 import pandas as pd
 
-from bedrock.gi.ags.read import ags4_to_dfs
+from bedrock_ge.gi.ags.read import ags4_to_dfs
 
 fixtures_dir = Path(__file__).parent / "fixtures"
 

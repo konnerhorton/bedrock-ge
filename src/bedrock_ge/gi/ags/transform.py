@@ -7,9 +7,9 @@ import pandera as pa
 from pandera.typing import DataFrame
 from pyproj import CRS
 
-from bedrock.gi.ags.schemas import Ags3HOLE, Ags3SAMP, BaseSAMP
-from bedrock.gi.schemas import BaseInSitu, BaseLocation, BaseSample, Project
-from bedrock.gi.validate import check_foreign_key
+from bedrock_ge.gi.ags.schemas import Ags3HOLE, Ags3SAMP, BaseSAMP
+from bedrock_ge.gi.schemas import BaseInSitu, BaseLocation, BaseSample, Project
+from bedrock_ge.gi.validate import check_foreign_key
 
 
 def ags3_db_to_no_gis_brgi_db(
