@@ -1,7 +1,7 @@
 [project]
 name = "bedrock-ge"
-version = "0.1.4"
-description = "Bedrock, the Open Source Foundation for Ground Investigation Data"
+version = "0.2.0"
+description = "Bedrock, the Open Source Foundation for Ground Engineering"
 authors = [
     {name = "Bedrock", email = "info@bedrock.engineer"}
 ]
@@ -39,9 +39,6 @@ classifiers = [
     "License :: OSI Approved :: Apache Software License",
     "Operating System :: OS Independent",
 ]
-
-[project.scripts]
-hey-plot = "bedrock.plot:hello_plt"
 
 [project.urls]
 Homepage = "https://bedrock.engineer/"
