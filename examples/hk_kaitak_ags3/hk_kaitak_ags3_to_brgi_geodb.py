@@ -284,6 +284,7 @@ def _(mo):
 def _(
     ags3_db_to_no_gis_brgi_db,
     ags_to_dfs,
+    chardet,
     check_no_gis_brgi_database,
     concatenate_databases,
 ):
@@ -297,8 +298,12 @@ def _(
             file_name = f"{report_no}/{gi_path.name}"
             if file_name.lower().endswith(".ags"):
                 print(f"\n🖥️ Processing {file_name} ...")
-                with open(gi_path) as ags3_file:
+                # Open the AGS 3 file as bytes, bc Not all AGS 3 files are encoded in the same way.
+                with open(gi_path, "rb") as ags3_file:
                     ags3_data = ags3_file.read()
+                    # Detect the encoding of the AGS 3 file, before reading to string.
+                    detected_encoding = chardet.detect(ags3_data)["encoding"]
+                    ags3_data = ags3_data.decode(detected_encoding)
                 # Convert content of a single AGS 3 file to a Dictionary of pandas dataframes (a database)
                 ags3_db = ags_to_dfs(ags3_data)
                 ags3_db["PROJ"]["PROJ_ID"] = file_name
