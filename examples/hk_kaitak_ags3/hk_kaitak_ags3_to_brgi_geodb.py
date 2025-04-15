@@ -95,9 +95,7 @@ def _(mo):
 def _(mo):
     ags3_dir = mo.notebook_dir() / "kaitak_ags3"
     ags3_paths = sorted(list(ags3_dir.glob("**/*.ags")))
-    print(
-        f"{len(ags3_paths)} Ground Investigation AGS 3 files for the area around Kai Tak, Hong Kong."
-    )
+    print(f"{len(ags3_paths)} Ground Investigation AGS 3 files for the area around Kai Tak, Hong Kong.")
     return ags3_dir, ags3_paths
 
 
@@ -163,10 +161,7 @@ app._unparsable_cell(
     r"""
     After creating the Bedrock GI 3D Geospatial Database `brgi_geodb` - which is a dictionary of [`geopandas.GeoDataFrame`](https://geopandas.org/en/stable/docs/reference/api/geopandas.GeoDataFrame.html#geopandas.GeoDataFrame)s - you can explore the Kai Tak GI on an interactive map with the [`geopandas.GeoDataFrame.explore`](https://geopandas.org/en/stable/docs/reference/api/geopandas.GeoDataFrame.explore.html#geopandas.GeoDataFrame.explore) method:
     """,
-    column=None,
-    disabled=False,
-    hide_code=True,
-    name="_",
+    column=None, disabled=False, hide_code=True, name="_"
 )
 
 
@@ -232,8 +227,10 @@ def _(mo):
 def _(brgi_geodb, mo, write_gi_db_to_gpkg):
     output_dir = mo.notebook_dir() / "output"
     if not output_dir.exists():
-        output_dir.mkdir(parents=True, exist_ok=True)
-    write_gi_db_to_gpkg(brgi_geodb, output_dir / "kaitak_gi.gpkg")
+            output_dir.mkdir(parents=True, exist_ok=True)
+    write_gi_db_to_gpkg(
+        brgi_geodb, output_dir / "kaitak_gi.gpkg"
+    )
     return (output_dir,)
 
 
@@ -325,9 +322,8 @@ def _(
                 # Then drop all that unfortunately still have a duplicate project_uid
                 brgi_db["Project"] = brgi_db["Project"].drop_duplicates(
                     subset="project_uid", keep="first"
-                )
+                    )
         return brgi_db
-
     return (list_of_ags3s_to_bedrock_gi_database,)
 
 
@@ -384,7 +380,6 @@ def _(
                         subset="project_uid", keep="first"
                     )
         return brgi_db
-
     return (zip_of_ags3s_to_bedrock_gi_database,)
 
 
@@ -395,10 +390,13 @@ def _():
     from pathlib import Path
 
     import chardet
-    import geopandas as gpd
+    import requests
     import marimo as mo
     import pandas as pd
-    import requests
+    import geopandas as gpd
+    import matplotlib
+    import mapclassify
+    import folium
     from pyproj import CRS
 
     from bedrock_ge.gi.ags.read import ags_to_dfs
@@ -406,8 +404,7 @@ def _():
     from bedrock_ge.gi.concatenate import concatenate_databases
     from bedrock_ge.gi.gis_geometry import calculate_gis_geometry
     from bedrock_ge.gi.validate import check_brgi_database, check_no_gis_brgi_database
-    from bedrock_ge.gi.write import write_gi_db_to_excel, write_gi_db_to_gpkg
-
+    from bedrock_ge.gi.write import write_gi_db_to_gpkg
     return (
         CRS,
         Path,
@@ -418,12 +415,14 @@ def _():
         check_brgi_database,
         check_no_gis_brgi_database,
         concatenate_databases,
+        folium,
         gpd,
         io,
+        mapclassify,
+        matplotlib,
         mo,
         pd,
         requests,
-        write_gi_db_to_excel,
         write_gi_db_to_gpkg,
         zipfile,
     )
