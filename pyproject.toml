@@ -14,7 +14,7 @@ dependencies = [
     "openpyxl~=3.0",
     "pandera>=0.23.0",
     "python-ags4~=1.0",
-    "sqlglot>=26.12.0",
+    "sqlglot>=25.0.0",
     "sqlmodel>=0.0.22",
 ]
 keywords = [
