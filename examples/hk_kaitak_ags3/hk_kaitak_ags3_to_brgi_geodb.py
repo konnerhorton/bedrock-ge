@@ -8,6 +8,7 @@
 #     "mapclassify==2.8.1",
 #     "marimo",
 #     "matplotlib==3.9.4",
+#     "nbformat==5.10.4",
 #     "pandas==2.2.3",
 #     "pyproj==3.6.1",
 #     "requests==2.32.3",
@@ -19,6 +20,7 @@ import marimo
 __generated_with = "0.12.8"
 app = marimo.App(
     app_title="Kai Tak, HK AGS 3 data to bedrock_ge.gi geodatabase",
+    auto_download=["ipynb", "html"],
 )
 
 
@@ -43,9 +45,9 @@ def _(mo):
         Ground Investigation Data for all of Hong Kong can be found here:  
         [GEO Data for Public Use](https://www.ginfo.cedd.gov.hk/GEOOpenData/eng/Default.aspx) → [Ground Investigation (GI) and Laboratory Test (LT) Records](https://www.ginfo.cedd.gov.hk/GEOOpenData/eng/GI.aspx)
 
-        The Ground Investigation data specific to the Kai Tak neighborhood in Hong Kong can be found in the `bedrock-gi` library: [`bedrock-gi/data/ags3/hk/kaitak.zip`](https://github.com/bedrock-gi/bedrock-gi/blob/main/data/ags3/hk/kaitak.zip). This ZIP archive contains GI data from 90 locations (boreholes and CPTs).
+        The Ground Investigation data specific to the Kai Tak neighborhood in Hong Kong can be found in the `bedrock-gi` library: [`bedrock-gi/data/ags3/hk/kaitak.`](https://github.com/bedrock-gi/bedrock-gi/blob/main/data/ags3/hk/kaitak.). This  archive contains GI data from 90 AGS 3 files, with a total of 834 locations (boreholes and Cone Penetration Tests).
 
-        One of the AGS 3 files with GI data was left outside the `.zip` archive, such that you can have a look at the structure of an AGS 3 file: [`data/ags3/hk/kaitak_64475/ASD012162 AGS.ags`](https://github.com/bedrock-gi/bedrock-gi/blob/main/data/ags3/hk/kaitak_64475/ASD012162%20AGS.ags)
+        One of the AGS 3 files with GI data was left outside the `.` archive, such that you can have a look at the structure of an AGS 3 file: [`data/ags3/hk/kaitak_64475/ASD012162 AGS.ags`](https://github.com/bedrock-gi/bedrock-gi/blob/main/data/ags3/hk/kaitak_64475/ASD012162%20AGS.ags)
         """
     )
     return
@@ -75,19 +77,9 @@ def _(mo):
 
         In Python it's convenient to represent a relational database as a dictionary of dataframe's.
 
-        ### Getting the AGS 3 files
+        ### Converting AGS 3 files to a dictionary of dataframes
 
-        To make it easy to run this notebook in the browser in marimo.app or Google Colab, the code below downloads the ZIP archive with AGS 3 data into memory and directly processes the data. However, you can also download the ZIP from [GitHub](https://github.com/bedrock-gi/bedrock-gi/blob/main/data/ags3/hk/kaitak.zip) (blob url, navigates to GitHub) or [here \[ ↓ \]](https://github.com/bedrock-gi/bedrock-gi/raw/main/data/ags3/hk/kaitak.zip) (raw url, downloads directly), and then read the ZIP into memory from your computer by running:
-
-        ```python
-        zip_path = Path("path/to/your/archive.zip")
-        with open(zip_path, "rb") as f:
-            zip_buffer = io.BytesIO(f.read())
-        ```
-
-        ### Converting the ZIP of AGS 3 files to a dictionary of dataframes
-
-        With the ZIP archive read to memory, the `zip_of_ags3s_to_bedrock_gi_database(zip_buffer, crs)` function can be used to convert the ZIP to a dictionary of dataframes. The result is shown below. Have a look at the different tables and the data in those tables. Make sure to use the search and filter functionality to explore the data if you're using marimo to run this notebook!
+        The AGS 3 files can be converted to a dictionary of dataframes using the function `list_of_ags3s_to_bedrock_gi_database(ags3_file_paths, CRS)`. The result is shown below. Have a look at the different tables and the data in those tables. Make sure to use the search and filter functionality to explore the data if you're using marimo to run this notebook!
 
         Notice the additional columns that were added to the tables by `bedrock-gi`:
 
@@ -102,11 +94,18 @@ def _(mo):
 
 
 @app.cell
-def _(CRS, mo, zip_of_ags3s_to_bedrock_gi_database):
-    zip = mo.notebook_dir() / "kaitak_ags3.zip"
-    brgi_db = zip_of_ags3s_to_bedrock_gi_database(zip, CRS("EPSG:2326"))
+def _(mo):
+    ags3_dir = mo.notebook_dir() / "kaitak_ags3"
+    ags3_paths = sorted(list(ags3_dir.glob("**/*.ags")))
+    print(f"{len(ags3_paths)} Ground Investigation AGS 3 files for the area around Kai Tak, Hong Kong.")
+    return ags3_dir, ags3_paths
+
+
+@app.cell
+def _(CRS, ags3_paths, list_of_ags3s_to_bedrock_gi_database):
+    brgi_db = list_of_ags3s_to_bedrock_gi_database(ags3_paths, CRS("EPSG:2326"))
     brgi_db
-    return brgi_db, zip
+    return (brgi_db,)
 
 
 @app.cell(hide_code=True)
@@ -142,8 +141,6 @@ def _(mo):
         `POINT (longitude latitude wgs84_ground_level_height)`
 
         The reason for creating the `LonLatHeight` table is that vertical lines in projected Coordinate Reference Systems (CRS) are often not rendered nicely by default in all web-mapping software. Vertical lines are often not visible when looking at a map from above, and not all web-mapping software is capable of handling geometry in non-WGS84, i.e. (Lon, Lat) coordinates.
-
-        After creating the Bedrock GI 3D Geospatial Database `brgi_geodb` - which is a dictionary of [`geopandas.GeoDataFrame`](https://geopandas.org/en/stable/docs/reference/api/geopandas.GeoDataFrame.html#geopandas.GeoDataFrame)s - you can explore the Kai Tak GI on an interactive map with the [`geopandas.GeoDataFrame.explore`](https://geopandas.org/en/stable/docs/reference/api/geopandas.GeoDataFrame.explore.html#geopandas.GeoDataFrame.explore):
         """
     )
     return
@@ -160,6 +157,14 @@ def _(brgi_db, calculate_gis_geometry, check_brgi_database, pd):
         brgi_geodb["InSitu_ISPT"]["ISPT_NVAL"], errors="coerce"
     )
     return (brgi_geodb,)
+
+
+app._unparsable_cell(
+    r"""
+    After creating the Bedrock GI 3D Geospatial Database `brgi_geodb` - which is a dictionary of [`geopandas.GeoDataFrame`](https://geopandas.org/en/stable/docs/reference/api/geopandas.GeoDataFrame.html#geopandas.GeoDataFrame)s - you can explore the Kai Tak GI on an interactive map with the [`geopandas.GeoDataFrame.explore`](https://geopandas.org/en/stable/docs/reference/api/geopandas.GeoDataFrame.explore.html#geopandas.GeoDataFrame.explore) method:
+    """,
+    column=None, disabled=False, hide_code=True, name="_"
+)
 
 
 @app.cell
@@ -265,11 +270,63 @@ def _(mo):
 
         GeoJSON is a nice, human readable file format for GIS vector data, which is especially useful for web services, but has a few drawbacks:
 
-        - Although it is technically possible to use GeoJSON with more CRSs, the [specification states clearly](https://tools.ietf.org/html/rfc7946#section-4) that WGS84 with EPSG:4326 and coordinates (Lon, Lat, Height) is the only CRS that should be used in GeoJSON (see [switchfromshapefile.org](http://switchfromshapefile.org/#geojson)).
+        - Although it is technically possible to use GeoJSON with more CRSs, the [specification states clearly](https://tools.ietf.org/html/rfc7946#section-4) that WGS84, with EPSG:4326 and coordinates (Lon, Lat, Height), is the only CRS that should be used in GeoJSON (see [switchfromshapefile.org](http://switchfromshapefile.org/#geojson)).
         - GeoJSON support in ArcGIS isn't fantastic. You have to go through [Geoprocessing - JSON to Features conversion tool](https://pro.arcgis.com/en/pro-app/latest/tool-reference/conversion/json-to-features.htm) to add a GeoJSON to your ArcGIS project, which is a bit cumbersome.
         """
     )
     return
+
+
+@app.cell
+def _(
+    ags3_db_to_no_gis_brgi_db,
+    ags_to_dfs,
+    check_no_gis_brgi_database,
+    concatenate_databases,
+):
+    def list_of_ags3s_to_bedrock_gi_database(gi_paths, crs):
+        """Read AGS 3 files from a list of paths to AGS 3 files and convert them to a dictionary of pandas dataframes."""
+        brgi_db = {}
+        # Iterate over GI AGS 3 files
+        for gi_path in gi_paths:
+            # Only process files that have an .ags or .AGS extension
+            report_no = gi_path.parent.name
+            file_name = f"{report_no}/{gi_path.name}"
+            if file_name.lower().endswith(".ags"):
+                print(f"\n🖥️ Processing {file_name} ...")
+                with open(gi_path) as ags3_file:
+                    ags3_data = ags3_file.read()
+                # Convert content of a single AGS 3 file to a Dictionary of pandas dataframes (a database)
+                ags3_db = ags_to_dfs(ags3_data)
+                ags3_db["PROJ"]["PROJ_ID"] = file_name
+                ags3_db["PROJ"]["REPORT_NO"] = int(report_no)
+                # Remove (Static) CPT AGS 3 group 'STCN' from brgi_db, because CPT data processing needs to be reviewed.
+                # Not efficient to create a GIS point for every point where a CPT measures a value.
+                if "STCN" in ags3_db.keys():
+                    del ags3_db["STCN"]
+                # Create GI data tables with bedrock-gi names and add columns (project_uid, location_uid, sample_uid),
+                # such that data from multiple AGS files can be combined
+                brgi_db_from_1_ags3_file = ags3_db_to_no_gis_brgi_db(ags3_db, crs)
+                print(
+                    f"🧐 Validating the Bedrock GI database from AGS file {file_name}..."
+                )
+                check_no_gis_brgi_database(brgi_db_from_1_ags3_file)
+                print(
+                    f"\n✅ Succesfully converted {file_name} to Bedrock GI database and validated!\n"
+                )
+                print(
+                    f"🧵 Concatenating Bedrock GI database for {file_name} to existing Bedrock GI database...\n"
+                )
+                brgi_db = concatenate_databases(brgi_db, brgi_db_from_1_ags3_file)
+
+                # Drop all rows that have completely duplicate rows in the Project table
+                brgi_db["Project"] = brgi_db["Project"].drop_duplicates()
+                # Then drop all that unfortunately still have a duplicate project_uid
+                brgi_db["Project"] = brgi_db["Project"].drop_duplicates(
+                    subset="project_uid", keep="first"
+                    )
+        return brgi_db
+    return (list_of_ags3s_to_bedrock_gi_database,)
 
 
 @app.cell
@@ -281,10 +338,10 @@ def _(
     concatenate_databases,
     zipfile,
 ):
-    def zip_of_ags3s_to_bedrock_gi_database(zip_buffer, crs):
+    def zip_of_ags3s_to_bedrock_gi_database(zip, crs):
         """Read AGS 3 files from a ZIP archive and convert them to a dictionary of pandas dataframes."""
         brgi_db = {}
-        with zipfile.ZipFile(zip_buffer) as zip_ref:
+        with zipfile.ZipFile(zip) as zip_ref:
             # Iterate over files and directories in the .zip archive
             for file_name in zip_ref.namelist():
                 # Only process files that have an .ags or .AGS extension
