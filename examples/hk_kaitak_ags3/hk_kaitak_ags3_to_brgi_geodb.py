@@ -1,5 +1,5 @@
 # /// script
-# requires-python = ">=3.9"
+# requires-python = ">=3.12"
 # dependencies = [
 #     "bedrock-ge==0.2.1",
 #     "chardet==5.2.0",
@@ -7,9 +7,9 @@
 #     "geopandas==1.0.1",
 #     "mapclassify==2.8.1",
 #     "marimo",
-#     "matplotlib==3.9.4",
+#     "matplotlib==3.10.1",
 #     "pandas==2.2.3",
-#     "pyproj==3.6.1",
+#     "pyproj==3.7.1",
 #     "requests==2.32.3",
 # ]
 # ///
@@ -92,10 +92,19 @@ def _(mo):
 
 
 @app.cell
-def _(mo):
+def _(mo, re):
     ags3_dir = mo.notebook_dir() / "kaitak_ags3"
-    ags3_paths = sorted(list(ags3_dir.glob("**/*.ags")))
-    print(f"{len(ags3_paths)} Ground Investigation AGS 3 files for the area around Kai Tak, Hong Kong.")
+    ags3_paths = sorted(
+        {
+            path
+            for path in ags3_dir.rglob("*")
+            if path.is_file()
+            and re.fullmatch(r".*\.ags", path.name, flags=re.IGNORECASE)
+        }
+    )
+    print(
+        f"{len(ags3_paths)} Ground Investigation AGS 3 files for the area around Kai Tak, Hong Kong."
+    )
     return ags3_dir, ags3_paths
 
 
@@ -157,12 +166,10 @@ def _(brgi_db, calculate_gis_geometry, check_brgi_database, pd):
     return (brgi_geodb,)
 
 
-app._unparsable_cell(
-    r"""
-    After creating the Bedrock GI 3D Geospatial Database `brgi_geodb` - which is a dictionary of [`geopandas.GeoDataFrame`](https://geopandas.org/en/stable/docs/reference/api/geopandas.GeoDataFrame.html#geopandas.GeoDataFrame)s - you can explore the Kai Tak GI on an interactive map with the [`geopandas.GeoDataFrame.explore`](https://geopandas.org/en/stable/docs/reference/api/geopandas.GeoDataFrame.explore.html#geopandas.GeoDataFrame.explore) method:
-    """,
-    column=None, disabled=False, hide_code=True, name="_"
-)
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""After creating the Bedrock GI 3D Geospatial Database `brgi_geodb` - which is a dictionary of [`geopandas.GeoDataFrame`](https://geopandas.org/en/stable/docs/reference/api/geopandas.GeoDataFrame.html#geopandas.GeoDataFrame)s - you can explore the Kai Tak GI on an interactive map with the [`geopandas.GeoDataFrame.explore`](https://geopandas.org/en/stable/docs/reference/api/geopandas.GeoDataFrame.explore.html#geopandas.GeoDataFrame.explore) method:""")
+    return
 
 
 @app.cell
@@ -227,10 +234,8 @@ def _(mo):
 def _(brgi_geodb, mo, write_gi_db_to_gpkg):
     output_dir = mo.notebook_dir() / "output"
     if not output_dir.exists():
-            output_dir.mkdir(parents=True, exist_ok=True)
-    write_gi_db_to_gpkg(
-        brgi_geodb, output_dir / "kaitak_gi.gpkg"
-    )
+        output_dir.mkdir(parents=True, exist_ok=True)
+    write_gi_db_to_gpkg(brgi_geodb, output_dir / "kaitak_gi.gpkg")
     return (output_dir,)
 
 
@@ -322,7 +327,7 @@ def _(
                 # Then drop all that unfortunately still have a duplicate project_uid
                 brgi_db["Project"] = brgi_db["Project"].drop_duplicates(
                     subset="project_uid", keep="first"
-                    )
+                )
         return brgi_db
     return (list_of_ags3s_to_bedrock_gi_database,)
 
@@ -386,17 +391,19 @@ def _(
 @app.cell
 def _():
     import io
+    import re
+    import sys
     import zipfile
     from pathlib import Path
 
     import chardet
-    import requests
-    import marimo as mo
-    import pandas as pd
-    import geopandas as gpd
-    import matplotlib
-    import mapclassify
     import folium
+    import geopandas as gpd
+    import mapclassify
+    import marimo as mo
+    import matplotlib
+    import pandas as pd
+    import requests
     from pyproj import CRS
 
     from bedrock_ge.gi.ags.read import ags_to_dfs
@@ -405,6 +412,9 @@ def _():
     from bedrock_ge.gi.gis_geometry import calculate_gis_geometry
     from bedrock_ge.gi.validate import check_brgi_database, check_no_gis_brgi_database
     from bedrock_ge.gi.write import write_gi_db_to_gpkg
+
+    print(sys.version)
+    print(sys.executable)
     return (
         CRS,
         Path,
@@ -422,7 +432,9 @@ def _():
         matplotlib,
         mo,
         pd,
+        re,
         requests,
+        sys,
         write_gi_db_to_gpkg,
         zipfile,
     )
