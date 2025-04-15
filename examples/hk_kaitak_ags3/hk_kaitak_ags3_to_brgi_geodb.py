@@ -93,7 +93,7 @@ def _(mo):
 
 @app.cell
 def _(mo, re):
-    ags3_dir = mo.notebook_dir() / "kaitak_ags3"
+    ags3_dir = mo.notebook_dir() / "public"
     ags3_paths = sorted(
         {
             path
