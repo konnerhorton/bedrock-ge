@@ -59,6 +59,7 @@ dev-dependencies = [
     "marimo>=0.12.5",
     "matplotlib>=3.9.2",
     "mypy>=1.11.2",
+    "nbconvert>=7.16.6",
     "pandas-stubs>=2.2.2.240807",
     "pytest>=8.3.3",
     "ruff>=0.6.7",
