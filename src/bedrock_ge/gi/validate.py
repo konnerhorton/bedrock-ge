@@ -14,7 +14,7 @@ from bedrock_ge.gi.schemas import (
 )
 
 
-def check_brge_database(brge_db: Dict) -> bool:
+def check_brgi_database(brgi_db: Dict) -> bool:
     """Validates a Bedrock Geotechnical Engineering (BRGE) database against schema definitions.
 
     This function checks each table in the BRGE database to ensure it conforms to the
@@ -23,7 +23,7 @@ def check_brge_database(brge_db: Dict) -> bool:
     which are not yet implemented.
 
     Args:
-        brge_db (Dict): A dictionary containing the BRGE database tables as DataFrames.
+        brgi_db (Dict): A dictionary containing the BRGE database tables as DataFrames.
 
     Returns:
         bool: True if all tables pass validation.
@@ -31,23 +31,23 @@ def check_brge_database(brge_db: Dict) -> bool:
     Raises:
         ValueError: If any table fails schema validation or has invalid foreign keys.
     """
-    for table_name, table in brge_db.items():
+    for table_name, table in brgi_db.items():
         if table_name == "Project":
             Project.validate(table)
             print("'Project' table aligns with Bedrock's 'Project' table schema.")
         elif table_name == "Location":
             Location.validate(table)
-            check_foreign_key("project_uid", brge_db["Project"], table)
+            check_foreign_key("project_uid", brgi_db["Project"], table)
             print("'Location' table aligns with Bedrock's 'Location' table schema.")
         elif table_name == "Sample":
             Sample.validate(table)
-            check_foreign_key("project_uid", brge_db["Project"], table)
-            check_foreign_key("location_uid", brge_db["Location"], table)
+            check_foreign_key("project_uid", brgi_db["Project"], table)
+            check_foreign_key("location_uid", brgi_db["Location"], table)
             print("'Sample' table aligns with Bedrock's 'Sample' table schema.")
         elif table_name == "InSitu":
             InSitu.validate(table)
-            check_foreign_key("project_uid", brge_db["Project"], table)
-            check_foreign_key("location_uid", brge_db["Location"], table)
+            check_foreign_key("project_uid", brgi_db["Project"], table)
+            check_foreign_key("location_uid", brgi_db["Location"], table)
             print(
                 f"'{table_name}' table aligns with Bedrock's table schema for In-Situ measurements."
             )
@@ -59,14 +59,14 @@ def check_brge_database(brge_db: Dict) -> bool:
     return True
 
 
-def check_no_gis_brge_database(brge_db: Dict) -> bool:
+def check_no_gis_brgi_database(brgi_db: Dict) -> bool:
     """Validates a BRGE database without GIS geometry against schema definitions.
 
-    Similar to check_brge_database but validates tables without GIS geometry components.
+    Similar to check_brgi_database but validates tables without GIS geometry components.
     This is useful for validating data that doesn't include spatial information.
 
     Args:
-        brge_db (Dict): A dictionary containing the BRGE database tables as DataFrames.
+        brgi_db (Dict): A dictionary containing the BRGE database tables as DataFrames.
 
     Returns:
         bool: True if all tables pass validation.
@@ -74,27 +74,27 @@ def check_no_gis_brge_database(brge_db: Dict) -> bool:
     Raises:
         ValueError: If any table fails schema validation or has invalid foreign keys.
     """
-    for table_name, table in brge_db.items():
+    for table_name, table in brgi_db.items():
         if table_name == "Project":
             Project.validate(table)
             print("'Project' table aligns with Bedrock's 'Project' table schema.")
         elif table_name == "Location":
             BaseLocation.validate(table)
-            check_foreign_key("project_uid", brge_db["Project"], table)
+            check_foreign_key("project_uid", brgi_db["Project"], table)
             print(
                 "'Location' table aligns with Bedrock's 'Location' table schema without GIS geometry."
             )
         elif table_name == "Sample":
             BaseSample.validate(table)
-            check_foreign_key("project_uid", brge_db["Project"], table)
-            check_foreign_key("location_uid", brge_db["Location"], table)
+            check_foreign_key("project_uid", brgi_db["Project"], table)
+            check_foreign_key("location_uid", brgi_db["Location"], table)
             print(
                 "'Sample' table aligns with Bedrock's 'Sample' table schema without GIS geometry."
             )
         elif table_name.startswith("InSitu_"):
             BaseInSitu.validate(table)
-            check_foreign_key("project_uid", brge_db["Project"], table)
-            check_foreign_key("location_uid", brge_db["Location"], table)
+            check_foreign_key("project_uid", brgi_db["Project"], table)
+            check_foreign_key("location_uid", brgi_db["Location"], table)
             print(
                 f"'{table_name}' table aligns with Bedrock's '{table_name}' table schema without GIS geometry."
             )
