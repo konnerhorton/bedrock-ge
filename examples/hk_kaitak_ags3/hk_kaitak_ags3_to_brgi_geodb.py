@@ -11,6 +11,7 @@
 #     "pandas==2.2.3",
 #     "pyproj==3.7.1",
 #     "requests==2.32.3",
+#     "shapely==2.1.0",
 # ]
 # ///
 
@@ -52,7 +53,7 @@ def _(mo):
 
         ### Getting the AGS 3 files
 
-        To make it easy to run this notebook on your computer (locally) in the browser (remotely) in marimo.app or Google Colab, the code below requests the ZIP archive from GitHub and directly processes it. However, you can also download the ZIP from GitHub (link above) or directly from this notebook [by clicking this raw.githubusercontent.com raw url \[ ↓ \]](http://raw.githubusercontent.com/bedrock-engineer/bedrock-ge/main/examples/hk_kaitak_ags3/kaitak_ags3.zip). 
+        To make it easy to run this notebook on your computer (locally) in the browser (remotely) in marimo.app or Google Colab, the code below requests the ZIP archive from GitHub and directly processes it. However, you can also download the ZIP from GitHub (link above) or directly from this notebook [by clicking this raw.githubusercontent.com raw url [ ↓ ]](http://raw.githubusercontent.com/bedrock-engineer/bedrock-ge/main/examples/hk_kaitak_ags3/kaitak_ags3.zip). 
 
         The cell below works as is, but has a commented line 2, to help you in case you have downloaded the ZIP, and want to use that downloaded ZIP in this notebook.
         """
@@ -63,10 +64,10 @@ def _(mo):
 @app.cell
 def _(io, requests):
     # Read ZIP from disk after downloading manually
-    # zip = Path("path/to/your/archive.zip")
+    # zip = Path(r"C:\Users\joost\ReposWindows\bedrock-ge\examples\hk_kaitak_ags3\public\kaitak_ags3.zip")
 
     # Request ZIP from GitHub
-    raw_githubusercontent_url = "http://raw.githubusercontent.com/bedrock-engineer/bedrock-ge/dev/examples/hk_kaitak_ags3/public/kaitak_ags3.zip"
+    raw_githubusercontent_url = "https://raw.githubusercontent.com/bedrock-engineer/bedrock-ge/main/examples/hk_kaitak_ags3/kaitak_ags3.zip"
     zip = io.BytesIO(requests.get(raw_githubusercontent_url).content)
     return raw_githubusercontent_url, zip
 
@@ -112,10 +113,28 @@ def _(mo):
 
 
 @app.cell
-def _(CRS, zip, zip_of_ags3s_to_bedrock_gi_database):
+def _(CRS, pd, zip, zip_of_ags3s_to_bedrock_gi_database):
     brgi_db = zip_of_ags3s_to_bedrock_gi_database(zip, CRS("EPSG:2326"))
-    brgi_db
+
+    # Some ISPT_NVAL (SPT count) are not numeric, e.g. "100/0.29"
+    # When converting to numeric, these non-numeric values are converted to NaN
+    brgi_db["InSitu_ISPT"]["ISPT_NVAL"] = pd.to_numeric(
+        brgi_db["InSitu_ISPT"]["ISPT_NVAL"], errors="coerce"
+    )
     return (brgi_db,)
+
+
+@app.cell(hide_code=True)
+def _(brgi_db, mo):
+    sel_brgi_table = mo.ui.dropdown(brgi_db, value="Project")
+    mo.md(f"Select the Bedrock GI table you want to explore: {sel_brgi_table}")
+    return (sel_brgi_table,)
+
+
+@app.cell(hide_code=True)
+def _(sel_brgi_table):
+    sel_brgi_table.value
+    return
 
 
 @app.cell(hide_code=True)
@@ -157,114 +176,126 @@ def _(mo):
 
 
 @app.cell
-def _(brgi_db, calculate_gis_geometry, check_brgi_database, pd):
+def _(brgi_db, calculate_gis_geometry, check_brgi_database):
     brgi_geodb = calculate_gis_geometry(brgi_db)
     check_brgi_database(brgi_geodb)
-
-    # Some ISPT_NVAL (SPT count) are not numeric, e.g. "100/0.29"
-    # When converting to numeric, these non-numeric values are converted to NaN
-    brgi_geodb["InSitu_ISPT"]["ISPT_NVAL"] = pd.to_numeric(
-        brgi_geodb["InSitu_ISPT"]["ISPT_NVAL"], errors="coerce"
-    )
     return (brgi_geodb,)
 
 
 @app.cell(hide_code=True)
 def _(mo):
-    mo.md(r"""After creating the Bedrock GI 3D Geospatial Database `brgi_geodb` - which is a dictionary of [`geopandas.GeoDataFrame`](https://geopandas.org/en/stable/docs/reference/api/geopandas.GeoDataFrame.html#geopandas.GeoDataFrame)s - you can explore the Kai Tak Ground Investigation data on an interactive map by applying the [`geopandas.GeoDataFrame.explore()`](https://geopandas.org/en/stable/docs/reference/api/geopandas.GeoDataFrame.explore.html#geopandas.GeoDataFrame.explore) method to the different tables in the `brgi_geodb`:""")
+    mo.md(
+        r"""
+        ## Ground Investigation data exploration
+
+        After creating the Bedrock GI 3D Geospatial Database `brgi_geodb` - which is a dictionary of [`geopandas.GeoDataFrame`](https://geopandas.org/en/stable/docs/reference/api/geopandas.GeoDataFrame.html#geopandas.GeoDataFrame)s - you can explore the Kai Tak Ground Investigation data on an interactive map by applying the [`geopandas.GeoDataFrame.explore()`](https://geopandas.org/en/stable/docs/reference/api/geopandas.GeoDataFrame.explore.html#geopandas.GeoDataFrame.explore) method to the different tables in the `brgi_geodb`.
+
+        Do note that this works best on the tables with `POINT` GIS geometry such as `LonLatHeight` or `InSitu_ISPT`. Tables with vertical `LINESTRING` GIS geometry, such as `Location`, `InSitu_GEOL` or `InSitu_WETH`, display very small on the `gdf.explore()` `leaflet`-based interactive map, and don't show at all on the `matplotlib`-based `gdf.plot()`.
+        """
+    )
     return
 
 
 @app.cell
 def _(brgi_geodb):
-    brgi_geodb["InSitu_GEOL"].iloc[::2].explore()
+    brgi_geodb["LonLatHeight"].explore()
     return
-
-
-@app.cell
-def _(mo):
-    mo.md(
-        r"""
-        Notice the different in the size of the displayed points on the map above between the `LonLatHeight` and other tables
-
-        With marimo's built-in data exploration tables it's also really easy to visualize filtered data:
-        """
-    )
-    return
-
-
-@app.cell
-def _(brgi_geodb, lon_lat_gdf, pd):
-    gi_table = brgi_geodb["Location"]
-    lon_lat_df = pd.DataFrame(lon_lat_gdf, copy=True).assign(
-        geometry=lambda df: df["geometry"].astype(str)
-    )
-    return gi_table, lon_lat_df
-
-
-@app.cell
-def _(brgi_geodb, mo):
-    table = mo.ui.table(
-        brgi_geodb["InSitu_ISPT"]
-        .assign(geometry=lambda df: df["geometry"].astype(str))
-    )
-    table
-    return (table,)
-
-
-@app.cell
-def _(gpd, table, wkt):
-    gdf = gpd.GeoDataFrame(
-        table.value, 
-        geometry=table.value["geometry"].apply(wkt.loads), 
-        crs=2326
-    )
-    gdf.explore()
-    return (gdf,)
-
-
-@app.cell(hide_code=True)
-def _(mo):
-    mo.md(
-        """
-        Now that our GI is in a Geospatial database, it's also really easy to "ask our GI data questions". That is, visualize where we have GI data when certain filters are applied.
-
-        For example, we can find the deepest SPT locations in boreholes where very soft or soft soil was found, meaning an SPT N-value of 10 or fewer blows:
-        """
-    )
-    return
-
-
-@app.cell
-def _(brgi_geodb, gpd):
-    soft_soil_spt_se10_df = (
-        brgi_geodb["InSitu_ISPT"]
-        .query("ISPT_NVAL <= 10")
-        .drop(columns="geometry")
-        .merge(brgi_geodb["LonLatHeight"], on="location_uid", how="inner")
-        .loc[lambda df: df.groupby("location_uid")["depth_to_top"].idxmin()]
-        .reset_index(drop=True)
-    )
-    soft_soil_spt_se10_gdf = gpd.GeoDataFrame(
-        soft_soil_spt_se10_df,
-        geometry=soft_soil_spt_se10_df["geometry"],
-        crs="EPSG:4326",
-    )
-    soft_soil_spt_se10_gdf.explore()
-    return soft_soil_spt_se10_df, soft_soil_spt_se10_gdf
 
 
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(
         r"""
-        Make sure to explore the Kai Tak GI data yourself as well!
+        With marimo's built-in data exploration tables and dataframes, it's also really easy to filter and visualize the GI data.
 
-        For example, try to find the lowest point in the boreholes where the weathering grade is better than "IV", meaning that the `WETH_GRAD` column in the `InSitu_WETH` table cannot contain a "V".
+        For example, in the `InSitu_ISPT` table (SPT data) you could apply a filter to the `ISPT_NVAL` (SPT N-value) of e.g. 1 - 10. When you then select those rows and then scroll to the map below, you'll see all the locations where soft soils were encountered.
+        """
+    )
+    return
 
+
+@app.cell(hide_code=True)
+def _(brgi_db, mo):
+    explore_brgi_table = mo.ui.dropdown(brgi_db, value="InSitu_ISPT")
+    mo.md(f"Select the GI table you want to explore: {explore_brgi_table}")
+    return (explore_brgi_table,)
+
+
+@app.cell(hide_code=True)
+def _(explore_brgi_table, mo):
+    filtered_table = mo.ui.table(explore_brgi_table.value)
+    filtered_table
+    return (filtered_table,)
+
+
+@app.cell(hide_code=True)
+def _(brgi_geodb, filtered_table, gpd, mo):
+    def gi_exploration_map(filtered_brgi_table):
+        if "location_uid" not in filtered_brgi_table.value.columns:
+            output = mo.md(
+                "No interactive map with the data selected in the table above can be shown, because the you're exploring isn't linked to the `LonLatHeight` table with a `location_uid` column, i.e. doesn't have `location_uid` as a foreign key."
+            ).callout("warn")
+        else:
+            filtered_df = filtered_brgi_table.value.merge(
+                brgi_geodb["LonLatHeight"], on="location_uid", how="inner"
+            )
+            filtered_gdf = gpd.GeoDataFrame(
+                filtered_df,
+                geometry=filtered_df["geometry"],
+                crs="EPSG:4326",  # 4326 is the WGS84 (lon, lat) EPSG code
+            )
+            output = filtered_gdf.explore()
+        return output
+
+    gi_exploration_map(filtered_table)
+    return (gi_exploration_map,)
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(
+        r"""
+        Something else you might be interested in, is where the weathering grade of the soil or rock is low. Weathering grades range from `I` (Fresh Rock) to `VI` (Residual Soil). All rock with a weathering grade of `III` (Moderately Decomposed) or better is still considered competent rock.
+
+        The weathering grades can be found in the `WETH_GRAD` column in the `InSitu_WETH` table (Weathering data). Therefore, to find all competent rock, we need to filter out all the rows that contain a `V`, which you can do in the widget below.
+
+        That widget also shows the Python code that creates the filter:
+        ```python
+        df_next = df
+        df_next = df_next[~((df_next["WETH_GRAD"].str.contains("V")))]
+        ```
+        """
+    )
+    return
+
+
+@app.cell(hide_code=True)
+def _(brgi_db, mo):
+    explore_brgi_df = mo.ui.dropdown(brgi_db, value="InSitu_WETH")
+    mo.md(f"Select the GI table you want to explore: {explore_brgi_df}")
+    return (explore_brgi_df,)
+
+
+@app.cell
+def _(explore_brgi_df, mo):
+    filtered_df = mo.ui.dataframe(explore_brgi_df.value)
+    filtered_df
+    return (filtered_df,)
+
+
+@app.cell
+def _(filtered_df, gi_exploration_map):
+    gi_exploration_map(filtered_df)
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(
+        r"""
         ## Saving the GI geospatial database as a GeoPackage (.gpkg)
 
-        Finally, lets write, i.e. persist `brgi_geodb` - a Python dictionary of `geopandas.GeoDataFrames` - to an actual geospatial database file, such that we can share our GI with others, create dashboards, access the GI data in QGIS or ArcGIS, and more...
+        Finally, lets write, i.e. persist `brgi_geodb` - a Python dictionary of `geopandas.GeoDataFrames` - to an actual geospatial database file, such that we can share our GI with others, reuse it in other notebooks, create dashboards, access the GI data in QGIS or ArcGIS, and more...
 
         Now, a GeoPackage is an OGC-standardized extension of SQLite (a relational database in a single file, .sqlite or .db) that allows you to store any type of GIS data (both raster as well as vector data) in a single file that has the .gpkg extension. Therefore, many (open source) GIS software packages support GeoPackage!
 
@@ -331,63 +362,6 @@ def _(
     chardet,
     check_no_gis_brgi_database,
     concatenate_databases,
-):
-    def list_of_ags3s_to_bedrock_gi_database(gi_paths, crs):
-        """Read AGS 3 files from a list of paths to AGS 3 files and convert them to a dictionary of pandas dataframes."""
-        brgi_db = {}
-        # Iterate over GI AGS 3 files
-        for gi_path in gi_paths:
-            # Only process files that have an .ags or .AGS extension
-            report_no = gi_path.parent.name
-            file_name = f"{report_no}/{gi_path.name}"
-            if file_name.lower().endswith(".ags"):
-                print(f"\n🖥️ Processing {file_name} ...")
-                # Open the AGS 3 file as bytes, bc Not all AGS 3 files are encoded in the same way.
-                with open(gi_path, "rb") as ags3_file:
-                    ags3_data = ags3_file.read()
-                    # Detect the encoding of the AGS 3 file, before reading to string.
-                    detected_encoding = chardet.detect(ags3_data)["encoding"]
-                    ags3_data = ags3_data.decode(detected_encoding)
-                # Convert content of a single AGS 3 file to a Dictionary of pandas dataframes (a database)
-                ags3_db = ags_to_dfs(ags3_data)
-                ags3_db["PROJ"]["PROJ_ID"] = file_name
-                ags3_db["PROJ"]["REPORT_NO"] = int(report_no)
-                # Remove (Static) CPT AGS 3 group 'STCN' from brgi_db, because CPT data processing needs to be reviewed.
-                # Not efficient to create a GIS point for every point where a CPT measures a value.
-                if "STCN" in ags3_db.keys():
-                    del ags3_db["STCN"]
-                # Create GI data tables with bedrock-gi names and add columns (project_uid, location_uid, sample_uid),
-                # such that data from multiple AGS files can be combined
-                brgi_db_from_1_ags3_file = ags3_db_to_no_gis_brgi_db(ags3_db, crs)
-                print(
-                    f"🧐 Validating the Bedrock GI database from AGS file {file_name}..."
-                )
-                check_no_gis_brgi_database(brgi_db_from_1_ags3_file)
-                print(
-                    f"\n✅ Succesfully converted {file_name} to Bedrock GI database and validated!\n"
-                )
-                print(
-                    f"🧵 Concatenating Bedrock GI database for {file_name} to existing Bedrock GI database...\n"
-                )
-                brgi_db = concatenate_databases(brgi_db, brgi_db_from_1_ags3_file)
-
-                # Drop all rows that have completely duplicate rows in the Project table
-                brgi_db["Project"] = brgi_db["Project"].drop_duplicates()
-                # Then drop all that unfortunately still have a duplicate project_uid
-                brgi_db["Project"] = brgi_db["Project"].drop_duplicates(
-                    subset="project_uid", keep="first"
-                )
-        return brgi_db
-    return (list_of_ags3s_to_bedrock_gi_database,)
-
-
-@app.cell
-def _(
-    ags3_db_to_no_gis_brgi_db,
-    ags_to_dfs,
-    chardet,
-    check_no_gis_brgi_database,
-    concatenate_databases,
     zipfile,
 ):
     def zip_of_ags3s_to_bedrock_gi_database(zip, crs):
@@ -405,8 +379,9 @@ def _(
                         ags3_data = ags3_data.decode(detected_encoding)
                     # Convert content of a single AGS 3 file to a Dictionary of pandas dataframes (a database)
                     ags3_db = ags_to_dfs(ags3_data)
+                    project_uid = file_name[:-4]
                     report_no = file_name.split("/")[0]
-                    ags3_db["PROJ"]["PROJ_ID"] = file_name
+                    ags3_db["PROJ"]["PROJ_ID"] = project_uid
                     ags3_db["PROJ"]["REPORT_NO"] = int(report_no)
                     # Remove (Static) CPT AGS 3 group 'STCN' from brgi_db, because CPT data processing needs to be reviewed.
                     # Not efficient to create a GIS point for every point where a CPT measures a value.
