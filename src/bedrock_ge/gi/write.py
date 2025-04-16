@@ -6,31 +6,29 @@ import pandas as pd
 
 
 def write_gi_db_to_gpkg(
-    brgi_db: Dict[str, gpd.GeoDataFrame],
+    brge_db: Dict[str, gpd.GeoDataFrame],
     gpkg_path: Union[str, Path],
 ) -> None:
-    """
-    Write a database, i.e. a dictionary of DataFrames, with Bedrock Ground Investigation data to a GeoPackage file.
+    """Write a database, i.e. a dictionary of DataFrames, with Bedrock Ground Investigation data to a GeoPackage file.
 
     Each DataFrame will be saved in a separate table named after the keys of the dictionary.
 
     Args:
-        brgi_dfs (dict): A dictionary where keys are brgi table names and values are DataFrames with brgi data.
+        brge_dfs (dict): A dictionary where keys are brge table names and values are DataFrames with brge data.
         gpkg_path (str): The name of the output GeoPackage file.
 
     Returns:
         None: This function does not return any value. It writes the DataFrames to a GeoPackage file.
     """
-
     # Create a GeoDataFrame from the dictionary of DataFrames
-    for sheet_name, brgi_table in brgi_db.items():
+    for sheet_name, brge_table in brge_db.items():
         sanitized_table_name = sanitize_table_name(sheet_name)
 
-        if isinstance(brgi_table, pd.DataFrame):
-            brgi_table = gpd.GeoDataFrame(brgi_table)
+        if isinstance(brge_table, pd.DataFrame):
+            brge_table = gpd.GeoDataFrame(brge_table)
 
-        if isinstance(brgi_table, gpd.GeoDataFrame):
-            brgi_table.to_file(
+        if isinstance(brge_table, gpd.GeoDataFrame):
+            brge_table.to_file(
                 gpkg_path, driver="GPKG", layer=sanitized_table_name, overwrite=True
             )
 
@@ -41,8 +39,7 @@ def write_gi_db_to_excel(
     gi_db: Dict[str, Union[pd.DataFrame, gpd.GeoDataFrame]],
     excel_path: Union[str, Path],
 ) -> None:
-    """
-    Write a database, i.e. a dictionary of DataFrames, with Ground Investigation data to an Excel file.
+    """Write a database, i.e. a dictionary of DataFrames, with Ground Investigation data to an Excel file.
 
     Each DataFrame will be saved in a separate sheet named after the keys of the dictionary.
     Function can be used on any GI database, whether in AGS, Bedrock, or another format.
@@ -54,7 +51,6 @@ def write_gi_db_to_excel(
     Returns:
         None: This function does not return any value. It writes the DataFrames to an Excel file.
     """
-
     # Create an Excel writer object
     with pd.ExcelWriter(excel_path, engine="openpyxl") as writer:
         for sheet_name, df in gi_db.items():
@@ -66,8 +62,7 @@ def write_gi_db_to_excel(
 
 
 def sanitize_table_name(sheet_name):
-    """
-    Replace invalid characters and spaces in GI table names with underscores,
+    """Replace invalid characters and spaces in GI table names with underscores,
     such that the name is consistent with SQL, GeoPackage and Excel naming conventions.
 
     Args:

@@ -8,8 +8,7 @@ def concatenate_databases(
     db1: Dict[str, Union[pd.DataFrame, gpd.GeoDataFrame]],
     db2: Dict[str, Union[pd.DataFrame, gpd.GeoDataFrame]],
 ) -> Dict[str, pd.DataFrame]:
-    """
-    Concatenate two dictionaries of pandas dataframes into one dict of dfs.
+    """Concatenate two dictionaries of pandas dataframes into one dict of dfs.
 
     The function concatenates the pandas dataframes of the second dict of dfs to the first dict of df for the keys that they have in common.
     Keys that don't occur in either of the dict of dfs need to end up in the final dict of dfs.
@@ -21,7 +20,6 @@ def concatenate_databases(
     Returns:
         dict: A dictionary of concatenated pandas DataFrames.
     """
-
     # Create a new dict to store the concatenated dataframes
     concatenated_dict = {key: df.dropna(axis=1, how="all") for key, df in db1.items()}
 

@@ -8,9 +8,9 @@
 
 📃 **Documentation:** <https://bedrock.engineer/docs>
 
-🖥️ **Source Code:** <https://github.com/bedrock-gi/bedrock-gi>
+🖥️ **Source Code:** <https://github.com/bedrock-engineer/bedrock-ge>
 
-🐍 **`bedrock-gi` on PyPI:** <https://pypi.org/project/bedrock-gi/>
+🐍 **`bedrock-gi` on PyPI:** <https://pypi.org/project/bedrock-ge/>
 
 🌐 **Website:** <https://bedrock.engineer/>
 
@@ -32,7 +32,7 @@
 | GeoJSON     | ✅  | ✅    |
 
 What do you need? [DIGGS](https://diggsml.org/)? [NADAG](https://www.ngu.no/geologisk-kartlegging/om-nadag-nasjonal-database-grunnundersokelser)? [GEF](https://publicwiki.deltares.nl/display/STREAM/Dutch+National+GEF+Standards)?  Something else?  
-Let us know by creating an [issue](https://github.com/bedrock-gi/bedrock-gi/issues) or starting a [discussion](https://github.com/orgs/bedrock-gi/discussions) 💭
+Let us know by creating an [issue](https://github.com/bedrock-engineer/bedrock-ge/issues) or starting a [discussion](https://github.com/orgs/bedrock-gi/discussions) 💭
 
 Also, if you have a project with publicly available GI data, please share that in a [discussion](https://github.com/orgs/bedrock-gi/discussions), such that we can create a tutorial from it 🤩
 
@@ -127,7 +127,7 @@ I would highly recommend anyone to start using [`uv`](https://docs.astral.sh/uv/
 - 🗂️ `uv` provides [comprehensive project management](https://docs.astral.sh/uv/#project-management), with a [universal lockfile](https://docs.astral.sh/uv/concepts/projects/#project-lockfile). This means no more headaches about virtual environments (or having to explain what on earth a virtual env is), or people running different versions of Python or Python packages on the same project, causing errors and other problems.
 - In short, 🚀 `uv` is a single tool to replace `pip`, `pip-tools`, `pipx`, `poetry`, `pyenv`, `virtualenv`, `conda` and more...
 
-It's of course also possible to install `bedrock-gi` from [PyPI](https://pypi.org/project/bedrock-gi/) (Python Packaging Index) using `pip`:
+It's of course also possible to install `bedrock-gi` from [PyPI](https://pypi.org/project/bedrock-ge/) (Python Packaging Index) using `pip`:
 
 ```bash
 pip install bedrock-gi
@@ -139,7 +139,7 @@ Got some feedback, a great idea, running into problems when working with Bedrock
 
 Please feel free to:
 
-1. open an issue for feature requests or bug reports: [`bedrock-gi` issues](https://github.com/bedrock-gi/bedrock-gi/issues),
+1. open an issue for feature requests or bug reports: [`bedrock-gi` issues](https://github.com/bedrock-engineer/bedrock-ge/issues),
 2. start a discussion in this GitHub repo: [Bedrock discussions](https://github.com/orgs/bedrock-gi/discussions),
 3. or start a discussion on the Speckle community forum if that's more appropriate: [Speckle community forum](https://speckle.community/)
 
@@ -155,7 +155,7 @@ Contributing isn't just about writing code:
 
 - Use Bedrock and provide [feedback](#-feedback) 🪲
 - Share how you use Bedrock 🏗️
-- Help each other out, e.g. by replying to questions in the [discussions](https://github.com/orgs/bedrock-gi/discussions) or [`bedrock-gi` issues](https://github.com/bedrock-gi/bedrock-gi/issues) 🤝
+- Help each other out, e.g. by replying to questions in the [discussions](https://github.com/orgs/bedrock-gi/discussions) or [`bedrock-gi` issues](https://github.com/bedrock-engineer/bedrock-ge/issues) 🤝
 - Spread the word about Bedrock 🤩
 - Documentation and tutorials 📃
 - Most pages on the [bedrock.engineer](https://bedrock.engineer/) website can be edited, so if you see a spelling mistake or have a suggestion on how to explain something better, please smash that button! 🖱️💥

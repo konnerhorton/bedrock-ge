@@ -43,9 +43,9 @@ def _(mo):
         Ground Investigation Data for all of Hong Kong can be found here:  
         [GEO Data for Public Use](https://www.ginfo.cedd.gov.hk/GEOOpenData/eng/Default.aspx) → [Ground Investigation (GI) and Laboratory Test (LT) Records](https://www.ginfo.cedd.gov.hk/GEOOpenData/eng/GI.aspx)
 
-        The Ground Investigation data specific to the Kai Tak neighborhood in Hong Kong can be found in the `bedrock-gi` library: [`bedrock-gi/data/ags3/hk/kaitak.zip`](https://github.com/bedrock-gi/bedrock-gi/blob/main/data/ags3/hk/kaitak.zip). This ZIP archive contains GI data from 90 locations (boreholes and CPTs).
+        The Ground Investigation data specific to the Kai Tak neighborhood in Hong Kong can be found in the `bedrock-ge` library: [`bedrock-gi/data/ags3/hk/kaitak.zip`](https://github.com/bedrock-engineer/bedrock-ge/blob/main/data/ags3/hk/kaitak.zip). This ZIP archive contains GI data from 90 locations (boreholes and CPTs).
 
-        One of the AGS 3 files with GI data was left outside the `.zip` archive, such that you can have a look at the structure of an AGS 3 file: [`data/ags3/hk/kaitak_64475/ASD012162 AGS.ags`](https://github.com/bedrock-gi/bedrock-gi/blob/main/data/ags3/hk/kaitak_64475/ASD012162%20AGS.ags)
+        One of the AGS 3 files with GI data was left outside the `.zip` archive, such that you can have a look at the structure of an AGS 3 file: [`data/ags3/hk/kaitak_64475/ASD012162 AGS.ags`](https://github.com/bedrock-engineer/bedrock-ge/blob/main/data/ags3/hk/kaitak_64475/ASD012162%20AGS.ags)
         """
     )
     return
@@ -54,7 +54,7 @@ def _(mo):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(
-        """
+        r"""
         ## Converting the AGS 3 files to a relational database
 
         A relational database is a database with multiple tables that are linked to each other with relations. This type of database is ideal for storing GI data, given its hierarchical structure:
@@ -77,7 +77,7 @@ def _(mo):
 
         ### Getting the AGS 3 files
 
-        To make it easy to run this notebook in the browser in marimo.app or Google Colab, the code below downloads the ZIP archive with AGS 3 data into memory and directly processes the data. However, you can also download the ZIP from [GitHub](https://github.com/bedrock-gi/bedrock-gi/blob/main/data/ags3/hk/kaitak.zip) (blob url, navigates to GitHub) or [here \[ ↓ \]](https://github.com/bedrock-gi/bedrock-gi/raw/main/data/ags3/hk/kaitak.zip) (raw url, downloads directly), and then read the ZIP into memory from your computer by running:
+        To make it easy to run this notebook in the browser in marimo.app or Google Colab, the code below downloads the ZIP archive with AGS 3 data into memory and directly processes the data. However, you can also download the ZIP from [GitHub](https://github.com/bedrock-engineer/bedrock-ge/blob/main/data/ags3/hk/kaitak.zip) (blob url, navigates to GitHub) or [here \[ ↓ \]](https://github.com/bedrock-engineer/bedrock-ge/raw/main/data/ags3/hk/kaitak.zip) (raw url, downloads directly), and then read the ZIP into memory from your computer by running:
 
         ```python
         zip_path = Path("path/to/your/archive.zip")
@@ -104,9 +104,9 @@ def _(mo):
 @app.cell
 def _(CRS, mo, zip_of_ags3s_to_bedrock_gi_database):
     zip = mo.notebook_dir() / "kaitak_ags3.zip"
-    brgi_db = zip_of_ags3s_to_bedrock_gi_database(zip, CRS("EPSG:2326"))
-    brgi_db
-    return brgi_db, zip
+    brge_db = zip_of_ags3s_to_bedrock_gi_database(zip, CRS("EPSG:2326"))
+    brge_db
+    return brge_db, zip
 
 
 @app.cell(hide_code=True)
@@ -143,28 +143,28 @@ def _(mo):
 
         The reason for creating the `LonLatHeight` table is that vertical lines in projected Coordinate Reference Systems (CRS) are often not rendered nicely by default in all web-mapping software. Vertical lines are often not visible when looking at a map from above, and not all web-mapping software is capable of handling geometry in non-WGS84, i.e. (Lon, Lat) coordinates.
 
-        After creating the Bedrock GI 3D Geospatial Database `brgi_geodb` - which is a dictionary of [`geopandas.GeoDataFrame`](https://geopandas.org/en/stable/docs/reference/api/geopandas.GeoDataFrame.html#geopandas.GeoDataFrame)s - you can explore the Kai Tak GI on an interactive map with the [`geopandas.GeoDataFrame.explore`](https://geopandas.org/en/stable/docs/reference/api/geopandas.GeoDataFrame.explore.html#geopandas.GeoDataFrame.explore):
+        After creating the Bedrock GI 3D Geospatial Database `brge_geodb` - which is a dictionary of [`geopandas.GeoDataFrame`](https://geopandas.org/en/stable/docs/reference/api/geopandas.GeoDataFrame.html#geopandas.GeoDataFrame)s - you can explore the Kai Tak GI on an interactive map with the [`geopandas.GeoDataFrame.explore`](https://geopandas.org/en/stable/docs/reference/api/geopandas.GeoDataFrame.explore.html#geopandas.GeoDataFrame.explore):
         """
     )
     return
 
 
 @app.cell
-def _(brgi_db, calculate_gis_geometry, check_brgi_database, pd):
-    brgi_geodb = calculate_gis_geometry(brgi_db)
-    check_brgi_database(brgi_geodb)
+def _(brge_db, calculate_gis_geometry, check_brge_database, pd):
+    brge_geodb = calculate_gis_geometry(brge_db)
+    check_brge_database(brge_geodb)
 
     # Some ISPT_NVAL (SPT count) are not numeric, e.g. "100/0.29"
     # When converting to numeric, these non-numeric values are converted to NaN
-    brgi_geodb["InSitu_ISPT"]["ISPT_NVAL"] = pd.to_numeric(
-        brgi_geodb["InSitu_ISPT"]["ISPT_NVAL"], errors="coerce"
+    brge_geodb["InSitu_ISPT"]["ISPT_NVAL"] = pd.to_numeric(
+        brge_geodb["InSitu_ISPT"]["ISPT_NVAL"], errors="coerce"
     )
-    return (brgi_geodb,)
+    return (brge_geodb,)
 
 
 @app.cell
-def _(brgi_geodb):
-    lon_lat_gdf = brgi_geodb["LonLatHeight"]
+def _(brge_geodb):
+    lon_lat_gdf = brge_geodb["LonLatHeight"]
     lon_lat_gdf.explore()
     return (lon_lat_gdf,)
 
@@ -182,9 +182,9 @@ def _(mo):
 
 
 @app.cell
-def _(brgi_geodb, gpd, lon_lat_gdf):
+def _(brge_geodb, gpd, lon_lat_gdf):
     soft_soil_spt_se10_df = (
-        brgi_geodb["InSitu_ISPT"]
+        brge_geodb["InSitu_ISPT"]
         .query("ISPT_NVAL <= 10")
         .drop(columns="geometry")
         .merge(lon_lat_gdf, on="location_uid", how="inner")
@@ -210,7 +210,7 @@ def _(mo):
 
         ## Saving the GI geospatial database as a GeoPackage (.gpkg)
 
-        Finally, lets write, i.e. persist `brgi_geodb` - a Python dictionary of `geopandas.GeoDataFrames` - to an actual geospatial database file, such that we can share our GI with others, create dashboards, access the GI data in QGIS or ArcGIS, and more...
+        Finally, lets write, i.e. persist `brge_geodb` - a Python dictionary of `geopandas.GeoDataFrames` - to an actual geospatial database file, such that we can share our GI with others, create dashboards, access the GI data in QGIS or ArcGIS, and more...
 
         Now, a GeoPackage is an OGC-standardized extension of SQLite (a relational database in a single file, .sqlite or .db) that allows you to store any type of GIS data (both raster as well as vector data) in a single file that has the .gpkg extension. Therefore, many (open source) GIS software packages support GeoPackage!
 
@@ -221,12 +221,12 @@ def _(mo):
 
 
 @app.cell
-def _(brgi_geodb, mo, write_gi_db_to_gpkg):
+def _(brge_geodb, mo, write_gi_db_to_gpkg):
     output_dir = mo.notebook_dir() / "output"
     if not output_dir.exists():
             output_dir.mkdir(parents=True, exist_ok=True)
     write_gi_db_to_gpkg(
-        brgi_geodb, output_dir / "kaitak_gi.gpkg"
+        brge_geodb, output_dir / "kaitak_gi.gpkg"
     )
     return (output_dir,)
 
@@ -274,16 +274,16 @@ def _(mo):
 
 @app.cell
 def _(
-    ags3_db_to_no_gis_brgi_db,
+    ags3_db_to_no_gis_brge_db,
     ags_to_dfs,
     chardet,
-    check_no_gis_brgi_database,
+    check_no_gis_brge_database,
     concatenate_databases,
     zipfile,
 ):
     def zip_of_ags3s_to_bedrock_gi_database(zip_buffer, crs):
         """Read AGS 3 files from a ZIP archive and convert them to a dictionary of pandas dataframes."""
-        brgi_db = {}
+        brge_db = {}
         with zipfile.ZipFile(zip_buffer) as zip_ref:
             # Iterate over files and directories in the .zip archive
             for file_name in zip_ref.namelist():
@@ -299,32 +299,32 @@ def _(
                     report_no = file_name.split("/")[0]
                     ags3_db["PROJ"]["PROJ_ID"] = file_name
                     ags3_db["PROJ"]["REPORT_NO"] = int(report_no)
-                    # Remove (Static) CPT AGS 3 group 'STCN' from brgi_db, because CPT data processing needs to be reviewed.
+                    # Remove (Static) CPT AGS 3 group 'STCN' from brge_db, because CPT data processing needs to be reviewed.
                     # Not efficient to create a GIS point for every point where a CPT measures a value.
                     if "STCN" in ags3_db.keys():
                         del ags3_db["STCN"]
                     # Create GI data tables with bedrock-gi names and add columns (project_uid, location_uid, sample_uid),
                     # such that data from multiple AGS files can be combined
-                    brgi_db_from_1_ags3_file = ags3_db_to_no_gis_brgi_db(ags3_db, crs)
+                    brge_db_from_1_ags3_file = ags3_db_to_no_gis_brge_db(ags3_db, crs)
                     print(
                         f"🧐 Validating the Bedrock GI database from AGS file {file_name}..."
                     )
-                    check_no_gis_brgi_database(brgi_db_from_1_ags3_file)
+                    check_no_gis_brge_database(brge_db_from_1_ags3_file)
                     print(
                         f"\n✅ Succesfully converted {file_name} to Bedrock GI database and validated!\n"
                     )
                     print(
                         f"🧵 Concatenating Bedrock GI database for {file_name} to existing Bedrock GI database...\n"
                     )
-                    brgi_db = concatenate_databases(brgi_db, brgi_db_from_1_ags3_file)
+                    brge_db = concatenate_databases(brge_db, brge_db_from_1_ags3_file)
 
                     # Drop all rows that have completely duplicate rows in the Project table
-                    brgi_db["Project"] = brgi_db["Project"].drop_duplicates()
+                    brge_db["Project"] = brge_db["Project"].drop_duplicates()
                     # Then drop all that unfortunately still have a duplicate project_uid
-                    brgi_db["Project"] = brgi_db["Project"].drop_duplicates(
+                    brge_db["Project"] = brge_db["Project"].drop_duplicates(
                         subset="project_uid", keep="first"
                     )
-        return brgi_db
+        return brge_db
     return (zip_of_ags3s_to_bedrock_gi_database,)
 
 
@@ -342,20 +342,20 @@ def _():
     from pyproj import CRS
 
     from bedrock_ge.gi.ags.read import ags_to_dfs
-    from bedrock_ge.gi.ags.transform import ags3_db_to_no_gis_brgi_db
+    from bedrock_ge.gi.ags.transform import ags3_db_to_no_gis_brge_db
     from bedrock_ge.gi.concatenate import concatenate_databases
     from bedrock_ge.gi.gis_geometry import calculate_gis_geometry
-    from bedrock_ge.gi.validate import check_brgi_database, check_no_gis_brgi_database
+    from bedrock_ge.gi.validate import check_brge_database, check_no_gis_brge_database
     from bedrock_ge.gi.write import write_gi_db_to_excel, write_gi_db_to_gpkg
     return (
         CRS,
         Path,
-        ags3_db_to_no_gis_brgi_db,
+        ags3_db_to_no_gis_brge_db,
         ags_to_dfs,
         calculate_gis_geometry,
         chardet,
-        check_brgi_database,
-        check_no_gis_brgi_database,
+        check_brge_database,
+        check_no_gis_brge_database,
         concatenate_databases,
         gpd,
         io,

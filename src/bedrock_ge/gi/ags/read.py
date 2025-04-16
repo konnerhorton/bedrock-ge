@@ -8,8 +8,7 @@ from bedrock_ge.gi.ags.validate import check_ags_proj_group
 
 
 def ags_to_dfs(ags_data: str) -> Dict[str, pd.DataFrame]:
-    """
-    Convert AGS 3 or AGS 4 data to a dictionary of pandas DataFrames.
+    """Convert AGS 3 or AGS 4 data to a dictionary of pandas DataFrames.
 
     Args:
         ags_data (str): The AGS data as a string.
@@ -61,7 +60,6 @@ def ags3_to_dfs(ags3_data: str) -> Dict[str, pd.DataFrame]:
         Dict[str, pd.DataFrame]: A dictionary of pandas DataFrames, where each key represents a group name from AGS 3 data,
         and the corresponding value is a pandas DataFrame containing the data for that group.
     """
-
     # Initialize dictionary and variables used in the AGS 3 read loop
     ags3_dfs = {}
     line_type = "line_0"

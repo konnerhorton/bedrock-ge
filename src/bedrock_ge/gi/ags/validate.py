@@ -13,7 +13,6 @@ def check_ags_proj_group(ags_proj: pd.DataFrame) -> bool:
     Returns:
         bool: Returns True if the AGS 3 or AGS 4 PROJ group is correct.
     """
-
     if len(ags_proj) != 1:
         raise ValueError("The PROJ group must contain exactly one row.")
 
