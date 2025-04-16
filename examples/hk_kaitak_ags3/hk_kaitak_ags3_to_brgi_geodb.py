@@ -43,12 +43,32 @@ def _(mo):
         Ground Investigation Data for all of Hong Kong can be found here:  
         [GEO Data for Public Use](https://www.ginfo.cedd.gov.hk/GEOOpenData/eng/Default.aspx) → [Ground Investigation (GI) and Laboratory Test (LT) Records](https://www.ginfo.cedd.gov.hk/GEOOpenData/eng/GI.aspx)
 
-        The Ground Investigation data specific to the Kai Tak neighborhood in Hong Kong can be found in the `bedrock-gi` library: [`bedrock-gi/data/ags3/hk/kaitak.`](https://github.com/bedrock-gi/bedrock-gi/blob/main/data/ags3/hk/kaitak.). This  archive contains GI data from 90 AGS 3 files, with a total of 834 locations (boreholes and Cone Penetration Tests).
+        The Ground Investigation data specific to the Kai Tak neighborhood in Hong Kong can be found in the `bedrock-ge` GitHub repository:  
+        [`github.com/bedrock-engineer/bedrock-ge/examples/hk_kaitak_ags3/kaitak_ags3.zip`](https://github.com/bedrock-engineer/bedrock-ge/blob/main/examples/hk_kaitak_ags3/kaitak_ags3.zip).  
+        This  archive contains GI data from 90 AGS 3 files, with a total of 834 locations (boreholes and Cone Penetration Tests).
 
-        One of the AGS 3 files with GI data was left outside the `.` archive, such that you can have a look at the structure of an AGS 3 file: [`data/ags3/hk/kaitak_64475/ASD012162 AGS.ags`](https://github.com/bedrock-gi/bedrock-gi/blob/main/data/ags3/hk/kaitak_64475/ASD012162%20AGS.ags)
+        One of the AGS 3 files with GI data was left outside the `.` archive, such that you can have a look at the structure of an AGS 3 file:  
+        [`github.com/bedrock-engineer/bedrock-ge/examples/hk_kaitak_ags3/ASD012162 AGS.ags`](https://github.com/bedrock-engineer/bedrock-ge/blob/main/examples/hk_kaitak_ags3/64475_ASD012162%20AGS.ags)
+
+        ### Getting the AGS 3 files
+
+        To make it easy to run this notebook on your computer (locally) in the browser (remotely) in marimo.app or Google Colab, the code below requests the ZIP archive from GitHub and directly processes it. However, you can also download the ZIP from GitHub (link above) or directly from this notebook [by clicking this raw.githubusercontent.com raw url \[ ↓ \]](http://raw.githubusercontent.com/bedrock-engineer/bedrock-ge/main/examples/hk_kaitak_ags3/kaitak_ags3.zip). 
+
+        The cell below works as is, but has a commented line 2, to help you in case you have downloaded the ZIP, and want to use that downloaded ZIP in this notebook.
         """
     )
     return
+
+
+@app.cell
+def _(io, requests):
+    # Read ZIP from disk after downloading manually
+    # zip = Path("path/to/your/archive.zip")
+
+    # Request ZIP from GitHub
+    raw_githubusercontent_url = "http://raw.githubusercontent.com/bedrock-engineer/bedrock-ge/dev/examples/hk_kaitak_ags3/public/kaitak_ags3.zip"
+    zip = io.BytesIO(requests.get(raw_githubusercontent_url).content)
+    return raw_githubusercontent_url, zip
 
 
 @app.cell(hide_code=True)
@@ -92,25 +112,8 @@ def _(mo):
 
 
 @app.cell
-def _(mo, re):
-    ags3_dir = mo.notebook_dir() / "public"
-    ags3_paths = sorted(
-        {
-            path
-            for path in ags3_dir.rglob("*")
-            if path.is_file()
-            and re.fullmatch(r".*\.ags", path.name, flags=re.IGNORECASE)
-        }
-    )
-    print(
-        f"{len(ags3_paths)} Ground Investigation AGS 3 files for the area around Kai Tak, Hong Kong."
-    )
-    return ags3_dir, ags3_paths
-
-
-@app.cell
-def _(CRS, ags3_paths, list_of_ags3s_to_bedrock_gi_database):
-    brgi_db = list_of_ags3s_to_bedrock_gi_database(ags3_paths, CRS("EPSG:2326"))
+def _(CRS, zip, zip_of_ags3s_to_bedrock_gi_database):
+    brgi_db = zip_of_ags3s_to_bedrock_gi_database(zip, CRS("EPSG:2326"))
     brgi_db
     return (brgi_db,)
 
@@ -168,15 +171,56 @@ def _(brgi_db, calculate_gis_geometry, check_brgi_database, pd):
 
 @app.cell(hide_code=True)
 def _(mo):
-    mo.md(r"""After creating the Bedrock GI 3D Geospatial Database `brgi_geodb` - which is a dictionary of [`geopandas.GeoDataFrame`](https://geopandas.org/en/stable/docs/reference/api/geopandas.GeoDataFrame.html#geopandas.GeoDataFrame)s - you can explore the Kai Tak GI on an interactive map with the [`geopandas.GeoDataFrame.explore`](https://geopandas.org/en/stable/docs/reference/api/geopandas.GeoDataFrame.explore.html#geopandas.GeoDataFrame.explore) method:""")
+    mo.md(r"""After creating the Bedrock GI 3D Geospatial Database `brgi_geodb` - which is a dictionary of [`geopandas.GeoDataFrame`](https://geopandas.org/en/stable/docs/reference/api/geopandas.GeoDataFrame.html#geopandas.GeoDataFrame)s - you can explore the Kai Tak Ground Investigation data on an interactive map by applying the [`geopandas.GeoDataFrame.explore()`](https://geopandas.org/en/stable/docs/reference/api/geopandas.GeoDataFrame.explore.html#geopandas.GeoDataFrame.explore) method to the different tables in the `brgi_geodb`:""")
     return
 
 
 @app.cell
 def _(brgi_geodb):
-    lon_lat_gdf = brgi_geodb["LonLatHeight"]
-    lon_lat_gdf.explore()
-    return (lon_lat_gdf,)
+    brgi_geodb["InSitu_GEOL"].iloc[::2].explore()
+    return
+
+
+@app.cell
+def _(mo):
+    mo.md(
+        r"""
+        Notice the different in the size of the displayed points on the map above between the `LonLatHeight` and other tables
+
+        With marimo's built-in data exploration tables it's also really easy to visualize filtered data:
+        """
+    )
+    return
+
+
+@app.cell
+def _(brgi_geodb, lon_lat_gdf, pd):
+    gi_table = brgi_geodb["Location"]
+    lon_lat_df = pd.DataFrame(lon_lat_gdf, copy=True).assign(
+        geometry=lambda df: df["geometry"].astype(str)
+    )
+    return gi_table, lon_lat_df
+
+
+@app.cell
+def _(brgi_geodb, mo):
+    table = mo.ui.table(
+        brgi_geodb["InSitu_ISPT"]
+        .assign(geometry=lambda df: df["geometry"].astype(str))
+    )
+    table
+    return (table,)
+
+
+@app.cell
+def _(gpd, table, wkt):
+    gdf = gpd.GeoDataFrame(
+        table.value, 
+        geometry=table.value["geometry"].apply(wkt.loads), 
+        crs=2326
+    )
+    gdf.explore()
+    return (gdf,)
 
 
 @app.cell(hide_code=True)
@@ -192,12 +236,12 @@ def _(mo):
 
 
 @app.cell
-def _(brgi_geodb, gpd, lon_lat_gdf):
+def _(brgi_geodb, gpd):
     soft_soil_spt_se10_df = (
         brgi_geodb["InSitu_ISPT"]
         .query("ISPT_NVAL <= 10")
         .drop(columns="geometry")
-        .merge(lon_lat_gdf, on="location_uid", how="inner")
+        .merge(brgi_geodb["LonLatHeight"], on="location_uid", how="inner")
         .loc[lambda df: df.groupby("location_uid")["depth_to_top"].idxmin()]
         .reset_index(drop=True)
     )
@@ -410,6 +454,7 @@ def _():
     import pandas as pd
     import requests
     from pyproj import CRS
+    from shapely import wkt
 
     from bedrock_ge.gi.ags.read import ags_to_dfs
     from bedrock_ge.gi.ags.transform import ags3_db_to_no_gis_brgi_db
@@ -440,6 +485,7 @@ def _():
         re,
         requests,
         sys,
+        wkt,
         write_gi_db_to_gpkg,
         zipfile,
     )
