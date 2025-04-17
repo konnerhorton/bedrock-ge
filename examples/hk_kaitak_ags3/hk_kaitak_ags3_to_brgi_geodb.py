@@ -380,7 +380,6 @@ def _(
                         ags3_data = ags3_data.decode(detected_encoding)
                     # Convert content of a single AGS 3 file to a Dictionary of pandas dataframes (a database)
                     ags3_db = ags_to_dfs(ags3_data)
-                    print()
                     report_no = file_name.split("/")[0]
                     ags3_db["PROJ"]["REPORT_NO"] = int(report_no)
                     project_uid = f"{report_no}/{ags3_db['PROJ']['PROJ_ID'].iloc[0]}"
