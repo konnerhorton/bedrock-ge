@@ -56,7 +56,7 @@ def _(mo):
 
         The Ground Investigation data specific to the Kai Tak neighborhood in Hong Kong can be found in the `bedrock-ge` GitHub repository:  
         [`github.com/bedrock-engineer/bedrock-ge/examples/hk_kaitak_ags3/kaitak_ags3.zip`](https://github.com/bedrock-engineer/bedrock-ge/blob/main/examples/hk_kaitak_ags3/kaitak_ags3.zip).  
-        This  archive contains GI data from 90 AGS 3 files, with a total of 834 locations (boreholes and Cone Penetration Tests).
+        This archive contains GI data from 90 AGS 3 files, with a total of 834 locations (boreholes and Cone Penetration Tests).
 
         One of the AGS 3 files with GI data was left outside the `.zip` archive, such that you can have a look at the structure of an AGS 3 file:  
         [`github.com/bedrock-engineer/bedrock-ge/examples/hk_kaitak_ags3/ASD012162 AGS.ags`](https://github.com/bedrock-engineer/bedrock-ge/blob/main/examples/hk_kaitak_ags3/64475_ASD012162%20AGS.ags)
@@ -88,7 +88,7 @@ def _(mo):
         """
         ## Converting the AGS 3 files to a relational database
 
-        A relational database is a database with multiple tables that are linked to each other with relations. This type of database is ideal for storing GI data, given its hierarchical structure:
+        A relational database is a database with multiple tables that are linked to each other with relations. This type of database is ideal for storing  GI data, given its hierarchical structure:
 
         ```
         Project
