@@ -317,12 +317,25 @@ def _(mo):
 
 
 @app.cell
-def _(brgi_geodb, mo, write_gi_db_to_gpkg):
-    output_dir = mo.notebook_dir() / "output"
-    if not output_dir.exists():
-        output_dir.mkdir(parents=True, exist_ok=True)
-    write_gi_db_to_gpkg(brgi_geodb, output_dir / "kaitak_gi.gpkg")
-    return (output_dir,)
+def _(brgi_geodb, mo):
+    brgi_geodb["LonLatHeight"].to_file(
+        mo.notebook_dir() / "KaiTak_LonLatHeight.gpkg", 
+        driver="GPKG",
+        layer="LonLatHeight",
+        overwrite=True
+    )
+    return
+
+
+@app.cell
+def _(brgi_geodb, mo, platform, write_gi_db_to_gpkg):
+    output = None
+    if platform.system() != "Emscripten":
+        write_gi_db_to_gpkg(brgi_geodb, mo.notebook_dir() / "kaitak_gi.gpkg")
+    else:
+        output = mo.md("Writing a GeoPackage from WebAssembly (marimo playground) causes geopandas to think that the GeoDataFrames in the `brgi_geodb` don't have a geometry column. You can [download the GeoPackage from GitHub](https://github.com/bedrock-engineer/bedrock-ge/blob/main/examples/hk_kaitak_ags3/kaitak_gi.gpkg)").callout("warn")
+    output
+    return (output,)
 
 
 @app.cell(hide_code=True)
@@ -428,6 +441,7 @@ def _():
     import io
     import re
     import sys
+    import platform
     import zipfile
     from pathlib import Path
 
@@ -468,6 +482,7 @@ def _():
         matplotlib,
         mo,
         pd,
+        platform,
         re,
         requests,
         sys,
