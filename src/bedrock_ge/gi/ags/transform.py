@@ -15,6 +15,32 @@ from bedrock_ge.gi.validate import check_foreign_key
 def ags3_db_to_no_gis_brgi_db(
     ags3_db: Dict[str, pd.DataFrame], crs: CRS
 ) -> Dict[str, pd.DataFrame]:
+    """Transform AGS 3 database format into Bedrock's internal database format.
+
+    This function converts an AGS 3 formatted geotechnical database into Bedrock's
+    internal database format, maintaining data relationships and structure. It handles
+    various types of geotechnical data including project information, locations,
+    samples, lab tests, and in-situ measurements.
+
+    Args:
+        ags3_db (Dict[str, pd.DataFrame]): A dictionary containing AGS 3 data tables,
+            where keys are table names and values are pandas DataFrames.
+        crs (CRS): Coordinate Reference System for the project data.
+
+    Returns:
+        Dict[str, pd.DataFrame]: A dictionary containing Bedrock GI database tables,
+            where keys are table names and values are transformed pandas DataFrames.
+
+    The transformation process:
+    1. Project Data: Converts AGS 3 'PROJ' group to Bedrock's 'Project' table
+    2. Location Data: Converts AGS 3 'HOLE' group to Bedrock's 'Location' table
+    3. Sample Data: Converts AGS 3 'SAMP' group to Bedrock's 'Sample' table
+    4. Other Data: Handles lab tests, in-situ measurements, and miscellaneous tables
+
+    Note:
+        The function creates a copy of the input database to avoid modifying the original data.
+        It performs foreign key checks to maintain data integrity during transformation.
+    """
     # Make sure that the AGS 3 database is not changed outside this function.
     ags3_db = ags3_db.copy()
 

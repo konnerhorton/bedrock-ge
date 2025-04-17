@@ -8,8 +8,7 @@ from bedrock_ge.gi.ags.validate import check_ags_proj_group
 
 
 def ags_to_dfs(ags_data: str) -> Dict[str, pd.DataFrame]:
-    """
-    Convert AGS 3 or AGS 4 data to a dictionary of pandas DataFrames.
+    """Convert AGS 3 or AGS 4 data to a dictionary of pandas DataFrames.
 
     Args:
         ags_data (str): The AGS data as a string.
