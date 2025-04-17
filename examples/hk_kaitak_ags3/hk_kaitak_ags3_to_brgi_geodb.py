@@ -260,6 +260,7 @@ def _(mo):
         The weathering grades can be found in the `WETH_GRAD` column in the `InSitu_WETH` table (Weathering data). Therefore, to find all competent rock, we need to filter out all the rows that contain a `V`, which you can do in the widget below.
 
         That widget also shows the Python code that creates the filter:
+
         ```python
         df_next = df
         df_next = df_next[~((df_next["WETH_GRAD"].str.contains("V")))]
@@ -379,10 +380,10 @@ def _(
                         ags3_data = ags3_data.decode(detected_encoding)
                     # Convert content of a single AGS 3 file to a Dictionary of pandas dataframes (a database)
                     ags3_db = ags_to_dfs(ags3_data)
-                    project_uid = file_name[:-4]
                     report_no = file_name.split("/")[0]
-                    ags3_db["PROJ"]["PROJ_ID"] = project_uid
                     ags3_db["PROJ"]["REPORT_NO"] = int(report_no)
+                    project_uid = f"{report_no}/{ags3_db['PROJ']['PROJ_ID'].iloc[0]}"
+                    ags3_db["PROJ"]["project_uid"] = project_uid
                     # Remove (Static) CPT AGS 3 group 'STCN' from brgi_db, because CPT data processing needs to be reviewed.
                     # Not efficient to create a GIS point for every point where a CPT measures a value.
                     if "STCN" in ags3_db.keys():

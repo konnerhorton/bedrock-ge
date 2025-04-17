@@ -144,17 +144,16 @@ name = "bedrock-ge"
 version = "0.2.1"
 source = { editable = "." }
 dependencies = [
-    { name = "duckdb" },
     { name = "geopandas" },
     { name = "openpyxl" },
     { name = "pandera" },
     { name = "python-ags4" },
-    { name = "sqlglot" },
     { name = "sqlmodel" },
 ]
 
 [package.dev-dependencies]
 dev = [
+    { name = "duckdb" },
     { name = "folium" },
     { name = "frictionless", extra = ["excel"] },
     { name = "jupyter" },
@@ -168,21 +167,21 @@ dev = [
     { name = "pandas-stubs", version = "2.2.3.250308", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.10'" },
     { name = "pytest" },
     { name = "ruff" },
+    { name = "sqlglot" },
 ]
 
 [package.metadata]
 requires-dist = [
-    { name = "duckdb", specifier = "~=1.0" },
     { name = "geopandas", specifier = "~=1.0" },
     { name = "openpyxl", specifier = "~=3.0" },
     { name = "pandera", specifier = ">=0.23.0" },
     { name = "python-ags4", specifier = "~=1.0" },
-    { name = "sqlglot", specifier = ">=25.0.0" },
     { name = "sqlmodel", specifier = ">=0.0.22" },
 ]
 
 [package.metadata.requires-dev]
 dev = [
+    { name = "duckdb", specifier = ">=1.2.2" },
     { name = "folium", specifier = ">=0.17.0" },
     { name = "frictionless", extras = ["excel"], specifier = ">=4.40.8" },
     { name = "jupyter", specifier = ">=1.1.1" },
@@ -194,6 +193,7 @@ dev = [
     { name = "pandas-stubs", specifier = ">=2.2.2.240807" },
     { name = "pytest", specifier = ">=8.3.3" },
     { name = "ruff", specifier = ">=0.6.7" },
+    { name = "sqlglot", specifier = ">=26.12.1" },
 ]
 
 [[package]]
