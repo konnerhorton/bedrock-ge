@@ -29,15 +29,25 @@ def _(mo):
         """
         # AGS 3 Data in Kai Tak, Hong Kong
 
-        This notebook walks you through converting Ground Inveestigation (GI) data in AGS 3 format to GI data represented as 3D GIS features, i.e. [simple feature GIS geometry](https://en.wikipedia.org/wiki/Simple_Features) + attributes, using `bedrock-gi`. Where AGS 3 is the GI data format commonly used in Hong Kong.
+        This notebook demonstrates how to:
+
+        1. Use `bedrock-ge` to load Ground Investigation (GI) data from AGS 3 files (a common GI data format in Hong Kong)
+        2. Convert the AGS 3 data into a standardized GI database using `bedrock-gi`
+        3. Transform the GI data into 3D GIS features with proper coordinates and geometry
+        4. Explore and analyze the GI data using:
+           - Interactive filtering with Pandas dataframes
+           - Visualization on maps with GeoPandas
+        5. Export the processed GI database to a GeoPackage file for use in GIS software
+
+        We'll work with real GI data from the Kai Tak neighborhood in Hong Kong.
 
         ## Context
 
-        Kai Tak is a neighborhood in Kowloon, Hong Kong. One of the highlights of Kai Tak used to be it's airport, which holds a special place in aviation history due to its unique and challenging approach, which involved pilots making a steep descent over a densely populated area while making a sharp turn at the same time and then landing on a single runway that jutted out into Victoria Harbor. [Landing at Kai Tak Airport | YouTube](https://www.youtube.com/watch?v=OtnL4KYVtDE)
+        Kai Tak is a neighborhood in Kowloon, Hong Kong. One of the highlights of Kai Tak used to be its airport. It holds a special place in aviation history due to its unique and challenging approach, which involved pilots making a steep descent over a densely populated area while making a sharp turn at the same time and then landing on a single runway that jutted out into Victoria Harbor. [Landing at Kai Tak Airport | YouTube](https://www.youtube.com/watch?v=OtnL4KYVtDE)
 
-        In 1998 the new Hong Kong International Airport opened, and operations at Kai Tak Airport were ceased. After the closure, the former Kai Tak Airport and surrounding neighborhood underwent a massive redevelopment project to transform it into a new residential and commercial district, which is still continuing today.
+        In 1998, the new Hong Kong International Airport opened, and operations at Kai Tak Airport were ceased. After the closure, the former Kai Tak Airport and surrounding neighborhood underwent a massive redevelopment project to transform it into a new residential and commercial district, which is still continuing today.
 
-        Have a look at the [Kai Tak Speckle Project](https://app.speckle.systems/projects/013aaf06e7/models/0e43d1f003,a739490298) to get an idea what Kai Tak looks like now. (Developents are going fast, so [Google Earth 3D](https://www.google.com/maps/@22.3065043,114.2020499,462a,35y,343.1h,75.5t/data=!3m1!1e3?entry=ttu) is a bit outdated.)
+        Have a look at the [Kai Tak Speckle Project](https://app.speckle.systems/projects/013aaf06e7/models/0e43d1f003,a739490298) to get an idea what Kai Tak looks like now. (Developments are going fast, so [Google Maps 3D](https://www.google.com/maps/@22.3065043,114.2020499,462a,35y,343.1h,75.5t/data=!3m1!1e3?entry=ttu) is a bit outdated.)
 
         ## The Kai Tak AGS 3 ground investigation data
 
@@ -48,12 +58,12 @@ def _(mo):
         [`github.com/bedrock-engineer/bedrock-ge/examples/hk_kaitak_ags3/kaitak_ags3.zip`](https://github.com/bedrock-engineer/bedrock-ge/blob/main/examples/hk_kaitak_ags3/kaitak_ags3.zip).  
         This  archive contains GI data from 90 AGS 3 files, with a total of 834 locations (boreholes and Cone Penetration Tests).
 
-        One of the AGS 3 files with GI data was left outside the `.` archive, such that you can have a look at the structure of an AGS 3 file:  
+        One of the AGS 3 files with GI data was left outside the `.zip` archive, such that you can have a look at the structure of an AGS 3 file:  
         [`github.com/bedrock-engineer/bedrock-ge/examples/hk_kaitak_ags3/ASD012162 AGS.ags`](https://github.com/bedrock-engineer/bedrock-ge/blob/main/examples/hk_kaitak_ags3/64475_ASD012162%20AGS.ags)
 
         ### Getting the AGS 3 files
 
-        To make it easy to run this notebook on your computer (locally) in the browser (remotely) in marimo.app or Google Colab, the code below requests the ZIP archive from GitHub and directly processes it. However, you can also download the ZIP from GitHub (link above) or directly from this notebook [by clicking this raw.githubusercontent.com raw url [ ↓ ]](http://raw.githubusercontent.com/bedrock-engineer/bedrock-ge/main/examples/hk_kaitak_ags3/kaitak_ags3.zip). 
+        To make it easy to run this notebook on your computer (locally) in the browser (remotely) in [marimo.app](https://marimo.app/) or [Google Colab](https://colab.research.google.com/), the code below requests the ZIP archive from GitHub and directly processes it. However, you can also download the ZIP from GitHub (link above) or directly from this notebook [by clicking this raw.githubusercontent.com raw url [ ↓ ]](http://raw.githubusercontent.com/bedrock-engineer/bedrock-ge/main/examples/hk_kaitak_ags3/kaitak_ags3.zip). 
 
         The cell below works as is, but has a commented line 2, to help you in case you have downloaded the ZIP, and want to use that downloaded ZIP in this notebook.
         """
@@ -142,8 +152,7 @@ def _(mo):
     mo.md(
         r"""
         ## Relational database to 3D geospatial database
-
-        A geospatial database is a relational database that can also store geospatial data. There are two broad categories of geospatial data:
+        A geospatial database is a relational database that has been enhanced to store geospatial data. There are two broad categories of geospatial data:
 
         1. [Raster data](https://en.wikipedia.org/wiki/GIS_file_format#Raster_formats): geographic information as a grid of pixels (cells), where each pixel stores a value corresponding to a specific location and attribute, such as elevation, temperature, or land cover. So, a Digital Elevation Model (DEM) is an example of GIS raster data.
         2. [Vector data](https://en.wikipedia.org/wiki/GIS_file_format#Vector_formats): tables in which each row contains:
@@ -295,9 +304,10 @@ def _(mo):
         r"""
         ## Saving the GI geospatial database as a GeoPackage (.gpkg)
 
-        Finally, lets write, i.e. persist `brgi_geodb` - a Python dictionary of `geopandas.GeoDataFrames` - to an actual geospatial database file, such that we can share our GI with others, reuse it in other notebooks, create dashboards, access the GI data in QGIS or ArcGIS, and more...
+        Finally, lets write, i.e. persist `brgi_geodb` - a Python dictionary of `geopandas.GeoDataFrames` - to an actual geospatial database file, so we can share our GI data with others.
+        For example, to reuse it in other notebooks, create dashboards, access the GI data in QGIS or ArcGIS, and more...
 
-        Now, a GeoPackage is an OGC-standardized extension of SQLite (a relational database in a single file, .sqlite or .db) that allows you to store any type of GIS data (both raster as well as vector data) in a single file that has the .gpkg extension. Therefore, many (open source) GIS software packages support GeoPackage!
+        A GeoPackage is an OGC-standardized extension of SQLite (a relational database in a single file, .sqlite or .db) that allows you to store any type of GIS data (both raster as well as vector data) in a single file that has the .gpkg extension. Therefore, many (open-source) GIS software packages support GeoPackage!
 
         > [What about Shapefile and GeoJSON?](#what-about-shapefile-and-geojson)
         """
@@ -320,7 +330,7 @@ def _(mo):
         """
         ## What's next?
 
-        As mentioned above, the `kaitak_gi.gpkg` GeoPackage can be loaded into QGIS or ArcGIS. QGIS and ArcGIS have [connectors for Speckle](https://www.speckle.systems/connectors), which allows you to publish GIS data to Speckle.
+        As mentioned above, the `kaitak_gi.gpkg` GeoPackage can be loaded into QGIS or ArcGIS. QGIS and ArcGIS have [connectors for the Speckle platform](https://www.speckle.systems/connectors), which allows you to publish GIS data to Speckle.
 
         With the Speckle viewer you can visualize the GI data in context with data from other AEC software such as Civil3D (Click the balloon!):
 
