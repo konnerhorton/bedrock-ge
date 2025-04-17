@@ -406,7 +406,7 @@ def _(
                     report_no = file_name.split("/")[0]
                     ags3_db["PROJ"]["REPORT_NO"] = int(report_no)
                     project_uid = f"{report_no}/{ags3_db['PROJ']['PROJ_ID'].iloc[0]}"
-                    ags3_db["PROJ"]["project_uid"] = project_uid
+                    ags3_db["PROJ"]["PROJ_ID"] = project_uid
                     # Remove (Static) CPT AGS 3 group 'STCN' from brgi_db, because CPT data processing needs to be reviewed.
                     # Not efficient to create a GIS point for every point where a CPT measures a value.
                     if "STCN" in ags3_db.keys():
