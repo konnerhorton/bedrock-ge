@@ -68,7 +68,8 @@ def calculate_gis_geometry(
 def calculate_location_gis_geometry(
     brgi_location: Union[pd.DataFrame, gpd.GeoDataFrame], crs: CRS
 ) -> gpd.GeoDataFrame:
-    """Calculate GIS geometry for a set of Ground Investigation locations.
+    """
+    Calculate GIS geometry for a set of Ground Investigation locations.
 
     Args:
         brgi_location (Union[pd.DataFrame, gpd.GeoDataFrame]): The GI locations to calculate GIS geometry for.

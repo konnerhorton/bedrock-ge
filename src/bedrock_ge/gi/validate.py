@@ -14,23 +14,7 @@ from bedrock_ge.gi.schemas import (
 )
 
 
-def check_brgi_database(brgi_db: Dict) -> bool:
-    """Validates a Bedrock Geotechnical Engineering (BRGE) database against schema definitions.
-
-    This function checks each table in the BRGE database to ensure it conforms to the
-    expected schema and has valid foreign key relationships. It validates Project,
-    Location, Sample, and InSitu tables, and provides feedback about Lab data tables
-    which are not yet implemented.
-
-    Args:
-        brgi_db (Dict): A dictionary containing the BRGE database tables as DataFrames.
-
-    Returns:
-        bool: True if all tables pass validation.
-
-    Raises:
-        ValueError: If any table fails schema validation or has invalid foreign keys.
-    """
+def check_brgi_database(brgi_db: Dict):
     for table_name, table in brgi_db.items():
         if table_name == "Project":
             Project.validate(table)
@@ -59,21 +43,7 @@ def check_brgi_database(brgi_db: Dict) -> bool:
     return True
 
 
-def check_no_gis_brgi_database(brgi_db: Dict) -> bool:
-    """Validates a BRGE database without GIS geometry against schema definitions.
-
-    Similar to check_brgi_database but validates tables without GIS geometry components.
-    This is useful for validating data that doesn't include spatial information.
-
-    Args:
-        brgi_db (Dict): A dictionary containing the BRGE database tables as DataFrames.
-
-    Returns:
-        bool: True if all tables pass validation.
-
-    Raises:
-        ValueError: If any table fails schema validation or has invalid foreign keys.
-    """
+def check_no_gis_brgi_database(brgi_db: Dict):
     for table_name, table in brgi_db.items():
         if table_name == "Project":
             Project.validate(table)
@@ -111,24 +81,26 @@ def check_foreign_key(
     parent_table: Union[pd.DataFrame, gpd.GeoDataFrame],
     table_with_foreign_key: Union[pd.DataFrame, gpd.GeoDataFrame],
 ) -> bool:
-    """Validates foreign key relationships between tables.
+    """
+    Checks if a foreign key in a table exists in the parent table.
 
-    Ensures that all foreign key values in a child table exist in the parent table.
-    This is crucial for maintaining referential integrity in the database.
+    Foreign keys describe the relationship between tables in a relational database.
+    For example, all GI Locations belong to a project.
+    All GI Locations are related to a project with the project_uid (Project Unique IDentifier).
+    The project_uid is the foreign key in the Location table.
+    This implies that the project_uid in the foreign key in the Location table must exist in the Project parent table.
+    That is what this function checks.
 
     Args:
-        foreign_key (str): The name of the foreign key column.
-        parent_table (Union[pd.DataFrame, gpd.GeoDataFrame]): The parent table containing
-            the primary keys.
-        table_with_foreign_key (Union[pd.DataFrame, gpd.GeoDataFrame]): The child table
-            containing the foreign keys.
-
-    Returns:
-        bool: True if all foreign keys are valid.
+        foreign_key (str): The name of the column of the foreign key.
+        parent_table (Union[pd.DataFrame, gpd.GeoDataFrame]): The parent table.
+        table_with_foreign_key (Union[pd.DataFrame, gpd.GeoDataFrame]): The table with the foreign key.
 
     Raises:
-        ValueError: If any foreign key values in the child table don't exist in the
-            parent table.
+        ValueError: If the table with the foreign key contains foreign keys that don't occur in the parent table.
+
+    Returns:
+        bool: True if the foreign keys all exist in the parent table.
     """
     # Get the foreign keys that are missing in the parent group
     missing_foreign_keys = table_with_foreign_key[
