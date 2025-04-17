@@ -33,10 +33,10 @@ def _(mo):
 
         1. Use `bedrock-ge` to load Ground Investigation (GI) data from AGS 3 files (a common GI data format in Hong Kong)
         2. Convert the AGS 3 data into a standardized GI database using `bedrock-gi`
-        3. Transform the GI data into 3D GIS features with proper coordinates and geometry
+        3. Transform the GI data into 3D GIS features with proper coordinates and geometry ([OGC Simple Feature Access](https://en.wikipedia.org/wiki/Simple_Features))
         4. Explore and analyze the GI data using:
            - Interactive filtering with Pandas dataframes
-           - Visualization on maps with GeoPandas
+           - Visualization on interactive maps with GeoPandas
         5. Export the processed GI database to a GeoPackage file for use in GIS software
 
         We'll work with real GI data from the Kai Tak neighborhood in Hong Kong.
@@ -58,7 +58,7 @@ def _(mo):
         [`github.com/bedrock-engineer/bedrock-ge/examples/hk_kaitak_ags3/kaitak_ags3.zip`](https://github.com/bedrock-engineer/bedrock-ge/blob/main/examples/hk_kaitak_ags3/kaitak_ags3.zip).  
         This archive contains GI data from 90 AGS 3 files, with a total of 834 locations (boreholes and Cone Penetration Tests).
 
-        One of the AGS 3 files with GI data was left outside the `.zip` archive, such that you can have a look at the structure of an AGS 3 file:  
+        One of the AGS 3 files with GI data was left outside the ZIP archive, such that you can have a look at the structure of an AGS 3 file:  
         [`github.com/bedrock-engineer/bedrock-ge/examples/hk_kaitak_ags3/ASD012162 AGS.ags`](https://github.com/bedrock-engineer/bedrock-ge/blob/main/examples/hk_kaitak_ags3/64475_ASD012162%20AGS.ags)
 
         ### Getting the AGS 3 files
