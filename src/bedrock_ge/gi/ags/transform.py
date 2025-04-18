@@ -12,9 +12,43 @@ from bedrock_ge.gi.schemas import BaseInSitu, BaseLocation, BaseSample, Project
 from bedrock_ge.gi.validate import check_foreign_key
 
 
+# What this function really does, is add the CRS and Bedrock columns:
+# - `project_uid`
+# - `location_uid`
+# - `sample_id`
+# - `sample_uid`
+# - `depth_to_`
+# There really isn't any mapping going on here...
+# TODO: Make sure that the name of the function and docstrings reflect this.
 def ags3_db_to_no_gis_brgi_db(
     ags3_db: Dict[str, pd.DataFrame], crs: CRS
 ) -> Dict[str, pd.DataFrame]:
+    """Maps a database with GI data from a single AGS 3 file to a database with Bedrock's schema.
+
+    This function converts an AGS 3 formatted geotechnical database into Bedrock's
+    internal database format, maintaining data relationships and structure. It handles
+    various types of geotechnical data including project information, locations,
+    samples, lab tests, and in-situ measurements.
+
+    Args:
+        ags3_db (Dict[str, pd.DataFrame]): A dictionary containing AGS 3 data tables,
+            where keys are table names and values are pandas DataFrames.
+        crs (CRS): Coordinate Reference System for the project data.
+
+    Returns:
+        Dict[str, pd.DataFrame]: A dictionary containing Bedrock GI database tables,
+            where keys are table names and values are transformed pandas DataFrames.
+
+    The mapping process:
+    1. Project Data: Converts AGS 3 'PROJ' group to Bedrock's 'Project' table
+    2. Location Data: Converts AGS 3 'HOLE' group to Bedrock's 'Location' table
+    3. Sample Data: Converts AGS 3 'SAMP' group to Bedrock's 'Sample' table
+    4. Other Data: Handles lab tests, in-situ measurements, and miscellaneous tables
+
+    Note:
+        The function creates a copy of the input database to avoid modifying the original data.
+        It performs foreign key checks to maintain data integrity during the mapping.
+    """
     # Make sure that the AGS 3 database is not changed outside this function.
     ags3_db = ags3_db.copy()
 
@@ -134,7 +168,7 @@ def ags3_samp_to_brgi_sample(
 def ags3_in_situ_to_brgi_in_situ(
     group_name: str, ags3_in_situ: pd.DataFrame, project_uid: str
 ) -> DataFrame[BaseInSitu]:
-    """Transform, i.e. map, AGS 3 in-situ measurement data to Bedrock's in-situ data schema.
+    """Maps AGS 3 in-situ measurement data to Bedrock's in-situ data schema.
 
     Args:
         group_name (str): The AGS 3 group name.

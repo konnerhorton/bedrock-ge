@@ -12,11 +12,41 @@ from shapely.geometry import LineString, Point
 
 def calculate_gis_geometry(
     no_gis_brgi_db: Dict[str, Union[pd.DataFrame, gpd.GeoDataFrame]],
+    verbose: bool = True,
 ) -> Dict[str, gpd.GeoDataFrame]:
+    """Calculates GIS geometry for tables in a Bedrock Ground Investigation database.
+
+    This function processes a dictionary of DataFrames containing Ground Investigation (GI) data,
+    adding appropriate GIS geometry to each table. It handles both 2D and 3D geometries,
+    including vertical boreholes and sampling locations.
+
+    Args:
+        no_gis_brgi_db (Dict[str, Union[pd.DataFrame, gpd.GeoDataFrame]]): Dictionary containing
+            the Bedrock GI database tables without GIS geometry. Keys are table names,
+            values are either pandas DataFrames or GeoDataFrames.
+        verbose (bool, optional): Whether to print progress information. Defaults to True.
+
+    Returns:
+        Dict[str, gpd.GeoDataFrame]: Dictionary containing the Bedrock GI database tables
+            with added GIS geometry. All tables are converted to GeoDataFrames with
+            appropriate CRS and geometry columns.
+
+    Raises:
+        ValueError: If the projects in the database use different Coordinate Reference Systems (CRS).
+
+    Note:
+        The function performs the following operations:
+        1. Verifies all projects use the same CRS
+        2. Calculates GIS geometry for the 'Location' table
+        3. Creates a 'LonLatHeight' table for 2D visualization
+        4. Processes 'Sample' table if present
+        5. Processes all tables starting with "InSitu_"
+    """
     # Make sure that the Bedrock database is not changed outside this function.
     brgi_db = no_gis_brgi_db.copy()
 
-    print("Calculating GIS geometry for the Bedrock GI database tables...")
+    if verbose:
+        print("Calculating GIS geometry for the Bedrock GI database tables...")
 
     # Check if all projects have the same CRS
     if not brgi_db["Project"]["crs_wkt"].nunique() == 1:
@@ -28,7 +58,8 @@ def calculate_gis_geometry(
     crs = CRS.from_wkt(brgi_db["Project"]["crs_wkt"].iloc[0])
 
     # Calculate GIS geometry for the 'Location' table
-    print("Calculating GIS geometry for the Bedrock GI 'Location' table...")
+    if verbose:
+        print("Calculating GIS geometry for the Bedrock GI 'Location' table...")
     brgi_db["Location"] = calculate_location_gis_geometry(brgi_db["Location"], crs)
 
     # Create the 'LonLatHeight' table.
@@ -36,11 +67,12 @@ def calculate_gis_geometry(
     # because vertical lines are often very small or completely hidden in 2D.
     # This table only contains the 3D of the GI locations at ground level,
     # in WGS84 (Longitude, Latitude, Height) coordinates.
-    print(
-        "Creating 'LonLatHeight' table with GI locations in WGS84 geodetic coordinates...",
-        "    WGS84 geodetic coordinates: (Longitude, Latitude, Ground Level Ellipsoidal Height)",
-        sep="\n",
-    )
+    if verbose:
+        print(
+            "Creating 'LonLatHeight' table with GI locations in WGS84 geodetic coordinates...",
+            "    WGS84 geodetic coordinates: (Longitude, Latitude, Ground Level Ellipsoidal Height)",
+            sep="\n",
+        )
     brgi_db["LonLatHeight"] = create_lon_lat_height_table(brgi_db["Location"], crs)
 
     # Create GIS geometry for tables that have In-Situ GIS geometry.
@@ -48,16 +80,18 @@ def calculate_gis_geometry(
     # These tables are children of the Location table,
     # i.e. have the 'Location' table as the parent table.
     if "Sample" in brgi_db.keys():
-        print("Calculating GIS geometry for the Bedrock GI 'Sample' table...")
+        if verbose:
+            print("Calculating GIS geometry for the Bedrock GI 'Sample' table...")
         brgi_db["Sample"] = calculate_in_situ_gis_geometry(
             brgi_db["Sample"], brgi_db["Location"], crs
         )
 
     for table_name, table in brgi_db.items():
         if table_name.startswith("InSitu_"):
-            print(
-                f"Calculating GIS geometry for the Bedrock GI '{table_name}' table..."
-            )
+            if verbose:
+                print(
+                    f"Calculating GIS geometry for the Bedrock GI '{table_name}' table..."
+                )
             brgi_db[table_name] = calculate_in_situ_gis_geometry(
                 table, brgi_db["Location"], crs
             )
@@ -68,8 +102,7 @@ def calculate_gis_geometry(
 def calculate_location_gis_geometry(
     brgi_location: Union[pd.DataFrame, gpd.GeoDataFrame], crs: CRS
 ) -> gpd.GeoDataFrame:
-    """
-    Calculate GIS geometry for a set of Ground Investigation locations.
+    """Calculates GIS geometry for a set of Ground Investigation locations.
 
     Args:
         brgi_location (Union[pd.DataFrame, gpd.GeoDataFrame]): The GI locations to calculate GIS geometry for.
@@ -123,7 +156,7 @@ def calculate_location_gis_geometry(
 def calculate_wgs84_coordinates(
     from_crs: CRS, easting: float, northing: float, elevation: Union[float, None] = None
 ) -> Tuple:
-    """Transform coordinates from an arbitrary Coordinate Reference System (CRS) to
+    """Transforms coordinates from an arbitrary Coordinate Reference System (CRS) to
     the WGS84 CRS, which is the standard for geodetic coordinates.
 
     Args:
@@ -151,7 +184,7 @@ def calculate_wgs84_coordinates(
 def create_lon_lat_height_table(
     brgi_location: gpd.GeoDataFrame, crs: CRS
 ) -> gpd.GeoDataFrame:
-    """Create a GeoDataFrame with GI locations in WGS84 (lon, lat, height) coordinates.
+    """Creates a GeoDataFrame with GI locations in WGS84 (lon, lat, height) coordinates.
 
     The 'LonLatHeight' table makes it easier to visualize the GIS geometry on 2D maps,
     because vertical lines are often very small or completely hidden in 2D. This table
@@ -190,6 +223,19 @@ def calculate_in_situ_gis_geometry(
     brgi_location: Union[pd.DataFrame, gpd.GeoDataFrame],
     crs: CRS,
 ) -> gpd.GeoDataFrame:
+    """Calculates GIS geometry for a set of Ground Investigation in-situ data.
+
+    Args:
+        brgi_in_situ (Union[pd.DataFrame, gpd.GeoDataFrame]): The in-situ data to calculate GIS geometry for.
+        brgi_location (Union[pd.DataFrame, gpd.GeoDataFrame]): The location data to merge with the in-situ data.
+        crs (CRS): The Coordinate Reference System of the in-situ data.
+
+    Returns:
+        gpd.GeoDataFrame: The GIS geometry for the given in-situ data, with *additional* columns:
+            elevation_at_top: The elevation at the top of the in-situ data.
+            elevation_at_base: The elevation at the base of the in-situ data.
+            geometry: The GIS geometry of the in-situ data.
+    """
     location_child = brgi_in_situ.copy()
 
     # Merge the location data into the in-situ data to get the location coordinates
