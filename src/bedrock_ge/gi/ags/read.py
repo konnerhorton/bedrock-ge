@@ -8,7 +8,7 @@ from bedrock_ge.gi.ags.validate import check_ags_proj_group
 
 
 def ags_to_dfs(ags_data: str) -> Dict[str, pd.DataFrame]:
-    """Convert AGS 3 or AGS 4 data to a dictionary of pandas DataFrames.
+    """Converts AGS 3 or AGS 4 data to a dictionary of pandas DataFrames.
 
     Args:
         ags_data (str): The AGS data as a string.
@@ -51,7 +51,7 @@ def ags_to_dfs(ags_data: str) -> Dict[str, pd.DataFrame]:
 
 
 def ags3_to_dfs(ags3_data: str) -> Dict[str, pd.DataFrame]:
-    """Convert AGS 3 data to a dictionary of pandas DataFrames.
+    """Converts AGS 3 data to a dictionary of pandas DataFrames.
 
     Args:
         ags_data (str): The AGS 3 data as a string.
@@ -151,7 +151,7 @@ def ags3_to_dfs(ags3_data: str) -> Dict[str, pd.DataFrame]:
 
 
 def ags4_to_dfs(ags4_data: str) -> Dict[str, pd.DataFrame]:
-    """Convert AGS 4 data to a dictionary of pandas DataFrames.
+    """Converts AGS 4 data to a dictionary of pandas DataFrames.
 
     Args:
         ags_data (str): The AGS 4 data as a string.

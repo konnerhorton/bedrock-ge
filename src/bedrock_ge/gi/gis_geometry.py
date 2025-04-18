@@ -102,7 +102,7 @@ def calculate_gis_geometry(
 def calculate_location_gis_geometry(
     brgi_location: Union[pd.DataFrame, gpd.GeoDataFrame], crs: CRS
 ) -> gpd.GeoDataFrame:
-    """Calculate GIS geometry for a set of Ground Investigation locations.
+    """Calculates GIS geometry for a set of Ground Investigation locations.
 
     Args:
         brgi_location (Union[pd.DataFrame, gpd.GeoDataFrame]): The GI locations to calculate GIS geometry for.
@@ -156,7 +156,7 @@ def calculate_location_gis_geometry(
 def calculate_wgs84_coordinates(
     from_crs: CRS, easting: float, northing: float, elevation: Union[float, None] = None
 ) -> Tuple:
-    """Transform coordinates from an arbitrary Coordinate Reference System (CRS) to
+    """Transforms coordinates from an arbitrary Coordinate Reference System (CRS) to
     the WGS84 CRS, which is the standard for geodetic coordinates.
 
     Args:
@@ -184,7 +184,7 @@ def calculate_wgs84_coordinates(
 def create_lon_lat_height_table(
     brgi_location: gpd.GeoDataFrame, crs: CRS
 ) -> gpd.GeoDataFrame:
-    """Create a GeoDataFrame with GI locations in WGS84 (lon, lat, height) coordinates.
+    """Creates a GeoDataFrame with GI locations in WGS84 (lon, lat, height) coordinates.
 
     The 'LonLatHeight' table makes it easier to visualize the GIS geometry on 2D maps,
     because vertical lines are often very small or completely hidden in 2D. This table
@@ -223,7 +223,7 @@ def calculate_in_situ_gis_geometry(
     brgi_location: Union[pd.DataFrame, gpd.GeoDataFrame],
     crs: CRS,
 ) -> gpd.GeoDataFrame:
-    """Calculate GIS geometry for a set of Ground Investigation in-situ data.
+    """Calculates GIS geometry for a set of Ground Investigation in-situ data.
 
     Args:
         brgi_in_situ (Union[pd.DataFrame, gpd.GeoDataFrame]): The in-situ data to calculate GIS geometry for.
