@@ -103,8 +103,19 @@ def ags3_db_to_no_gis_brgi_db(
 
 @pa.check_types(lazy=True)
 def ags_proj_to_brgi_project(ags_proj: pd.DataFrame, crs: CRS) -> DataFrame[Project]:
+    """Maps the AGS 3 'PROJ' group to a Bedrock GI 'Project' table.
+
+    Args:
+        ags_proj (pd.DataFrame): The AGS 3 'PROJ' group.
+        crs (CRS): The coordinate reference system of the project.
+
+    Returns:
+        DataFrame[Project]: The Bedrock GI 'Project' table.
+    """
+    if "project_uid" not in ags_proj.columns:
+        ags_proj["project_uid"] = ags_proj["PROJ_ID"]
+
     ags_proj["crs_wkt"] = crs.to_wkt()
-    ags_proj["project_uid"] = ags_proj["PROJ_ID"]
 
     return ags_proj  # type: ignore
 
