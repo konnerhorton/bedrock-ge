@@ -98,14 +98,15 @@ def check_no_gis_brgi_database(
         bool: True if all tables are valid and relationships are properly maintained.
 
     Example:
-        >>> brgi_db = {
-        ...     "Project": projects_df,
-        ...     "Location": locations_df,
-        ...     "Sample": samples_df,
-        ...     "InSitu_measurements": insitu_df
-        ... }
-        >>> check_no_gis_brgi_database(brgi_db)
-        True
+        ```python
+        brgi_db = {
+            "Project": projects_df,
+            "Location": locations_df,
+            "Sample": samples_df,
+            "InSitu_measurements": insitu_df
+        }
+        check_no_gis_brgi_database(brgi_db)
+        ```
     """
     for table_name, table in brgi_db.items():
         if table_name == "Project":
