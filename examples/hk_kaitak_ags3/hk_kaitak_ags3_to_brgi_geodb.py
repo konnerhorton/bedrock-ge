@@ -56,7 +56,7 @@ def _(mo):
 
         The Ground Investigation data specific to the Kai Tak neighborhood in Hong Kong can be found in the `bedrock-ge` GitHub repository:  
         [`github.com/bedrock-engineer/bedrock-ge/examples/hk_kaitak_ags3/kaitak_ags3.zip`](https://github.com/bedrock-engineer/bedrock-ge/blob/main/examples/hk_kaitak_ags3/kaitak_ags3.zip).  
-        This archive contains GI data from 90 AGS 3 files, with a total of 834 locations (boreholes and Cone Penetration Tests).
+        This archive contains GI data from 88 AGS 3 files, with a total of 834 locations (boreholes and Cone Penetration Tests).
 
         One of the AGS 3 files with GI data was left outside the ZIP archive, such that you can have a look at the structure of an AGS 3 file:  
         [`github.com/bedrock-engineer/bedrock-ge/examples/hk_kaitak_ags3/ASD012162 AGS.ags`](https://github.com/bedrock-engineer/bedrock-ge/blob/main/examples/hk_kaitak_ags3/64475_ASD012162%20AGS.ags)
@@ -317,23 +317,14 @@ def _(mo):
 
 
 @app.cell
-def _(brgi_geodb, mo):
-    brgi_geodb["LonLatHeight"].to_file(
-        mo.notebook_dir() / "KaiTak_LonLatHeight.gpkg", 
-        driver="GPKG",
-        layer="LonLatHeight",
-        overwrite=True
-    )
-    return
-
-
-@app.cell
 def _(brgi_geodb, mo, platform, write_gi_db_to_gpkg):
     output = None
     if platform.system() != "Emscripten":
         write_gi_db_to_gpkg(brgi_geodb, mo.notebook_dir() / "kaitak_gi.gpkg")
     else:
-        output = mo.md("Writing a GeoPackage from WebAssembly (marimo playground) causes geopandas to think that the GeoDataFrames in the `brgi_geodb` don't have a geometry column. You can [download the GeoPackage from GitHub](https://github.com/bedrock-engineer/bedrock-ge/blob/main/examples/hk_kaitak_ags3/kaitak_gi.gpkg)").callout("warn")
+        output = mo.md(
+            "Writing a GeoPackage from WebAssembly (marimo playground) causes geopandas to think that the GeoDataFrames in the `brgi_geodb` don't have a geometry column. You can [download the GeoPackage from GitHub](https://github.com/bedrock-engineer/bedrock-ge/blob/main/examples/hk_kaitak_ags3/kaitak_gi.gpkg)"
+        ).callout("warn")
     output
     return (output,)
 
@@ -405,7 +396,7 @@ def _(
                     ags3_db = ags_to_dfs(ags3_data)
                     report_no = file_name.split("/")[0]
                     ags3_db["PROJ"]["REPORT_NO"] = int(report_no)
-                    project_uid = f"{report_no}/{ags3_db['PROJ']['PROJ_ID'].iloc[0]}"
+                    project_uid = f"{ags3_db['PROJ']['PROJ_ID'].iloc[0]}_{file_name}"
                     ags3_db["PROJ"]["project_uid"] = project_uid
                     # Remove (Static) CPT AGS 3 group 'STCN' from brgi_db, because CPT data processing needs to be reviewed.
                     # Not efficient to create a GIS point for every point where a CPT measures a value.
@@ -433,15 +424,16 @@ def _(
                         subset="project_uid", keep="first"
                     )
         return brgi_db
+
     return (zip_of_ags3s_to_bedrock_gi_database,)
 
 
 @app.cell
 def _():
     import io
+    import platform
     import re
     import sys
-    import platform
     import zipfile
     from pathlib import Path
 
@@ -463,6 +455,7 @@ def _():
     from bedrock_ge.gi.validate import check_brgi_database, check_no_gis_brgi_database
     from bedrock_ge.gi.write import write_gi_db_to_gpkg
 
+    print(platform.system())
     print(sys.version)
     print(sys.executable)
     return (
