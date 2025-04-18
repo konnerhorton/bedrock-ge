@@ -80,7 +80,7 @@ Check that the new version is available on PyPI:
 Install the new Python package version in a clean environment to verify it works:
 
 ```bash
-uv run --with bedrock-gi --no-project -- python -c "import bedrock; print(f'bedrock-gi version: {bedrock.__version__}')"
+uv run --with bedrock-ge --no-project -- python -c "import bedrock_ge; print(f'bedrock-ge version: {bedrock_ge.__version__}')"
 ```
 
 ## 11. Create a GitHub Release
