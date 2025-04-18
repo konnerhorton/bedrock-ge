@@ -32,7 +32,7 @@ def _(mo):
         This notebook demonstrates how to:
 
         1. Use `bedrock-ge` to load Ground Investigation (GI) data from AGS 3 files (a common GI data format in Hong Kong)
-        2. Convert the AGS 3 data into a standardized GI database using `bedrock-gi`
+        2. Convert the AGS 3 data into a standardized GI database using `bedrock-ge`
         3. Transform the GI data into 3D GIS features with proper coordinates and geometry ([OGC Simple Feature Access](https://en.wikipedia.org/wiki/Simple_Features))
         4. Explore and analyze the GI data using:
            - Interactive filtering with Pandas dataframes
@@ -110,7 +110,7 @@ def _(mo):
 
         The AGS 3 files can be converted to a dictionary of dataframes using the function `list_of_ags3s_to_bedrock_gi_database(ags3_file_paths, CRS)`. The result is shown below. Have a look at the different tables and the data in those tables. Make sure to use the search and filter functionality to explore the data if you're using marimo to run this notebook!
 
-        Notice the additional columns that were added to the tables by `bedrock-gi`:
+        Notice the additional columns that were added to the tables by `bedrock-ge`:
 
         - To make sure that the primary keys of the GI data tables are unique when putting data from multiple AGS files together:  
             `project_uid`, `location_uid`, `sample_uid`
@@ -402,7 +402,7 @@ def _(
                     # Not efficient to create a GIS point for every point where a CPT measures a value.
                     if "STCN" in ags3_db.keys():
                         del ags3_db["STCN"]
-                    # Create GI data tables with bedrock-gi names and add columns (project_uid, location_uid, sample_uid),
+                    # Create GI data tables with bedrock-ge names and add columns (project_uid, location_uid, sample_uid),
                     # such that data from multiple AGS files can be combined
                     brgi_db_from_1_ags3_file = ags3_db_to_no_gis_brgi_db(ags3_db, crs)
                     print(

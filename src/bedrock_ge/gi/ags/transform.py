@@ -1,4 +1,4 @@
-"""Transforms, i.e. maps, AGS data to Bedrock's schema"""
+"""Transforms, i.e. maps, AGS data to Bedrock's schema."""
 
 from typing import Dict
 
