@@ -161,9 +161,9 @@ def check_foreign_key(
         ValueError: If any foreign key values in the child table do not exist in the parent table.
 
     Example:
-        >>> check_foreign_key("project_uid", projects_df, locations_df)
-        True
-        # This verifies that all project_uid values in locations_df exist in projects_df
+        ```python
+        check_foreign_key("project_uid", projects_df, locations_df)
+        ```
     """
     # Get the foreign keys that are missing in the parent group
     missing_foreign_keys = table_with_foreign_key[
