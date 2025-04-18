@@ -14,16 +14,18 @@ from bedrock_ge.gi.schemas import (
 )
 
 
+# TODO: rename to check_brgi_geodb
+# TODO: make this check actually work...
 def check_brgi_database(brgi_db: Dict[str, Union[pd.DataFrame, gpd.GeoDataFrame]]):
-    """Validates the structure and relationships of a 'Bedrock Ground Investigation' (BGI) database (which is a dictionary of DataFrames).
+    """Validates the structure and relationships of a 'Bedrock Ground Investigation' (BRGI) database (which is a dictionary of DataFrames).
 
     This function checks that all tables in the BGI database conform to their respective schemas
     and that all foreign key relationships are properly maintained. It validates the following tables:
     - Project
-    - Location (with GIS geometry)
+    - Location
     - Sample
-    - InSitu measurements
-    - Lab data (not yet implemented)
+    - InSitu_TESTX
+    - Lab_TESTY (not yet implemented)
 
     Args:
         brgi_db (Dict): A dictionary containing the BGI database tables, where keys are table names
@@ -34,14 +36,14 @@ def check_brgi_database(brgi_db: Dict[str, Union[pd.DataFrame, gpd.GeoDataFrame]
 
     Example:
         ```python
-        brgi_db = {
-            "Project": projects_df,
-            "Location": locations_gdf,
-            "Sample": samples_df,
-            "InSitu": insitu_df
+        brgi_geodb = {
+            "Project": project_df,
+            "Location": location_gdf,
+            "Sample": sample_gdf,
+            "InSitu_ISPT": in_situ_ispt_gdf
         }
-        check_brgi_database(brgi_db)
-        True
+        check_brgi_database(brgi_geodb)
+        ```
     """
     for table_name, table in brgi_db.items():
         if table_name == "Project":
@@ -56,6 +58,9 @@ def check_brgi_database(brgi_db: Dict[str, Union[pd.DataFrame, gpd.GeoDataFrame]
             check_foreign_key("project_uid", brgi_db["Project"], table)
             check_foreign_key("location_uid", brgi_db["Location"], table)
             print("'Sample' table aligns with Bedrock's 'Sample' table schema.")
+        # ! JG is pretty sure that this doesn't work
+        # ! The line below should be:
+        # ! elif table_name.startswith("InSitu_"):
         elif table_name == "InSitu":
             InSitu.validate(table)
             check_foreign_key("project_uid", brgi_db["Project"], table)
@@ -71,16 +76,19 @@ def check_brgi_database(brgi_db: Dict[str, Union[pd.DataFrame, gpd.GeoDataFrame]
     return True
 
 
-def check_no_gis_brgi_database(brgi_db: Dict[str, Union[pd.DataFrame, gpd.GeoDataFrame]]):
+# TODO: rename to check_brgi_db
+def check_no_gis_brgi_database(
+    brgi_db: Dict[str, Union[pd.DataFrame, gpd.GeoDataFrame]],
+):
     """Validates the structure and relationships of a 'Bedrock Ground Investigation' (BGI) database without GIS geometry.
 
     This function performs the same validation as check_brgi_database but uses schemas that don't require
     GIS geometry. It validates the following tables:
-    - Project
+    - Project (never has GIS geometry)
     - Location (without GIS geometry)
     - Sample (without GIS geometry)
-    - InSitu measurements (without GIS geometry)
-    - Lab data (not yet implemented)
+    - InSitu_TESTX (without GIS geometry)
+    - Lab_TESTY (not yet implemented)
 
     Args:
         brgi_db (Dict): A dictionary containing the Bedrock GI database tables, where keys are table names
