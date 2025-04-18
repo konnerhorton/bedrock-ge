@@ -1,7 +1,7 @@
 # /// script
 # requires-python = ">=3.12"
 # dependencies = [
-#     "bedrock-ge==0.2.1",
+#     "bedrock-ge==0.2.2",
 #     "chardet==5.2.0",
 #     "folium==0.19.5",
 #     "geopandas==1.0.1",
@@ -17,7 +17,7 @@
 
 import marimo
 
-__generated_with = "0.12.8"
+__generated_with = "0.12.10"
 app = marimo.App(
     app_title="Kai Tak, HK AGS 3 data to bedrock_ge.gi geodatabase",
 )

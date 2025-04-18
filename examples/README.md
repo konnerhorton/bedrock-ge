@@ -69,6 +69,12 @@ I think that if people don't know how to run a Jupyter notebook they should simp
 marimo export ipynb --sandbox --sort top-down --include-outputs hk_kaitak_ags3_to_brgi_geodb.py -o hk_kaitak_ags3_to_brgi_geodb.ipynb
 ```
 
+After or before exporting a marimo notebook to a Jupyter notebook, the cell with the import statements and the cell(s) with function definitions have to be moved to the top of the Jupyter notebook for it to work. Additionally, in order for Google Colab to be able to run the notebook, you need to install `bedrock-ge` and a few other Python libraries by adding the following cell to the very top of the Jupyter notebook:
+
+```bash
+! pip install bedrock-ge folium mapclassify marimo --quiet
+```
+
 ### HTML WebAssembly (WASM)
 
 ```bash
