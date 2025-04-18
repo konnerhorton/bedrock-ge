@@ -9,7 +9,7 @@ def write_gi_db_to_gpkg(
     brgi_db: Dict[str, gpd.GeoDataFrame],
     gpkg_path: Union[str, Path],
 ) -> None:
-    """Write a database with Bedrock Ground Investigation data to a GeoPackage file.
+    """Writes a database with Bedrock Ground Investigation data to a GeoPackage file.
 
     Writes a dictionary of DataFrames containing Bedrock Ground Investigation data to a
     GeoPackage file. Each DataFrame will be saved in a separate table named by the keys
@@ -43,7 +43,7 @@ def write_gi_db_to_excel(
     gi_db: Dict[str, Union[pd.DataFrame, gpd.GeoDataFrame]],
     excel_path: Union[str, Path],
 ) -> None:
-    """Write a database with Ground Investigation data to an Excel file.
+    """Writes a database with Ground Investigation data to an Excel file.
 
     Each DataFrame in the database dictionary will be saved in a separate Excel sheet named
     after the dictionary keys. This function can be used on any GI database, whether in
@@ -67,8 +67,9 @@ def write_gi_db_to_excel(
     print(f"Ground Investigation data has been written to '{excel_path}'.")
 
 
+# TODO: Make the 31 character table name length truncation a separate function. Only necessary for Excel.
 def sanitize_table_name(sheet_name):
-    """Replaces invalid characters and spaces in GI table names with underscores.
+    """Replaces invalid characters and spaces in GI table names with underscores and truncates to 31 characters.
 
     Makes table names consistent with SQL, GeoPackage and Excel naming conventions by
     replacing invalid characters and spaces with underscores.
@@ -101,6 +102,7 @@ def sanitize_table_name(sheet_name):
         )
 
     # Ensure name isn't empty after sanitization
+    # ! "Table1" doesn't make a lot of sense?!? It could be that there are more than 1 table without a name...
     if not sanitized_name:
         sanitized_name = "Table1"
         print("The table name was completely invalid or empty. Replaced with 'Table1'.")
