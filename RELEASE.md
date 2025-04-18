@@ -1,4 +1,4 @@
-# Releasing a new version of `bedrock-gi`
+# Releasing a new version of `bedrock-ge`
 
 ## 1. Update the Version Number
 
@@ -85,4 +85,4 @@ uv run --with bedrock-ge --no-project -- python -c "import bedrock_ge; print(f'b
 
 ## 11. Create a GitHub Release
 
-Create a new release based on the tag: [github.com/bedrock-gi/bedrock-gi/releases](https://github.com/bedrock-engineer/bedrock-ge/releases).
+Create a new release based on the tag: [github.com/bedrock-engineer/bedrock-ge/releases](https://github.com/bedrock-engineer/bedrock-ge/releases).
