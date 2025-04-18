@@ -2,7 +2,7 @@
   <img src="https://bedrock.engineer/public/Bedrock_TextRight.png" alt="Bedrock logo" width="75%"/>
 </p>
 
-<h3 align="center">Bedrock, the Open Source Foundation for Ground Investigation Data</h3>
+<h3 align="center">Bedrock, the Open Source Foundation for Geotechnical Engineering</h3>
 
 ---
 
@@ -10,11 +10,11 @@
 
 🖥️ **Source Code:** <https://github.com/bedrock-engineer/bedrock-ge>
 
-🐍 **`bedrock-gi` on PyPI:** <https://pypi.org/project/bedrock-ge/>
+🐍 **`bedrock-ge` on PyPI:** <https://pypi.org/project/bedrock-ge/>
 
 🌐 **Website:** <https://bedrock.engineer/>
 
-🔗 **LinkedIn:** <https://www.linkedin.com/company/bedrock-gi>
+🔗 **LinkedIn:** <https://www.linkedin.com/company/bedrock-engineer>
 
 ---
 
@@ -32,13 +32,13 @@
 | GeoJSON     | ✅  | ✅    |
 
 What do you need? [DIGGS](https://diggsml.org/)? [NADAG](https://www.ngu.no/geologisk-kartlegging/om-nadag-nasjonal-database-grunnundersokelser)? [GEF](https://publicwiki.deltares.nl/display/STREAM/Dutch+National+GEF+Standards)?  Something else?  
-Let us know by creating an [issue](https://github.com/bedrock-engineer/bedrock-ge/issues) or starting a [discussion](https://github.com/orgs/bedrock-gi/discussions) 💭
+Let us know by creating an [issue](https://github.com/bedrock-engineer/bedrock-ge/issues) or starting a [discussion](https://github.com/orgs/bedrock-engineer/discussions) 💭
 
-Also, if you have a project with publicly available GI data, please share that in a [discussion](https://github.com/orgs/bedrock-gi/discussions), such that we can create a tutorial from it 🤩
+Also, if you have a project with publicly available GI data, please share that in a [discussion](https://github.com/orgs/bedrock-engineer/discussions), such that we can create a tutorial from it 🤩
 
 ### ✅ Validate your GI data
 
-`bedrock-gi` comes with data validation to make sure that you can combine Ground Investigation data from multiple files into a single GIS database with consistent relationships between GI locations, samples, in-situ measurements and lab tests.
+`bedrock-ge` comes with data validation to make sure that you can combine Ground Investigation data from multiple files into a single GIS database with consistent relationships between GI locations, samples, in-situ measurements and lab tests.
 
 This data validation mechanism (based on [`pandera`](https://pandera.readthedocs.io/en/stable/)) is easily extensible, giving you the power to add your own data validation criteria 💪
 
@@ -64,7 +64,7 @@ Moreover, your GI data becomes available in all the software that [Speckle has c
 
 ### 🔓 Free and Open Source Software
 
-Free and Open Source Software (FOSS) gives you full access to the code, which means you can customize `bedrock-gi` to integrate with other tools and fit your workflows & project needs.
+Free and Open Source Software (FOSS) gives you full access to the code, which means you can customize `bedrock-ge` to integrate with other tools and fit your workflows & project needs.
 
 As the name implies, FOSS is free to use, so you're not tied to expensive software licenses or locked into a specific software vendor ⛓️‍💥
 
@@ -114,10 +114,10 @@ This relational database ([linked tables](https://en.wikipedia.org/wiki/Relation
 
 ## ⬇️ Installation
 
-In case you're using `uv`, you can add `bedrock-gi` to your Python project and install it in your project's virtual environment by running:
+In case you're using `uv`, you can add `bedrock-ge` to your Python project and install it in your project's virtual environment by running:
 
 ```bash
-uv add bedrock-gi
+uv add bedrock-ge
 ```
 
 I would highly recommend anyone to start using [`uv`](https://docs.astral.sh/uv/) (Unified Virtual Environment Manager) if you're not already doing so. Some of the advantages (Source: [`uv`](https://docs.astral.sh/uv/)):
@@ -127,10 +127,10 @@ I would highly recommend anyone to start using [`uv`](https://docs.astral.sh/uv/
 - 🗂️ `uv` provides [comprehensive project management](https://docs.astral.sh/uv/#project-management), with a [universal lockfile](https://docs.astral.sh/uv/concepts/projects/#project-lockfile). This means no more headaches about virtual environments (or having to explain what on earth a virtual env is), or people running different versions of Python or Python packages on the same project, causing errors and other problems.
 - In short, 🚀 `uv` is a single tool to replace `pip`, `pip-tools`, `pipx`, `poetry`, `pyenv`, `virtualenv`, `conda` and more...
 
-It's of course also possible to install `bedrock-gi` from [PyPI](https://pypi.org/project/bedrock-ge/) (Python Packaging Index) using `pip`:
+It's of course also possible to install `bedrock-ge` from [PyPI](https://pypi.org/project/bedrock-ge/) (Python Packaging Index) using `pip`:
 
 ```bash
-pip install bedrock-gi
+pip install bedrock-ge
 ```
 
 ## 💭 Feedback
@@ -139,8 +139,8 @@ Got some feedback, a great idea, running into problems when working with Bedrock
 
 Please feel free to:
 
-1. open an issue for feature requests or bug reports: [`bedrock-gi` issues](https://github.com/bedrock-engineer/bedrock-ge/issues),
-2. start a discussion in this GitHub repo: [Bedrock discussions](https://github.com/orgs/bedrock-gi/discussions),
+1. open an issue for feature requests or bug reports: [`bedrock-ge` issues](https://github.com/bedrock-engineer/bedrock-ge/issues),
+2. start a discussion in this GitHub repo: [Bedrock discussions](https://github.com/orgs/bedrock-engineer/discussions),
 3. or start a discussion on the Speckle community forum if that's more appropriate: [Speckle community forum](https://speckle.community/)
 
 All feedback and engagement with the Bedrock community is welcome 🤗
@@ -155,7 +155,7 @@ Contributing isn't just about writing code:
 
 - Use Bedrock and provide [feedback](#-feedback) 🪲
 - Share how you use Bedrock 🏗️
-- Help each other out, e.g. by replying to questions in the [discussions](https://github.com/orgs/bedrock-gi/discussions) or [`bedrock-gi` issues](https://github.com/bedrock-engineer/bedrock-ge/issues) 🤝
+- Help each other out, e.g. by replying to questions in the [discussions](https://github.com/orgs/bedrock-engineer/discussions) or [`bedrock-ge` issues](https://github.com/bedrock-engineer/bedrock-ge/issues) 🤝
 - Spread the word about Bedrock 🤩
 - Documentation and tutorials 📃
 - Most pages on the [bedrock.engineer](https://bedrock.engineer/) website can be edited, so if you see a spelling mistake or have a suggestion on how to explain something better, please smash that button! 🖱️💥
@@ -177,7 +177,7 @@ If you want your ground investigation data to go into a GIS database, all GIS ge
 
 Therefore, if you are dealing with GI data collected using different projected CRS's, you'll have to convert the Easting, Northing, z-coordinates to global longitude, latitude, ellipsoidal height coordinates in a geodetic CRS. ([Further reading](https://clover-animantarx-a3a.notion.site/Geomatics-36dfece2dece4358b44c44d08c9cded6))
 
-Please start a [discussion](https://github.com/orgs/bedrock-gi/discussions) or create an issue if want to be able to put data that were collected in different projected CRS's into a single GIS database. This is pretty easy with [`geopandas`](https://geopandas.org/en/stable/) / [`pyproj`](https://pyproj4.github.io/pyproj/stable/) transformations, but hasn't been necessary yet.
+Please start a [discussion](https://github.com/orgs/bedrock-engineer/discussions) or create an issue if want to be able to put data that were collected in different projected CRS's into a single GIS database. This is pretty easy with [`geopandas`](https://geopandas.org/en/stable/) / [`pyproj`](https://pyproj4.github.io/pyproj/stable/) transformations, but hasn't been necessary yet.
 
 ## ✍️ Author
 
