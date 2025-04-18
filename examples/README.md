@@ -69,7 +69,7 @@ I think that if people don't know how to run a Jupyter notebook they should simp
 marimo export ipynb --sandbox --sort top-down --include-outputs hk_kaitak_ags3_to_brgi_geodb.py -o hk_kaitak_ags3_to_brgi_geodb.ipynb
 ```
 
-### HTML WebASseMbly
+### HTML WebAssembly (WASM)
 
 ```bash
 marimo export html-wasm --sandbox --mode edit hk_kaitak_ags3_to_brgi_geodb.py -o output
