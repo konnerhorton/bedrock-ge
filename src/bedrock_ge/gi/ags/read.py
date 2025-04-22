@@ -54,7 +54,7 @@ def ags3_to_dfs(ags3_data: str) -> Dict[str, pd.DataFrame]:
     """Converts AGS 3 data to a dictionary of pandas DataFrames.
 
     Args:
-        ags_data (str): The AGS 3 data as a string.
+        ags3_data (str): The AGS 3 data as a string.
 
     Returns:
         Dict[str, pd.DataFrame]: A dictionary of pandas DataFrames, where each key represents a group name from AGS 3 data,
@@ -154,7 +154,7 @@ def ags4_to_dfs(ags4_data: str) -> Dict[str, pd.DataFrame]:
     """Converts AGS 4 data to a dictionary of pandas DataFrames.
 
     Args:
-        ags_data (str): The AGS 4 data as a string.
+        ags4_data (str): The AGS 4 data as a string.
 
     Returns:
         Dict[str, pd.DataFrame]: A dictionary of pandas DataFrames, where each key represents a group name from AGS 4 data,

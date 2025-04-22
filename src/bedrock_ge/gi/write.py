@@ -16,7 +16,7 @@ def write_gi_db_to_gpkg(
     of the dictionary.
 
     Args:
-        brgi_dfs (dict): A dictionary where keys are brgi table names and values are DataFrames
+        brgi_db (dict): A dictionary where keys are brgi table names and values are DataFrames
             with brgi data.
         gpkg_path (str): The name of the output GeoPackage file.
 
@@ -78,7 +78,7 @@ def sanitize_table_name(sheet_name):
         sheet_name (str): The original sheet name.
 
     Returns:
-        sanitized_name (str): A sanitized sheet name with invalid characters and spaces replaced.
+        sanitized_name: A sanitized sheet name with invalid characters and spaces replaced.
     """
     # Trim to a maximum length of 31 characters
     trimmed_name = sheet_name.strip()[:31]
