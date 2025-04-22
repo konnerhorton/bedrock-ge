@@ -12,8 +12,8 @@ def write_gi_db_to_gpkg(
     """Writes a database with Bedrock Ground Investigation data to a GeoPackage file.
 
     Writes a dictionary of DataFrames containing Bedrock Ground Investigation data to a
-    GeoPackage file. Each DataFrame will be saved in a separate table named by the keys
-    of the dictionary.
+    [GeoPackage file](https://www.geopackage.org/). Each DataFrame will be saved in a
+    separate table named by the keys of the dictionary.
 
     Args:
         brgi_db (dict): A dictionary where keys are brgi table names and values are DataFrames
@@ -23,7 +23,6 @@ def write_gi_db_to_gpkg(
     Returns:
         None
     """
-
     # Create a GeoDataFrame from the dictionary of DataFrames
     for sheet_name, brgi_table in brgi_db.items():
         sanitized_table_name = sanitize_table_name(sheet_name)
@@ -56,7 +55,6 @@ def write_gi_db_to_excel(
     Returns:
         None
     """
-
     # Create an Excel writer object
     with pd.ExcelWriter(excel_path, engine="openpyxl") as writer:
         for sheet_name, df in gi_db.items():

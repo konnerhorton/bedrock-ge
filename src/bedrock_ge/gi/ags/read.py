@@ -60,7 +60,6 @@ def ags3_to_dfs(ags3_data: str) -> Dict[str, pd.DataFrame]:
         Dict[str, pd.DataFrame]: A dictionary of pandas DataFrames, where each key represents a group name from AGS 3 data,
         and the corresponding value is a pandas DataFrame containing the data for that group.
     """
-
     # Initialize dictionary and variables used in the AGS 3 read loop
     ags3_dfs = {}
     line_type = "line_0"

@@ -30,6 +30,12 @@ def ags3_db_to_no_gis_brgi_db(
     various types of geotechnical data including project information, locations,
     samples, lab tests, and in-situ measurements.
 
+    The mapping process:
+    1. Project Data: Converts AGS 3 'PROJ' group to Bedrock's 'Project' table
+    2. Location Data: Converts AGS 3 'HOLE' group to Bedrock's 'Location' table
+    3. Sample Data: Converts AGS 3 'SAMP' group to Bedrock's 'Sample' table
+    4. Other Data: Handles lab tests, in-situ measurements, and miscellaneous tables
+
     Args:
         ags3_db (Dict[str, pd.DataFrame]): A dictionary containing AGS 3 data tables,
             where keys are table names and values are pandas DataFrames.
@@ -37,13 +43,7 @@ def ags3_db_to_no_gis_brgi_db(
 
     Returns:
         Dict[str, pd.DataFrame]: A dictionary containing Bedrock GI database tables,
-            where keys are table names and values are transformed pandas DataFrames.
-
-    The mapping process:
-    1. Project Data: Converts AGS 3 'PROJ' group to Bedrock's 'Project' table
-    2. Location Data: Converts AGS 3 'HOLE' group to Bedrock's 'Location' table
-    3. Sample Data: Converts AGS 3 'SAMP' group to Bedrock's 'Sample' table
-    4. Other Data: Handles lab tests, in-situ measurements, and miscellaneous tables
+        where keys are table names and values are transformed pandas DataFrames.
 
     Note:
         The function creates a copy of the input database to avoid modifying the original data.
