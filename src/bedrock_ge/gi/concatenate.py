@@ -22,7 +22,6 @@ def concatenate_databases(
     Returns:
         dict: A dictionary of concatenated pandas DataFrames.
     """
-
     # Create a new dict to store the concatenated dataframes
     concatenated_dict = {key: df.dropna(axis=1, how="all") for key, df in db1.items()}
 

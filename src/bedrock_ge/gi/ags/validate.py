@@ -5,7 +5,7 @@ def check_ags_proj_group(ags_proj: pd.DataFrame) -> bool:
     """Checks if the AGS 3 or AGS 4 PROJ group is correct.
 
     Args:
-        proj_df (pd.DataFrame): The DataFrame with the PROJ group.
+        ags_proj (pd.DataFrame): The DataFrame with the PROJ group.
 
     Raises:
         ValueError: If AGS 3 of AGS 4 PROJ group is not correct.
