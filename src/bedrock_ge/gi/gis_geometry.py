@@ -28,8 +28,8 @@ def calculate_gis_geometry(
 
     Returns:
         Dict[str, gpd.GeoDataFrame]: Dictionary containing the Bedrock GI database tables
-            with added GIS geometry. All tables are converted to GeoDataFrames with
-            appropriate CRS and geometry columns.
+        with added GIS geometry. All tables are converted to GeoDataFrames with
+        appropriate CRS and geometry columns.
 
     Raises:
         ValueError: If the projects in the database use different Coordinate Reference Systems (CRS).
@@ -109,12 +109,12 @@ def calculate_location_gis_geometry(
         crs (pyproj.CRS): The Coordinate Reference System (CRS) to use for the GIS geometry.
 
     Returns:
-        gpd.GeoDataFrame: The GIS geometry for the given GI locations, with *additional* columns:
-            longitude: The longitude of the location in the WGS84 CRS.
-            latitude: The latitude of the location in the WGS84 CRS.
-            wgs84_ground_level_height: The height of the ground level of the location in the WGS84 CRS.
-            elevation_at_base: The elevation at the base of the location.
-            geometry: The GIS geometry of the location.
+        gpd.GeoDataFrame: The GIS geometry for the given GI locations, with additional columns:
+            - longitude: The longitude of the location in the WGS84 CRS.
+            - latitude: The latitude of the location in the WGS84 CRS.
+            - wgs84_ground_level_height: The height of the ground level of the location in the WGS84 CRS.
+            - elevation_at_base: The elevation at the base of the location.
+            - geometry: The GIS geometry of the location.
     """
     # Calculate Elevation at base of GI location
     brgi_location["elevation_at_base"] = (
@@ -156,8 +156,7 @@ def calculate_location_gis_geometry(
 def calculate_wgs84_coordinates(
     from_crs: CRS, easting: float, northing: float, elevation: Union[float, None] = None
 ) -> Tuple:
-    """Transforms coordinates from an arbitrary Coordinate Reference System (CRS) to
-    the WGS84 CRS, which is the standard for geodetic coordinates.
+    """Transforms coordinates from an arbitrary Coordinate Reference System (CRS) to the WGS84 CRS, which is the standard for geodetic coordinates.
 
     Args:
         from_crs (pyproj.CRS): The pyproj.CRS object of the CRS to transform from.
@@ -231,10 +230,10 @@ def calculate_in_situ_gis_geometry(
         crs (CRS): The Coordinate Reference System of the in-situ data.
 
     Returns:
-        gpd.GeoDataFrame: The GIS geometry for the given in-situ data, with *additional* columns:
-            elevation_at_top: The elevation at the top of the in-situ data.
-            elevation_at_base: The elevation at the base of the in-situ data.
-            geometry: The GIS geometry of the in-situ data.
+        gpd.GeoDataFrame: The GIS geometry for the given in-situ data, with additional columns:
+        - elevation_at_top: The elevation at the top of the in-situ data.
+        - elevation_at_base: The elevation at the base of the in-situ data.
+        - geometry: The GIS geometry of the in-situ data.
     """
     location_child = brgi_in_situ.copy()
 
