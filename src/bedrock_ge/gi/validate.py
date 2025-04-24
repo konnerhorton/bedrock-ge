@@ -29,8 +29,8 @@ def check_brgi_database(brgi_db: Dict[str, Union[pd.DataFrame, gpd.GeoDataFrame]
 
     Args:
         brgi_db (Dict[str, Union[pd.DataFrame, gpd.GeoDataFrame]]): A dictionary
-        containing the BRGI database tables, where keys are table names and values are
-        the corresponding data tables (DataFrame or GeoDataFrame).
+            containing the BRGI database tables, where keys are table names and
+            values are the corresponding data tables (DataFrame or GeoDataFrame).
 
     Returns:
         bool: True if all tables are valid and relationships are properly maintained.
@@ -93,8 +93,8 @@ def check_no_gis_brgi_database(
 
     Args:
         brgi_db (Dict[str, Union[pd.DataFrame, gpd.GeoDataFrame]]): A dictionary
-        containing the Bedrock GI database tables, where keys are table names and values
-        are the corresponding data tables (DataFrame or GeoDataFrame).
+            containing the Bedrock GI database tables, where keys are table names
+            and values are the corresponding data tables (DataFrame or GeoDataFrame).
 
     Returns:
         bool: True if all tables are valid and relationships are properly maintained.
