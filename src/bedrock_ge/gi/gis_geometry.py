@@ -156,7 +156,7 @@ def calculate_location_gis_geometry(
 
 def calculate_wgs84_coordinates(
     from_crs: CRS, easting: float, northing: float, elevation: Union[float, None] = None
-) -> tuple[float, float, (float | None)]:
+) -> Tuple[float, float, (float | None)]:
     """Transforms coordinates from an arbitrary Coordinate Reference System (CRS) to the WGS84 CRS, which is the standard for geodetic coordinates.
 
     Args:
@@ -167,7 +167,7 @@ def calculate_wgs84_coordinates(
             transform. Defaults to None.
 
     Returns:
-        tuple[float, float, (float | None)]: A tuple containing the longitude, latitude
+        Tuple[float, float, (float | None)]: A tuple containing the longitude, latitude
             and WGS84 height of the transformed point, in that order.
             The height is None if no elevation was given, or if the provided CRS doesn't
             have a proper datum defined.
