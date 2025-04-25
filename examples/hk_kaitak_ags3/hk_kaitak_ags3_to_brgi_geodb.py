@@ -1,7 +1,7 @@
 # /// script
 # requires-python = ">=3.12"
 # dependencies = [
-#     "bedrock-ge==0.2.2",
+#     "bedrock-ge==0.2.3",
 #     "chardet==5.2.0",
 #     "folium==0.19.5",
 #     "geopandas==1.0.1",

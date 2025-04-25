@@ -12,6 +12,7 @@ Update the version number in:
 
 - [`pyproject.toml`](pyproject.toml)
 - [`/src/bedrock/__init__.py`](/src/bedrock/__init__.py)
+- Inline script dependencies of marimo notebooks in [`examples`](/examples/)
 
 ## 2. Update the Changelog
 
