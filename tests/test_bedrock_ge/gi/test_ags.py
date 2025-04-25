@@ -6,12 +6,12 @@ import pandas as pd
 
 from bedrock_ge.gi.ags.read import ags4_to_dfs
 
-fixtures_dir = Path(__file__).parent / "fixtures"
+data_dir = Path(__file__).parent / "data"
 
 
 def test_ags4_to_dfs():
-    expected_path = fixtures_dir / "asg4_expected.json"
-    sample_path = fixtures_dir / "ags4_sample.ags"
+    expected_path = data_dir / "asg4_expected.json"
+    sample_path = data_dir / "ags4_sample.ags"
 
     with open(sample_path, "r") as file:
         ags4_sample_data = file.read()
