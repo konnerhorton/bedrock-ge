@@ -97,7 +97,7 @@ def check_no_gis_brgi_database(
             and values are the corresponding data tables (DataFrame or GeoDataFrame).
 
     Returns:
-        is_valid (bool): True if all tables are valid and relationships are properly maintained.
+        bool: True if all tables are valid and relationships are properly maintained.
 
     Example:
         ```python

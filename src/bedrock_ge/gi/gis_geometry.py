@@ -156,7 +156,7 @@ def calculate_location_gis_geometry(
 
 def calculate_wgs84_coordinates(
     from_crs: CRS, easting: float, northing: float, elevation: Union[float, None] = None
-) -> Tuple:
+) -> tuple[float, float, (float | None)]:
     """Transforms coordinates from an arbitrary Coordinate Reference System (CRS) to the WGS84 CRS, which is the standard for geodetic coordinates.
 
     Args:
@@ -167,9 +167,10 @@ def calculate_wgs84_coordinates(
             transform. Defaults to None.
 
     Returns:
-        tuple: A tuple containing the longitude, latitude and WGS84 height of the
-            transformed point, in that order. The height is None if no elevation was
-            given, or if the provided CRS doesn't have a proper datum defined.
+        tuple[float, float, (float | None)]: A tuple containing the longitude, latitude
+            and WGS84 height of the transformed point, in that order.
+            The height is None if no elevation was given, or if the provided CRS doesn't
+            have a proper datum defined.
     """
     transformer = Transformer.from_crs(from_crs, 4326, always_xy=True)
     if elevation:
@@ -178,7 +179,7 @@ def calculate_wgs84_coordinates(
         lon, lat = transformer.transform(easting, northing)
         wgs84_height = None
 
-    return lon, lat, wgs84_height
+    return (lon, lat, wgs84_height)
 
 
 def create_lon_lat_height_table(
@@ -198,7 +199,7 @@ def create_lon_lat_height_table(
         crs (CRS): The Coordinate Reference System of the GI locations.
 
     Returns:
-        GeoDataFrame: The 'LonLatHeight' GeoDataFrame.
+        gpd.GeoDataFrame: The 'LonLatHeight' GeoDataFrame.
     """
     lon_lat_height = gpd.GeoDataFrame(
         brgi_location[
