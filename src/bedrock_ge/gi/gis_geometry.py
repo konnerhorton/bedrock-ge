@@ -28,14 +28,15 @@ def calculate_gis_geometry(
 
     Returns:
         Dict[str, gpd.GeoDataFrame]: Dictionary containing the Bedrock GI database tables
-        with added GIS geometry. All tables are converted to GeoDataFrames with
-        appropriate CRS and geometry columns.
+            with added GIS geometry. All tables are converted to GeoDataFrames with
+            appropriate CRS and geometry columns.
 
     Raises:
         ValueError: If the projects in the database use different Coordinate Reference Systems (CRS).
 
     Note:
         The function performs the following operations:
+
         1. Verifies all projects use the same CRS
         2. Calculates GIS geometry for the 'Location' table
         3. Creates a 'LonLatHeight' table for 2D visualization
@@ -231,9 +232,9 @@ def calculate_in_situ_gis_geometry(
 
     Returns:
         gpd.GeoDataFrame: The GIS geometry for the given in-situ data, with additional columns:
-        - elevation_at_top: The elevation at the top of the in-situ data.
-        - elevation_at_base: The elevation at the base of the in-situ data.
-        - geometry: The GIS geometry of the in-situ data.
+            - elevation_at_top: The elevation at the top of the in-situ data.
+            - elevation_at_base: The elevation at the base of the in-situ data.
+            - geometry: The GIS geometry of the in-situ data.
     """
     location_child = brgi_in_situ.copy()
 
