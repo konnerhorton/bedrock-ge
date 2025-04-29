@@ -151,7 +151,7 @@ dependencies = [
     { name = "sqlmodel" },
 ]
 
-[package.optional-dependencies]
+[package.dev-dependencies]
 dev = [
     { name = "duckdb" },
     { name = "folium" },
@@ -174,26 +174,29 @@ tests = [
 
 [package.metadata]
 requires-dist = [
-    { name = "duckdb", marker = "extra == 'dev'", specifier = ">=1.2.2" },
-    { name = "folium", marker = "extra == 'dev'", specifier = ">=0.17.0" },
-    { name = "frictionless", extras = ["excel"], marker = "extra == 'dev'", specifier = ">=4.40.8" },
     { name = "geopandas", specifier = "~=1.0" },
-    { name = "jupyter", marker = "extra == 'dev'", specifier = ">=1.1.1" },
-    { name = "mapclassify", marker = "extra == 'dev'", specifier = ">=2.8.1" },
-    { name = "marimo", marker = "extra == 'dev'", specifier = ">=0.12.5" },
-    { name = "matplotlib", marker = "extra == 'dev'", specifier = ">=3.9.2" },
-    { name = "mypy", marker = "extra == 'dev'", specifier = ">=1.11.2" },
-    { name = "nbconvert", marker = "extra == 'dev'", specifier = ">=7.16.6" },
     { name = "openpyxl", specifier = "~=3.0" },
-    { name = "pandas-stubs", marker = "extra == 'dev'", specifier = ">=2.2.2.240807" },
     { name = "pandera", specifier = ">=0.23.0" },
-    { name = "pytest", marker = "extra == 'tests'", specifier = ">=8.3.3" },
     { name = "python-ags4", specifier = "~=1.0" },
-    { name = "ruff", marker = "extra == 'dev'", specifier = ">=0.6.7" },
-    { name = "sqlglot", marker = "extra == 'dev'", specifier = ">=26.12.1" },
     { name = "sqlmodel", specifier = ">=0.0.22" },
 ]
-provides-extras = ["dev", "tests"]
+
+[package.metadata.requires-dev]
+dev = [
+    { name = "duckdb", specifier = ">=1.2.2" },
+    { name = "folium", specifier = ">=0.17.0" },
+    { name = "frictionless", extras = ["excel"], specifier = ">=4.40.8" },
+    { name = "jupyter", specifier = ">=1.1.1" },
+    { name = "mapclassify", specifier = ">=2.8.1" },
+    { name = "marimo", specifier = ">=0.12.5" },
+    { name = "matplotlib", specifier = ">=3.9.2" },
+    { name = "mypy", specifier = ">=1.11.2" },
+    { name = "nbconvert", specifier = ">=7.16.6" },
+    { name = "pandas-stubs", specifier = ">=2.2.2.240807" },
+    { name = "ruff", specifier = ">=0.6.7" },
+    { name = "sqlglot", specifier = ">=26.12.1" },
+]
+tests = [{ name = "pytest", specifier = ">=8.3.3" }]
 
 [[package]]
 name = "bleach"
