@@ -28,14 +28,15 @@ def calculate_gis_geometry(
 
     Returns:
         Dict[str, gpd.GeoDataFrame]: Dictionary containing the Bedrock GI database tables
-        with added GIS geometry. All tables are converted to GeoDataFrames with
-        appropriate CRS and geometry columns.
+            with added GIS geometry. All tables are converted to GeoDataFrames with
+            appropriate CRS and geometry columns.
 
     Raises:
         ValueError: If the projects in the database use different Coordinate Reference Systems (CRS).
 
     Note:
         The function performs the following operations:
+
         1. Verifies all projects use the same CRS
         2. Calculates GIS geometry for the 'Location' table
         3. Creates a 'LonLatHeight' table for 2D visualization
@@ -155,7 +156,7 @@ def calculate_location_gis_geometry(
 
 def calculate_wgs84_coordinates(
     from_crs: CRS, easting: float, northing: float, elevation: Union[float, None] = None
-) -> Tuple:
+) -> Tuple[float, float, (float | None)]:
     """Transforms coordinates from an arbitrary Coordinate Reference System (CRS) to the WGS84 CRS, which is the standard for geodetic coordinates.
 
     Args:
@@ -166,9 +167,10 @@ def calculate_wgs84_coordinates(
             transform. Defaults to None.
 
     Returns:
-        tuple: A tuple containing the longitude, latitude and WGS84 height of the
-            transformed point, in that order. The height is None if no elevation was
-            given, or if the provided CRS doesn't have a proper datum defined.
+        Tuple[float, float, (float | None)]: A tuple containing the longitude, latitude
+            and WGS84 height of the transformed point, in that order.
+            The height is None if no elevation was given, or if the provided CRS doesn't
+            have a proper datum defined.
     """
     transformer = Transformer.from_crs(from_crs, 4326, always_xy=True)
     if elevation:
@@ -177,7 +179,7 @@ def calculate_wgs84_coordinates(
         lon, lat = transformer.transform(easting, northing)
         wgs84_height = None
 
-    return lon, lat, wgs84_height
+    return (lon, lat, wgs84_height)
 
 
 def create_lon_lat_height_table(
@@ -197,7 +199,7 @@ def create_lon_lat_height_table(
         crs (CRS): The Coordinate Reference System of the GI locations.
 
     Returns:
-        GeoDataFrame: The 'LonLatHeight' GeoDataFrame.
+        gpd.GeoDataFrame: The 'LonLatHeight' GeoDataFrame.
     """
     lon_lat_height = gpd.GeoDataFrame(
         brgi_location[
@@ -231,9 +233,9 @@ def calculate_in_situ_gis_geometry(
 
     Returns:
         gpd.GeoDataFrame: The GIS geometry for the given in-situ data, with additional columns:
-        - elevation_at_top: The elevation at the top of the in-situ data.
-        - elevation_at_base: The elevation at the base of the in-situ data.
-        - geometry: The GIS geometry of the in-situ data.
+            - elevation_at_top: The elevation at the top of the in-situ data.
+            - elevation_at_base: The elevation at the base of the in-situ data.
+            - geometry: The GIS geometry of the in-situ data.
     """
     location_child = brgi_in_situ.copy()
 
