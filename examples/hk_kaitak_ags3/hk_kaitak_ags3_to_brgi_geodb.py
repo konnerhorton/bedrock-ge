@@ -1,7 +1,7 @@
 # /// script
 # requires-python = ">=3.12"
 # dependencies = [
-#     "bedrock-ge==0.2.2",
+#     "bedrock-ge==0.2.3",
 #     "chardet==5.2.0",
 #     "folium==0.19.5",
 #     "geopandas==1.0.1",
@@ -167,7 +167,7 @@ def _(mo):
 
         ### From GI dataframe to `geopandas.GeoDataFrame` 
 
-        In order to construct the 3D simple feature GIS geometry of the `Location`s, `Sample`s and `InSitu_TEST`s, a few more columns have to be calcualated for each of these tables: `elevation_at_top` and `elevation_at_base` if the in-situ test or sample was taken over a depth interval.
+        In order to construct the 3D simple feature GIS geometry of the `Location`s, `Sample`s and `InSitu_TEST`s, a few more columns have to be calculated for each of these tables: `elevation_at_top` and `elevation_at_base` if the in-situ test or sample was taken over a depth interval.
 
         The 3D simple feature GIS geometry as [WKT](https://en.wikipedia.org/wiki/Well-known_text_representation_of_geometry) for point tests and samples:  
         `POINT (easting northing elevation_at_top)`
@@ -341,7 +341,7 @@ def _(mo):
 
         <iframe title="Speckle" src="https://app.speckle.systems/projects/013aaf06e7/models/1cbe68ed69,44c8d1ecae,9535541c2b,a739490298,ff81bfa02b#embed=%7B%22isEnabled%22%3Atrue%7D" width="100%" height="400" frameborder="0"></iframe>
 
-        Additionally, you can load the GI data in other software that Speckle has a connector for, such as Rhino / Grasshopper to enable parameteric geotechnical engineering workflows.
+        Additionally, you can load the GI data in other software that Speckle has a connector for, such as Rhino / Grasshopper to enable parametric geotechnical engineering workflows.
         """
     )
     return
@@ -410,7 +410,7 @@ def _(
                     )
                     check_no_gis_brgi_database(brgi_db_from_1_ags3_file)
                     print(
-                        f"\n✅ Succesfully converted {file_name} to Bedrock GI database and validated!\n"
+                        f"\n✅ Successfully converted {file_name} to Bedrock GI database and validated!\n"
                     )
                     print(
                         f"🧵 Concatenating Bedrock GI database for {file_name} to existing Bedrock GI database...\n"
