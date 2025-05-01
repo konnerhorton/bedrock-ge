@@ -1,7 +1,7 @@
+import hashlib
 import os
 import shutil
 import subprocess
-import sys
 from pathlib import Path
 from tempfile import TemporaryDirectory
 
@@ -19,14 +19,15 @@ def test_kaitak_ags3_notebook_runs_and_creates_gpkg(examples_dir):
     # to the one created when executing the notebook.
     # And to put back to the original state at the end of the test.
     with TemporaryDirectory() as temp_dir:
-        temp_gpkg_path = Path(temp_dir) / "temp_kaitak_gi.gpkg"
-        shutil.move(gpkg_output_path, temp_gpkg_path)
+        temp_original_gpkg_path = Path(temp_dir) / "temp_kaitak_gi.gpkg"
+        shutil.move(gpkg_output_path, temp_original_gpkg_path)
 
-        print(f"Running: `python {notebook_path}`\n")
         # Run the notebook as a script
         # TODO: implement logging
         # NOTE: The env (environment variables) and encoding are required for running
-        # the notebook as a script from both Windows and Linux. Wihtout: UnicodeDecodeError
+        # the notebook as a script from both Windows and Linux. Without => UnicodeDecodeError
+        # NOTE: `uvx uv run` runs the marimo notebook as a script in a temporary environment,
+        # with the Python version and dependencies specified in the PEP 723 inline script metadata.
         env = os.environ.copy()
         env["PYTHONIOENCODING"] = "utf-8"
         result = subprocess.run(
@@ -51,9 +52,19 @@ def test_kaitak_ags3_notebook_runs_and_creates_gpkg(examples_dir):
         )
 
         # TODO: write some logic to compare the original and new GeoPackages.
+        # with gpkg_output_path.open("rb") as f:
+        #     gpkg_output_hash = hashlib.sha256(f.read()).hexdigest()
+
+        # with temp_original_gpkg_path.open("rb") as f:
+        #     temp_original_gpkg_hash = hashlib.sha256(f.read()).hexdigest()
+
+        # assert gpkg_output_hash == temp_original_gpkg_hash, (
+        #     f"The original GeoPackage {temp_original_gpkg_path} and the output GeoPackage {gpkg_output_path} have different hex hashes."
+        # )
+        # TODO: write some logic to compare the original and new GeoPackages.
 
         # Remove the newly generated kaitak_gi.gpkg
         os.remove(gpkg_output_path)
         # Place back the original kaitak_gi.gpkg from the temporary directory
         # to its original location.
-        shutil.move(temp_gpkg_path, gpkg_output_path)
+        shutil.move(temp_original_gpkg_path, gpkg_output_path)
