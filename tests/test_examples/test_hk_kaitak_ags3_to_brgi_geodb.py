@@ -109,17 +109,19 @@ def test_kaitak_ags3_notebook_runs_and_creates_gpkg(examples_dir):
             },
         ]
         for table in important_tables:
-            df_output = gpd.read_file(gpkg_output_path, layer=table["table_name"])
-            assert len(df_output) == table["no_rows"], (
+            gdf_output = gpd.read_file(gpkg_output_path, layer=table["table_name"])
+            assert len(gdf_output) == table["no_rows"], (
                 f"The output GeoPackage {gpkg_output_path.name} table {table['table_name']} "
-                f"has {len(df_output)} rows instead of {table['no_rows']}."
+                f"has {len(gdf_output)} rows instead of {table['no_rows']}."
             )
-            df_original = gpd.read_file(
+            gdf_original = gpd.read_file(
                 temp_original_gpkg_path, layer=table["table_name"]
             )
-            assert df_original.equals(df_output), (
+            gdf_diff = gdf_original.compare(gdf_output)
+            assert gdf_diff.empty, (
                 f"The original GeoPackage {temp_original_gpkg_path.name} and the output "
-                f"GeoPackage {gpkg_output_path.name} have a different {table['table_name']} table."
+                f"GeoPackage {gpkg_output_path.name} have a different {table['table_name']} table.\n"
+                f"{gdf_diff}"
             )
 
         # Remove the newly generated kaitak_gi.gpkg
