@@ -112,14 +112,14 @@ def test_kaitak_ags3_notebook_runs_and_creates_gpkg(examples_dir):
             df_output = gpd.read_file(gpkg_output_path, layer=table["table_name"])
             assert len(df_output) == table["no_rows"], (
                 f"The output GeoPackage {gpkg_output_path.name} table {table['table_name']} "
-                "has {len(df_output)} rows instead of {table['no_rows']}."
+                f"has {len(df_output)} rows instead of {table['no_rows']}."
             )
             df_original = gpd.read_file(
                 temp_original_gpkg_path, layer=table["table_name"]
             )
             assert df_original.equals(df_output), (
                 f"The original GeoPackage {temp_original_gpkg_path.name} and the output "
-                "GeoPackage {gpkg_output_path.name} have a different {table['table_name']} table."
+                f"GeoPackage {gpkg_output_path.name} have a different {table['table_name']} table."
             )
 
         # Remove the newly generated kaitak_gi.gpkg
