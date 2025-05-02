@@ -1,12 +1,24 @@
-import hashlib
 import os
 import shutil
+import sqlite3
 import subprocess
 from pathlib import Path
 from tempfile import TemporaryDirectory
 
+import geopandas as gpd
+
 
 def test_kaitak_ags3_notebook_runs_and_creates_gpkg(examples_dir):
+    """Tests the Kai Tak, Hong Kong AGS 3 example marimo notebook.
+
+    Tests that the `hk_kaitak_ags3_to_brgi_geodb.py` marimo notebook:
+    - Runs successfully as a script using `uvx uv run` with the Python version and
+      dependencies specified in the PEP 723 inline script metadata.
+    - Creates a valid GeoPackage
+    - That the GeoPackage contains the expected tables
+    - That the Project, Location, Sample, InSitu_GEOL, InSitu_ISPT and InSitu_WETH
+      tables have the expected number of rows.
+    """
     notebook_dir = examples_dir / "hk_kaitak_ags3"
     notebook_path = notebook_dir / "hk_kaitak_ags3_to_brgi_geodb.py"
     gpkg_output_path = notebook_dir / "kaitak_gi.gpkg"
@@ -51,17 +63,64 @@ def test_kaitak_ags3_notebook_runs_and_creates_gpkg(examples_dir):
             f"The expected GeoPackage {gpkg_output_path} was not created."
         )
 
-        # TODO: write some logic to compare the original and new GeoPackages.
-        # with gpkg_output_path.open("rb") as f:
-        #     gpkg_output_hash = hashlib.sha256(f.read()).hexdigest()
+        # Compare the original and new GeoPackages and check the number of rows
+        # in the important tables.
+        conn_original = sqlite3.connect(temp_original_gpkg_path)
+        conn_output = sqlite3.connect(gpkg_output_path)
 
-        # with temp_original_gpkg_path.open("rb") as f:
-        #     temp_original_gpkg_hash = hashlib.sha256(f.read()).hexdigest()
+        tables_original = conn_original.execute(
+            "SELECT name FROM sqlite_master WHERE type='table';"
+        ).fetchall()
+        conn_original.close()
+        tables_output = conn_output.execute(
+            "SELECT name FROM sqlite_master WHERE type='table';"
+        ).fetchall()
+        conn_output.close()
 
-        # assert gpkg_output_hash == temp_original_gpkg_hash, (
-        #     f"The original GeoPackage {temp_original_gpkg_path} and the output GeoPackage {gpkg_output_path} have different hex hashes."
-        # )
-        # TODO: write some logic to compare the original and new GeoPackages.
+        assert tables_original == tables_output, (
+            f"The original GeoPackage {temp_original_gpkg_path.name} and the output "
+            "GeoPackage {gpkg_output_path.name} have different tables."
+        )
+
+        important_tables = [
+            {
+                "table_name": "Project",
+                "no_rows": 88,
+            },
+            {
+                "table_name": "Location",
+                "no_rows": 754,
+            },
+            {
+                "table_name": "Sample",
+                "no_rows": 17_774,
+            },
+            {
+                "table_name": "InSitu_GEOL",
+                "no_rows": 7_764,
+            },
+            {
+                "table_name": "InSitu_ISPT",
+                "no_rows": 3_986,
+            },
+            {
+                "table_name": "InSitu_WETH",
+                "no_rows": 3_928,
+            },
+        ]
+        for table in important_tables:
+            df_output = gpd.read_file(gpkg_output_path, layer=table["table_name"])
+            assert len(df_output) == table["no_rows"], (
+                f"The output GeoPackage {gpkg_output_path.name} table {table['table_name']} "
+                "has {len(df_output)} rows instead of {table['no_rows']}."
+            )
+            df_original = gpd.read_file(
+                temp_original_gpkg_path, layer=table["table_name"]
+            )
+            assert df_original.equals(df_output), (
+                f"The original GeoPackage {temp_original_gpkg_path.name} and the output "
+                "GeoPackage {gpkg_output_path.name} have a different {table['table_name']} table."
+            )
 
         # Remove the newly generated kaitak_gi.gpkg
         os.remove(gpkg_output_path)
