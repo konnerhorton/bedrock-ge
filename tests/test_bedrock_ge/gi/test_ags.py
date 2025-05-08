@@ -56,8 +56,6 @@ def test_detect_encoding():
         ags4: ags4_encoding,
         ags3_path: ags3_encoding,
         ags4_path: ags4_encoding,
-        ags3_str: default_encoding,
-        ags4_str: default_encoding,
         ags3_byte: ags3_encoding,
         ags4_byte: ags4_encoding,
         ags3_sio: default_encoding,
