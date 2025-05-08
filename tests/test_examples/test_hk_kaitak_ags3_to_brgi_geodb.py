@@ -54,7 +54,7 @@ def test_kaitak_ags3_notebook_runs_and_creates_gpkg(examples_dir):
 
         # Check that the script ran successfully
         assert result.returncode == 0, (
-            f"\n📛 Running `uvx run marimo notebook.py` failed with code {result.returncode}\n"
+            f"📛 Running `uvx run marimo notebook.py` failed with code {result.returncode}\n"
             f"📄 STDOUT:\n{result.stdout}\n"
             f"⚠️ STDERR:\n{result.stderr}"
         )
@@ -80,7 +80,9 @@ def test_kaitak_ags3_notebook_runs_and_creates_gpkg(examples_dir):
 
         assert tables_original == tables_output, (
             f"The original GeoPackage {temp_original_gpkg_path.name} and the output "
-            "GeoPackage {gpkg_output_path.name} have different tables."
+            f"GeoPackage {gpkg_output_path.name} have different tables:\n"
+            f"Original: {tables_original}\n"
+            f"Output: {tables_output}"
         )
 
         important_tables = [
