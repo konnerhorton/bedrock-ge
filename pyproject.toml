@@ -69,12 +69,9 @@ Source = "https://github.com/bedrock-engineer/bedrock-ge"
 Documentation = "https://bedrock.engineer/docs/"
 Tracker = "https://github.com/bedrock-engineer/bedrock-ge/issues"
 
-[build-system]
-requires = ["hatchling"]
-build-backend = "hatchling.build"
 
-[tool.uv]
-dev-dependencies = [
+[dependency-groups]
+dev = [
     "duckdb>=1.2.2",
     "folium>=0.17.0",
     "frictionless[excel]>=4.40.8",
@@ -85,10 +82,17 @@ dev-dependencies = [
     "mypy>=1.11.2",
     "nbconvert>=7.16.6",
     "pandas-stubs>=2.2.2.240807",
-    "pytest>=8.3.3",
     "ruff>=0.6.7",
     "sqlglot>=26.12.1",
 ]
+
+tests = [
+    "pytest>=8.3.3",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
 
 [tool.ruff]
 line-length = 88

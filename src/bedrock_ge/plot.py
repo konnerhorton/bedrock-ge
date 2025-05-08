@@ -1,2 +1,4 @@
 def hello_plt() -> None:
-    print("Hello from src/bedrock/plot.py!")
+    print(
+        "Hi Bedrock engineer! bedrock_ge.plot is a placeholder module for Geotechnical Engineering plots."
+    )
