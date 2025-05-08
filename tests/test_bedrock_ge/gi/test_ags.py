@@ -4,8 +4,9 @@ import sys
 from pathlib import Path
 
 import pandas as pd
+import pytest
 
-from bedrock_ge.gi.ags.read import ags4_to_dfs
+from bedrock_ge.gi.ags.read import ags4_to_dfs, detect_encoding
 
 data_dir = Path(__file__).parent / "data"
 
@@ -26,8 +27,8 @@ def test_ags4_to_dfs():
 
 
 def test_detect_encoding():
-    ags3 = fixtures_dir / "ags3_sample.ags"
-    ags4 = fixtures_dir / "ags4_sample.ags"
+    ags3 = data_dir / "ags3_sample.ags"
+    ags4 = data_dir / "ags4_sample.ags"
 
     default_encoding = "utf-8"
     ags4_encoding = "ISO-8859-1"
@@ -69,12 +70,12 @@ def test_detect_encoding():
         assert expected == result
 
     # test non-existent file
-    non_existent = fixtures_dir / "empty.ags"
+    non_existent = data_dir / "empty.ags"
     with pytest.raises(FileNotFoundError):
         detect_encoding(non_existent)
 
     # test empty file (should still return default encoding)
-    empty = fixtures_dir / "empty.ags"
+    empty = data_dir / "empty.ags"
     empty.touch()
     expected = default_encoding
     result = detect_encoding(empty)
