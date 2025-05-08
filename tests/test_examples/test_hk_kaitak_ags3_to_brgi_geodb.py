@@ -6,6 +6,7 @@ from pathlib import Path
 from tempfile import TemporaryDirectory
 
 import geopandas as gpd
+import pandas as pd
 
 
 def test_kaitak_ags3_notebook_runs_and_creates_gpkg(examples_dir):
@@ -117,12 +118,17 @@ def test_kaitak_ags3_notebook_runs_and_creates_gpkg(examples_dir):
             gdf_original = gpd.read_file(
                 temp_original_gpkg_path, layer=table["table_name"]
             )
-            gdf_diff = gdf_original.compare(gdf_output)
-            assert gdf_diff.empty, (
-                f"The original GeoPackage {temp_original_gpkg_path.name} and the output "
-                f"GeoPackage {gpkg_output_path.name} have a different {table['table_name']} table.\n"
-                f"{gdf_diff}"
+            pd.testing.assert_frame_equal(
+                gdf_original, gdf_output, check_exact=False, rtol=1e-5
             )
+            # It's also possible to assert that GIS geometries are not exactly equal.
+            # However, when testing the equality of GeoDataFrames with pandas, the GIS
+            # geometry are compared precisely, because the geometry is converted to a
+            # WKT string and compared as strings. Therefore, if a less precise comparison
+            # of GIS geometries is necessary, the assertion above needs changing too.
+            # gpd.testing.assert_geoseries_equal(
+            #     gdf_original, gdf_output, check_less_precise=False
+            # )
 
         # Remove the newly generated kaitak_gi.gpkg
         os.remove(gpkg_output_path)
