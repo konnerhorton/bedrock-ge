@@ -2,8 +2,9 @@ from __future__ import annotations
 
 import io
 from contextlib import contextmanager, nullcontext
+from io import TextIOBase
 from pathlib import Path
-from typing import IO, Any, Dict, List
+from typing import IO, Any, ContextManager, Dict, List
 
 import chardet
 import pandas as pd
@@ -104,7 +105,9 @@ def detect_encoding(source: str | Path | IO[str] | IO[bytes] | bytes) -> str:
     raise TypeError(f"Unsupported input type for encoding detection: {type(source)}")
 
 
-def read_ags_source(source: str | Path | IO[str] | IO[bytes] | bytes, encoding=None):
+def read_ags_source(
+    source: str | Path | IO[str] | IO[bytes] | bytes, encoding=None
+) -> ContextManager[TextIOBase]:
     """Opens or wraps a given source for reading AGS (text-based) data.
 
     Args:
@@ -113,8 +116,7 @@ def read_ags_source(source: str | Path | IO[str] | IO[bytes] | bytes, encoding=N
             - IO[str]: A file-like text stream.
             - IO[bytes]: Byte stream
             - bytes: Binary content or stream (will be decoded).
-        encoding (str | None): Encoding to use for decoding bytes. Defaults if None, encoding will be
-            determined by `chardet.detect`.
+        encoding (str | None): Encoding to use for decoding bytes. Default is None.
 
     Returns:
         ContextManager[TextIOBase]: A context manager yielding a text stream.
@@ -165,8 +167,8 @@ def ags_to_dfs(
     """Converts AGS 3 or AGS 4 file to a dictionary of pandas DataFrames.
 
     Args:
-        source (str | Path | IO[str] | IO[bytes] | bytes): The AGS file (str or Path) or a file-like
-            object that represents and AGS file.
+        source (str | Path | IO[str] | IO[bytes] | bytes): The AGS file (str or Path)
+            or a file-like object that represents the AGS file.
         encoding (str): default=None
             Encoding of text file, an attempt at detecting the encoding will be made if `None`
 
@@ -215,12 +217,14 @@ def ags_to_dfs(
     return ags_dfs
 
 
-def ags3_to_dfs(source: str, encoding: str) -> Dict[str, pd.DataFrame]:
+def ags3_to_dfs(
+    source: str | Path | IO[str] | IO[bytes] | bytes, encoding: str
+) -> Dict[str, pd.DataFrame]:
     """Converts AGS 3 data to a dictionary of pandas DataFrames.
 
     Args:
-        source (str | Path | IO[str] | IO[bytes] | bytes): The AGS3 file (str or Path) or a file-like
-            object that represents and AGS3 file.
+        source (str | Path | IO[str] | IO[bytes] | bytes): The AGS 3 file (str or Path)
+            or a file-like object that represents the AGS 3 file.
         encoding (str):  Encoding of file or object.
 
     Returns:
@@ -235,76 +239,75 @@ def ags3_to_dfs(source: str, encoding: str) -> Dict[str, pd.DataFrame]:
     group_data: List[List[Any]] = [[], [], []]
 
     with read_ags_source(source, encoding=encoding) as file:
-        ags3_data = file.read().splitlines()
+        for i, line in enumerate(file):
+            line = line.strip()
+            last_line_type = line_type
 
-    for i, line in enumerate(ags3_data):
-        last_line_type = line_type
+            # In AGS 3.1 group names are prefixed with **
+            if line.startswith('"**'):
+                line_type = "group_name"
+                if group:
+                    ags3_dfs[group] = pd.DataFrame(group_data, columns=headers)
 
-        # In AGS 3.1 group names are prefixed with **
-        if line.startswith('"**'):
-            line_type = "group_name"
-            if group:
-                ags3_dfs[group] = pd.DataFrame(group_data, columns=headers)
+                group = line.strip(' ,"*')
+                group_data = []
 
-            group = line.strip(' ,"*')
-            group_data = []
+            # In AGS 3 header names are prefixed with "*
+            elif line.startswith('"*'):
+                line_type = "headers"
+                new_headers = line.split('","')
+                new_headers = [h.strip(' ,"*') for h in new_headers]
 
-        # In AGS 3 header names are prefixed with "*
-        elif line.startswith('"*'):
-            line_type = "headers"
-            new_headers = line.split('","')
-            new_headers = [h.strip(' ,"*') for h in new_headers]
+                # Some groups have so many headers that they span multiple lines.
+                # Therefore we need to check whether the new headers are
+                # a continuation of the previous headers from the last line.
+                if line_type == last_line_type:
+                    headers = headers + new_headers
+                else:
+                    headers = new_headers
 
-            # Some groups have so many headers that they span multiple lines.
-            # Therefore we need to check whether the new headers are
-            # a continuation of the previous headers from the last line.
-            if line_type == last_line_type:
-                headers = headers + new_headers
-            else:
-                headers = new_headers
-
-        # Skip lines where group units are defined, these are defined in the AGS 3 data dictionary.
-        elif line.startswith('"<UNITS>"'):
-            line_type = "units"
-            continue
-
-        # The rest of the lines contain:
-        # 1. GI data
-        # 2. a continuation of the previous line. These lines contain "<CONT>" in the first column.
-        # 3. are empty or contain worthless data
-        else:
-            line_type = "data_row"
-            data_row = line.split('","')
-            if len("".join(data_row)) == 0:
-                # print(f"Line {i} is empty. Last Group: {group}")
+            # Skip lines where group units are defined, these are defined in the AGS 3 data dictionary.
+            elif line.startswith('"<UNITS>"'):
+                line_type = "units"
                 continue
-            elif len(data_row) != len(headers):
-                print(
-                    f"\n🚨 CAUTION: The number of columns on line {i + 1} ({len(data_row)}) doesn't match the number of columns of group {group} ({len(headers)})!",
-                    f"{group} headers: {headers}",
-                    f"Line {i + 1}:      {data_row}",
-                    sep="\n",
-                    end="\n\n",
-                )
-                continue
-            # Append continued lines (<CONT>) to the last data_row
-            elif data_row[0] == '"<CONT>':
-                last_data_row = group_data[-1]
-                for j, data in enumerate(data_row):
-                    data = data.strip(' "')
-                    if data and data != "<CONT>":
-                        if last_data_row[j] is None:
-                            # Last data row didn't contain data for this column
-                            last_data_row[j] = coerce_string(data)
-                        else:
-                            # Last data row already contains data for this column
-                            last_data_row[j] = str(last_data_row[j]) + data
-            # Lines that are assumed to contain valid data are added to the group data
+
+            # The rest of the lines contain:
+            # 1. GI data
+            # 2. a continuation of the previous line. These lines contain "<CONT>" in the first column.
+            # 3. are empty or contain worthless data
             else:
-                cleaned_data_row = []
-                for data in data_row:
-                    cleaned_data_row.append(coerce_string(data.strip(' "')))
-                group_data.append(cleaned_data_row)
+                line_type = "data_row"
+                data_row = line.split('","')
+                if len("".join(data_row)) == 0:
+                    # print(f"Line {i} is empty. Last Group: {group}")
+                    continue
+                elif len(data_row) != len(headers):
+                    print(
+                        f"\n🚨 CAUTION: The number of columns on line {i + 1} ({len(data_row)}) doesn't match the number of columns of group {group} ({len(headers)})!",
+                        f"{group} headers: {headers}",
+                        f"Line {i + 1}:      {data_row}",
+                        sep="\n",
+                        end="\n\n",
+                    )
+                    continue
+                # Append continued lines (<CONT>) to the last data_row
+                elif data_row[0] == '"<CONT>':
+                    last_data_row = group_data[-1]
+                    for j, data in enumerate(data_row):
+                        data = data.strip(' "')
+                        if data and data != "<CONT>":
+                            if last_data_row[j] is None:
+                                # Last data row didn't contain data for this column
+                                last_data_row[j] = coerce_string(data)
+                            else:
+                                # Last data row already contains data for this column
+                                last_data_row[j] = str(last_data_row[j]) + data
+                # Lines that are assumed to contain valid data are added to the group data
+                else:
+                    cleaned_data_row = []
+                    for data in data_row:
+                        cleaned_data_row.append(coerce_string(data.strip(' "')))
+                    group_data.append(cleaned_data_row)
 
     # Also add the last group's df to the dictionary of AGS dfs
     ags3_dfs[group] = pd.DataFrame(group_data, columns=headers).dropna(
@@ -320,14 +323,13 @@ def ags3_to_dfs(source: str, encoding: str) -> Dict[str, pd.DataFrame]:
 
 
 def ags4_to_dfs(
-    source: str | Path | IO[str] | IO[bytes] | bytes
+    source: str | Path | IO[str] | IO[bytes] | bytes,
 ) -> Dict[str, pd.DataFrame]:
     """Converts AGS 4 data to a dictionary of pandas DataFrames.
 
     Args:
         source (str | Path | IO[str] | IO[bytes] | bytes): The AGS4 file (str or Path) or a file-like
             object that represents and AGS4 file.
-        encoding (str):  Encoding of file or object.
 
     Returns:
         Dict[str, pd.DataFrame]: A dictionary of pandas DataFrames, where each key represents a group name from AGS 4 data,
