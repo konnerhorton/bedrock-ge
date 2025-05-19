@@ -161,3 +161,7 @@ Contributing isn't scary. Contributing isn't just about writing code:
 ## Contributors
 
 Please take a look at the [contributors page](https://github.com/bedrock-engineer/bedrock-ge/graphs/contributors).
+
+## Professional Support
+
+While `bedrock-ge` is an Open Source project, you might be looking for professional support implementing it, contact info@bedrock.engineer.
