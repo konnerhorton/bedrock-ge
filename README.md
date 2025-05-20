@@ -24,16 +24,16 @@
 
 > **Definition of Bedrock**
 >
-> In an abstract sense, the main principles on which something is based. [1]
+> In an abstract sense, the bedrock refers to the main principles something is based on. [1]
 >
 > In the real world, the bedrock is the hard area of rock in the ground that holds up the loose soil above. [1]
 >
-> In many civil engineering projects, the identification of the bedrock through digging, drilling or geophysical methods is an important task, which greatly influences (foundation) design. [2]
+> In many civil engineering projects, the identification of the bedrock through digging, drilling or geophysical methods is an important task, which greatly influences (geotechnical) design. [2]
 >
 > Sources: [[1] Bedrock | Cambridge Dictionary](https://dictionary.cambridge.org/us/dictionary/english/bedrock), [[2] Bedrock | Wikipedia](https://en.wikipedia.org/wiki/Bedrock)
 
-Valuable ground investigation data is often trapped in legacy formats that limit analysis and visualization.
-`bedrock-ge` lets you transforms this data from specialized geotechnical formats and common formats (Excel, CSV) into standardized geospatial data.
+Ground Investigation (GI) data is often trapped in legacy formats that limit analysis and visualization possibilities.
+`bedrock-ge` lets you transform this data from specialized geotechnical formats and common tabular formats (Excel, CSV) into standardized geospatial data.
 `bedrock-ge` validates the data for consistency and converts it into modern geospatial formats that can be stored in industry-standard databases.
 
 This standardization lets you bridge the gap between raw geotechnical data and modern Python (geo)scientific ecosystem and modern geospatial tools.
@@ -66,17 +66,27 @@ Also, if you have a project with publicly available GI data, please share that i
 
 This data validation mechanism (based on [`pandera`](https://pandera.readthedocs.io/en/stable/)) is easily extensible, giving you the power to add your own data validation criteria.
 
-### 🗺️ Put your GI data from multiple files into a single 3D GIS database
+### 🗺️ Put your GI data from multiple files into a single 3D geospatial database
 
 For example, you can take GI data from 100 AGS files and combine them into a single a [GeoPackage](https://en.wikipedia.org/wiki/GeoPackage) ([like a Shapefile, but then waaay better](http://switchfromshapefile.org/)). Such a GeoPackage can then be loaded into ArcGIS, where you can visualize your GI data in 3D:
 
 <figure style="margin-inline: block; display: block;">
-  <img src="https://bedrock.engineer/public/images/KaiTak_BrGI_ArcGIS.gif" alt="GI data visualization .gif in 3D in ArcGIS" width="80%"/> 
+  <img src="https://bedrock.engineer/public/images/KaiTak_BrGI_ArcGIS.gif" alt="GI data visualization .gif in 3D in ArcGIS" width="90%"/> 
+  <figcaption>
+  <a href="https://arcg.is/0r9DG9">Click here to explore this visualization in your browser</a>
+</figcaption>
 </figure>
 
 ### 🟦 Put your GI data into Speckle
 
-Once you have your GI data inside [Speckle](https://speckle.systems/), it's easy to visualize GI data together with civil engineering designs:
+From ArcGIS or QGIS you can publish your GI data to [Speckle](https://speckle.systems/) and then visualize it together with your ground models and civil engineering designs:
+
+<figure style="margin-inline: block; display: block;">
+  <img src="https://bedrock.engineer/public/images/KaiTak_BrGI_ArcGIS.gif" alt="GI data visualization .gif in 3D in ArcGIS" width="90%"/> 
+  <figcaption>
+  <a href="https://arcg.is/0r9DG9">Click here to explore this visualization in your browser</a>
+</figcaption>
+</figure>
 
 <div style="margin-inline: block;">
   <img src="https://bedrock.engineer/public/images/KaiTak_BrGI_Speckle.png" alt="Kai Tak, Hong Kong, data from many sources." width="56%" />
@@ -92,11 +102,11 @@ Moreover, your GI data becomes available in all the software that [Speckle has c
 
 As the name implies, FOSS is free to use, so you're not tied to expensive software licenses or locked into a specific software vendor.
 
-You can give [feedback](#-feedback) and [contribute](#-contributing), such that together we together can build the tools we've always wanted and needed.
+You can give [feedback](#-feedback) and [contribute](#-contributing), such that together we can build the tools we've always wanted and needed.
 
 ## ⬇️ Installation
 
-We recommend to use [`uv`](https://docs.astral.sh/uv/) as a package manager.
+We recommend to use [`uv`](https://docs.astral.sh/uv/) as your package manager.
 Using `uv`, you can add `bedrock-ge` to your Python project and install it in your project's virtual environment by running:
 
 ```bash
@@ -125,36 +135,34 @@ All feedback and engagement with the Bedrock community is welcome.
 
 Contributing isn't scary. Contributing isn't just about writing code:
 
+- Spread the word about Bedrock
 - Use Bedrock and provide [feedback](#-feedback)
 - Share how you use Bedrock
 - Help each other out, e.g. by replying to questions in the [discussions](https://github.com/orgs/bedrock-engineer/discussions) or [`bedrock-ge` issues](https://github.com/bedrock-engineer/bedrock-ge/issues)
-- Spread the word about Bedrock
 - Documentation and tutorials
 - Most pages on the [bedrock.engineer](https://bedrock.engineer/) website can be edited, so if you see a spelling mistake or have a suggestion on how to explain something better, click this button to make a contribition.
 
 <figure style="margin-inline: block;">
-  <img src="https://bedrock.engineer/public/images/EditThisPage.png" alt="Edit this page on GitHub button on bedrock.engineer" width="20%"/>
+  <img src="https://bedrock.engineer/public/images/EditThisPage.png" alt="Edit this page on GitHub button on bedrock.engineer" width="25%"/>
 </figure>
 
 - If you would like to contribute code, awesome!
-  Please create an issue for what you'd like to contribute. If you don't know how to get started, please indicate this in your issue, and we'll help you out.
+  Please create an [issue](https://github.com/bedrock-engineer/bedrock-ge/issues) for what you'd like to contribute. If you don't know how to get started, please indicate this in your issue, and we'll help you out.
 
 ## Maintainers
 
 ### Joost
 
-> Hi, I'm Joost Gevaert 👋
-
 > I studied geotechnical engineering and applied geophysics and then worked for [Arup](https://www.arup.com/) for 4 years as a geotechnical engineer and [computational designer](https://www.arup.com/services/computational-and-parametric-design/).
-
+>
 > During my time at Arup I worked a lot on bringing computational design into the world of geotechnical engineering, and on [bridging the gaps between geotechnical engineering and structural engineering](https://www.linkedin.com/posts/joost-gevaert_lightbim-lightbim-lightbim-activity-7234726439835549697-3xdO).
-
+>
 > Bedrock is the Free and Open Source Software (FOSS) that I wish existed when I worked as a geotechnical engineer at Arup.
 
 ### Jules
 
-> Hi, my name is Jules. I studied Applied Geoscience (Petroleum Engineering Reservoir Geology) but frustration with technical software led me to learn to code and as a result, I mostly worked in software development.
-
+> I studied Applied Geoscience (Petroleum Engineering Reservoir Geology) but frustration with technical software led me to learn to code and as a result, I mostly worked in software development.
+>
 > Over the past 5 years, I’ve worked on data-rich applications across various domains, specifically in frontend development.
 > My primary interest is figuring out how to build tools for more thoughtful display and processing of technical information, for geoscience in particular.
 
@@ -164,4 +172,4 @@ Please take a look at the [contributors page](https://github.com/bedrock-enginee
 
 ## Professional Support
 
-While `bedrock-ge` is an Open Source project, you might be looking for professional support implementing it, contact info@bedrock.engineer.
+While `bedrock-ge` is an Free Open Source Software (FOSS) project, you might be looking for professional support implementing it, contact <info@bedrock.engineer> for more information.
