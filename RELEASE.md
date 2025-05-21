@@ -11,7 +11,7 @@ Follow [Semantic Versioning](https://semver.org/) (e.g., `1.0.0`, `1.1.0`, `1.1.
 Update the version number in:
 
 - [`pyproject.toml`](pyproject.toml)
-- [`/src/bedrock/__init__.py`](/src/bedrock/__init__.py)
+- [`/src/bedrock/__init__.py`](/src/bedrock_ge/__init__.py)
 - Inline script dependencies of marimo notebooks in [`examples`](/examples/)
 
 ## 2. Update the Changelog
