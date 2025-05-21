@@ -72,7 +72,7 @@ For example, you can take GI data from 100 AGS files and combine them into a sin
 <figure style="margin-inline: block; display: block;">
   <img src="https://bedrock.engineer/public/images/KaiTak_BrGI_ArcGIS.gif" alt="GI data visualization .gif in 3D in ArcGIS" width="90%"/> 
   <figcaption>
-  <a href="https://arcg.is/0r9DG9">Click here to explore this visualization in your browser</a>
+  GI data in Kai Tak, Hong Kong. <a href="https://arcg.is/0r9DG9">Click here to explore yourself.</a>
 </figcaption>
 </figure>
 
@@ -81,17 +81,18 @@ For example, you can take GI data from 100 AGS files and combine them into a sin
 From ArcGIS or QGIS you can publish your GI data to [Speckle](https://speckle.systems/) and then visualize it together with your ground models and civil engineering designs:
 
 <figure style="margin-inline: block; display: block;">
-  <img src="https://bedrock.engineer/public/images/KaiTak_BrGI_ArcGIS.gif" alt="GI data visualization .gif in 3D in ArcGIS" width="90%"/> 
+  <img src="https://bedrock.engineer/public/images/KaiTak_BrGI_Speckle.png" alt="Kai Tak, Hong Kong, data from many sources." width="90%"/> 
   <figcaption>
-  <a href="https://arcg.is/0r9DG9">Click here to explore this visualization in your browser</a>
+  Models from Rhino, Revit, Civil3D + context & GI data from Q/ArcGIS. <a href="https://app.speckle.systems/projects/013aaf06e7/models/0fa0287ba8@dfbec71408,1cbe68ed69@d3c4a34cff,44c8d1ecae@b962e2f29d,7f9d99cae2@bbed7cf165,9535541c2b@fafe06f9c0,a739490298@e858cc8cb3,ff81bfa02b@dda7c2f981">Click here to explore yourself.</a>
 </figcaption>
 </figure>
 
-<div style="margin-inline: block;">
-  <img src="https://bedrock.engineer/public/images/KaiTak_BrGI_Speckle.png" alt="Kai Tak, Hong Kong, data from many sources." width="56%" />
-  <img src="https://bedrock.engineer/public/images/BPFoundation.png" alt="Bored Pile foundation design." width="40%" />
-  <a href="https://app.speckle.systems/projects/013aaf06e7/models/0fa0287ba8@dfbec71408,1cbe68ed69@d3c4a34cff,44c8d1ecae@b962e2f29d,7f9d99cae2@bbed7cf165,9535541c2b@fafe06f9c0,a739490298@e858cc8cb3,ff81bfa02b@dda7c2f981" target="_blank">Click here to go to the Kai Tak Speckle project from the left image</a>
-</div>
+<figure style="margin-inline: block; display: block;">
+  <img src="https://bedrock.engineer/public/images/WekaHills_Speckle.gif" alt="GI data, the derived Leapfrog ground model and a tunnel in Speckle." width="90%"/> 
+  <figcaption>
+  GI data, the derived Leapfrog ground model and a tunnel in Speckle. <a href="https://app.speckle.systems/projects/7a489ac0d4/models/$epsg:2193-7839%2Fgeo%2Fgeology-model,65b4cf97d5,9069ef2b2b">Click here to explore yourself.</a>
+</figcaption>
+</figure>
 
 Moreover, your GI data becomes available in all the software that [Speckle has connectors for](https://app.speckle.systems/downloads).
 
