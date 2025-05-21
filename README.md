@@ -106,7 +106,7 @@ You can give [feedback](#-feedback) and [contribute](#-contributing), such that 
 
 ## Installation
 
-We recommend to use [`uv`](https://docs.astral.sh/uv/) as your package manager.
+We recommend to use [`uv`](https://docs.astral.sh/uv/) to manage Python for you.
 Using `uv`, you can add `bedrock-ge` to your Python project and install it in your project's virtual environment by running:
 
 ```bash
