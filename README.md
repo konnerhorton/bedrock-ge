@@ -35,9 +35,9 @@
 Ground Investigation (GI) data is often trapped in legacy formats that limit analysis and visualization possibilities.
 `bedrock-ge` lets you transform this data from specialized geotechnical formats and common tabular formats (Excel, CSV) into modern, standardized geospatial data.
 
-This standardization lets you bridge the gap between raw geotechnical data and modern Python (geo)scientific ecosystem and modern geospatial tools.
+This standardization lets you bridge the gap between raw geotechnical data, the modern Python (geo)scientific ecosystem and modern geospatial tools.
 This gives geotechnical engineers greater flexibility in visualization, modeling, and integration across different software environments while avoiding vendor lock-in.
-For example, this enables connections with GIS and BIM environments through [platforms like Speckle](#-put-your-gi-data-into-speckle).
+For example, this enables connecting your GI data with GIS as well as BIM environments through [platforms like Speckle](#-put-your-gi-data-into-speckle).
 
 The purpose of Bedrock is NOT to become THE standard for geotechnical data, because [we don't need 15 instead of 14 competing standards](https://xkcd.com/927/). 
 
@@ -61,7 +61,7 @@ Also, if you have a project with publicly available GI data, please share that i
 
 ### ✅ Validate your GI data
 
-`bedrock-ge` comes with data validation to make sure that you can combine Ground Investigation data from multiple files into a single GIS database with consistent relationships between GI locations, samples, in-situ measurements and lab tests.
+`bedrock-ge` comes with data validation to make sure that you can combine Ground Investigation data from multiple files into a single geospatial database with consistent relationships between GI locations, samples, in-situ measurements and lab tests.
 
 This data validation mechanism (based on [`pandera`](https://pandera.readthedocs.io/en/stable/)) is easily extensible, giving you the power to add your own data validation criteria.
 
@@ -70,9 +70,9 @@ This data validation mechanism (based on [`pandera`](https://pandera.readthedocs
 For example, you can take GI data from 100 AGS files and combine them into a single a [GeoPackage](https://en.wikipedia.org/wiki/GeoPackage) ([like a Shapefile, but then waaay better](http://switchfromshapefile.org/)). Such a GeoPackage can then be loaded into ArcGIS, where you can visualize your GI data in 3D:
 
 <figure style="margin-inline: block; display: block;">
-  <img src="https://bedrock.engineer/public/images/KaiTak_BrGI_ArcGIS.gif" alt="GI data visualization .gif in 3D in ArcGIS" width="90%"/> 
+  <img src="https://bedrock.engineer/public/images/KaiTak_BrGI_ArcGIS.gif" alt="Kai Tak, Hong Kong, 3D GI data visualization in ArcGIS" width="90%"/> 
   <figcaption>
-  GI data in Kai Tak, Hong Kong. <a href="https://arcg.is/0r9DG9">Click here to explore yourself.</a>
+  GI data in Kai Tak, Hong Kong. <a href="https://arcg.is/0r9DG9">Click here to explore for yourself.</a>
 </figcaption>
 </figure>
 
@@ -81,16 +81,16 @@ For example, you can take GI data from 100 AGS files and combine them into a sin
 From ArcGIS or QGIS you can publish your GI data to [Speckle](https://speckle.systems/) and then visualize it together with your ground models and civil engineering designs:
 
 <figure style="margin-inline: block; display: block;">
-  <img src="https://bedrock.engineer/public/images/KaiTak_BrGI_Speckle.png" alt="Kai Tak, Hong Kong, data from many sources." width="90%"/> 
+  <img src="https://bedrock.engineer/public/images/KaiTak_BrGI_Speckle.png" alt="Kai Tak, Hong Kong, data from many sources in Speckle." width="90%"/> 
   <figcaption>
-  Models from Rhino, Revit, Civil3D + context & GI data from Q/ArcGIS. <a href="https://app.speckle.systems/projects/013aaf06e7/models/0fa0287ba8@dfbec71408,1cbe68ed69@d3c4a34cff,44c8d1ecae@b962e2f29d,7f9d99cae2@bbed7cf165,9535541c2b@fafe06f9c0,a739490298@e858cc8cb3,ff81bfa02b@dda7c2f981">Click here to explore yourself.</a>
+  Models from Rhino, Revit, Civil3D + context & GI data from Q/ArcGIS. <a href="https://app.speckle.systems/projects/013aaf06e7/models/0fa0287ba8,1cbe68ed69,44c8d1ecae,7f9d99cae2,9535541c2b,a739490298,ff81bfa02b">Click here to explore for yourself.</a>
 </figcaption>
 </figure>
 
 <figure style="margin-inline: block; display: block;">
   <img src="https://bedrock.engineer/public/images/WekaHills_Speckle.gif" alt="GI data, the derived Leapfrog ground model and a tunnel in Speckle." width="90%"/> 
   <figcaption>
-  GI data, the derived Leapfrog ground model and a tunnel in Speckle. <a href="https://app.speckle.systems/projects/7a489ac0d4/models/$epsg:2193-7839%2Fgeo%2Fgeology-model,65b4cf97d5,9069ef2b2b">Click here to explore yourself.</a>
+  GI data, the derived Leapfrog ground model and a tunnel in Speckle. <a href="https://app.speckle.systems/projects/7a489ac0d4/models/$epsg:2193-7839%2Fgeo%2Fgeology-model,65b4cf97d5,9069ef2b2b">Click here to explore for yourself.</a>
 </figcaption>
 </figure>
 
@@ -104,7 +104,7 @@ As the name implies, FOSS is free to use, so you're not tied to expensive softwa
 
 You can give [feedback](#-feedback) and [contribute](#-contributing), such that together we can build the tools we've always wanted and needed.
 
-## ⬇️ Installation
+## Installation
 
 We recommend to use [`uv`](https://docs.astral.sh/uv/) as your package manager.
 Using `uv`, you can add `bedrock-ge` to your Python project and install it in your project's virtual environment by running:
