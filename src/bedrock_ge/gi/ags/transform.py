@@ -43,7 +43,7 @@ def ags3_db_to_no_gis_brgi_db(
 
     Returns:
         Dict[str, pd.DataFrame]: A dictionary containing Bedrock GI database tables,
-        where keys are table names and values are transformed pandas DataFrames.
+            where keys are table names and values are transformed pandas DataFrames.
 
     Note:
         The function creates a copy of the input database to avoid modifying the original data.

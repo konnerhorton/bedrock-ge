@@ -18,7 +18,7 @@ def ags_to_dfs(ags_data: str) -> Dict[str, pd.DataFrame]:
 
     Returns:
         Dict[str, pd.DataFrame]]: A dictionary where keys represent AGS group
-        names with corresponding DataFrames for the corresponding group data.
+            names with corresponding DataFrames for the corresponding group data.
     """
     # Process each line to find the AGS version and delegate parsing
     for line in ags_data.splitlines():
@@ -57,8 +57,9 @@ def ags3_to_dfs(ags3_data: str) -> Dict[str, pd.DataFrame]:
         ags3_data (str): The AGS 3 data as a string.
 
     Returns:
-        Dict[str, pd.DataFrame]: A dictionary of pandas DataFrames, where each key represents a group name from AGS 3 data,
-        and the corresponding value is a pandas DataFrame containing the data for that group.
+        Dict[str, pd.DataFrame]: A dictionary of pandas DataFrames, where each key
+            represents a group name from AGS 3 data, and the corresponding value is a
+            pandas DataFrame containing the data for that group.
     """
     # Initialize dictionary and variables used in the AGS 3 read loop
     ags3_dfs = {}
@@ -156,8 +157,9 @@ def ags4_to_dfs(ags4_data: str) -> Dict[str, pd.DataFrame]:
         ags4_data (str): The AGS 4 data as a string.
 
     Returns:
-        Dict[str, pd.DataFrame]: A dictionary of pandas DataFrames, where each key represents a group name from AGS 4 data,
-        and the corresponding value is a pandas DataFrame containing the data for that group.
+        Dict[str, pd.DataFrame]: A dictionary of pandas DataFrames, where each key 
+            represents a group name from AGS 4 data, and the corresponding value is a
+            pandas DataFrame containing the data for that group.
     """
     # AGS4.AGS4_to_dataframe accepts the file, not the data string
     ags4_file = io.StringIO(ags4_data)
