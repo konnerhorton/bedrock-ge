@@ -73,12 +73,9 @@ Tracker = "https://github.com/bedrock-engineer/bedrock-ge/issues"
 [dependency-groups]
 dev = [
     "duckdb>=1.2.2",
-    "folium>=0.17.0",
     "frictionless[excel]>=4.40.8",
     "jupyter>=1.1.1",
-    "mapclassify>=2.8.1",
     "marimo>=0.12.5",
-    "matplotlib>=3.9.2",
     "mypy>=1.11.2",
     "nbconvert>=7.16.6",
     "pandas-stubs>=2.2.2.240807",
@@ -87,6 +84,9 @@ dev = [
 ]
 
 tests = [
+    "folium>=0.17.0",
+    "mapclassify>=2.8.1",
+    "matplotlib>=3.9.2",
     "pytest>=8.3.3",
 ]
 
