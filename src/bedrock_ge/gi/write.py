@@ -16,7 +16,8 @@ def write_gi_db_to_gpkg(
     separate table named by the keys of the dictionary.
 
     Args:
-        brgi_db (dict): A dictionary where keys are brgi table names and values are DataFrames
+        brgi_db (Dict[str, Union[pd.DataFrame, gpd.GeoDataFrame]]): A dictionary where
+            keys are brgi table names and values are pandas DataFrames or GeoDataFrames
             with brgi data.
         gpkg_path (str): The name of the output GeoPackage file.
 
@@ -39,7 +40,7 @@ def write_gi_db_to_gpkg(
 
 
 def write_gi_db_to_excel(
-    gi_db: Dict[str, Union[pd.DataFrame, gpd.GeoDataFrame]],
+    gi_dfs: Dict[str, Union[pd.DataFrame, gpd.GeoDataFrame]],
     excel_path: Union[str, Path],
 ) -> None:
     """Writes a database with Ground Investigation data to an Excel file.
@@ -49,15 +50,17 @@ def write_gi_db_to_excel(
     AGS, Bedrock, or another format.
 
     Args:
-        gi_dfs (dict): A dictionary where keys are GI table names and values are DataFrames with GI data.
-        excel_path (str): The name of the output Excel file.
+        gi_dfs (Dict[str, Union[pd.DataFrame, gpd.GeoDataFrame]]): A dictionary where
+            keys are GI table names and values are DataFrames with GI data.
+        excel_path (Union[str, Path]): Path to the output Excel file. Can be provided as a
+            string or Path object.
 
     Returns:
         None
     """
     # Create an Excel writer object
     with pd.ExcelWriter(excel_path, engine="openpyxl") as writer:
-        for sheet_name, df in gi_db.items():
+        for sheet_name, df in gi_dfs.items():
             sanitized_sheet_name = sanitize_table_name(sheet_name)
             if isinstance(df, pd.DataFrame) or isinstance(df, gpd.GeoDataFrame):
                 df.to_excel(writer, sheet_name=sanitized_sheet_name, index=False)
@@ -76,7 +79,7 @@ def sanitize_table_name(sheet_name):
         sheet_name (str): The original sheet name.
 
     Returns:
-        sanitized_name: A sanitized sheet name with invalid characters and spaces replaced.
+        sanitized_name (str): A sanitized sheet name with invalid characters and spaces replaced.
     """
     # Trim to a maximum length of 31 characters
     trimmed_name = sheet_name.strip()[:31]
