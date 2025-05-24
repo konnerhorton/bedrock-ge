@@ -177,7 +177,7 @@ def ags_to_dfs(
 
     Returns:
         Dict[str, pd.DataFrame]]: A dictionary where keys represent AGS group
-        names with corresponding DataFrames for the corresponding group data.
+            names with corresponding DataFrames for the corresponding group data.
     """
     # if bytes are provided, convert to IO[bytes] to be file-like
     if isinstance(source, bytes):
@@ -228,8 +228,9 @@ def ags3_to_dfs(
         encoding (str):  Encoding of file or object.
 
     Returns:
-        Dict[str, pd.DataFrame]: A dictionary of pandas DataFrames, where each key represents a group name from AGS 3 data,
-        and the corresponding value is a pandas DataFrame containing the data for that group.
+        Dict[str, pd.DataFrame]: A dictionary of pandas DataFrames, where each key
+            represents a group name from AGS 3 data, and the corresponding value is a
+            pandas DataFrame containing the data for that group.
     """
     # Initialize dictionary and variables used in the AGS 3 read loop
     ags3_dfs = {}
@@ -332,8 +333,9 @@ def ags4_to_dfs(
             object that represents and AGS4 file.
 
     Returns:
-        Dict[str, pd.DataFrame]: A dictionary of pandas DataFrames, where each key represents a group name from AGS 4 data,
-        and the corresponding value is a pandas DataFrame containing the data for that group.
+        Dict[str, pd.DataFrame]: A dictionary of pandas DataFrames, where each key 
+            represents a group name from AGS 4 data, and the corresponding value is a
+            pandas DataFrame containing the data for that group.
     """
     ags4_tups = AGS4.AGS4_to_dataframe(source)
 

@@ -33,7 +33,7 @@ def check_brgi_database(brgi_db: Dict[str, Union[pd.DataFrame, gpd.GeoDataFrame]
             values are the corresponding data tables (DataFrame or GeoDataFrame).
 
     Returns:
-        bool: True if all tables are valid and relationships are properly maintained.
+        is_valid (bool): True if all tables are valid and relationships are properly maintained.
 
     Example:
         ```python

@@ -44,7 +44,8 @@ def test_kaitak_ags3_notebook_runs_and_creates_gpkg(examples_dir):
         env = os.environ.copy()
         env["PYTHONIOENCODING"] = "utf-8"
         result = subprocess.run(
-            ["uvx", "uv", "run", "--no-project", "--no-cache", str(notebook_path)],
+            # ["uvx", "uv", "run", "--no-project", "--no-cache", str(notebook_path)],
+            ["uv", "run", str(notebook_path)],
             check=False,
             capture_output=True,
             text=True,

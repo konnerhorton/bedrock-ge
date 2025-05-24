@@ -11,18 +11,14 @@ Follow [Semantic Versioning](https://semver.org/) (e.g., `1.0.0`, `1.1.0`, `1.1.
 Update the version number in:
 
 - [`pyproject.toml`](pyproject.toml)
-- [`/src/bedrock/__init__.py`](/src/bedrock/__init__.py)
+- [`/src/bedrock/__init__.py`](/src/bedrock_ge/__init__.py)
 - Inline script dependencies of marimo notebooks in [`examples`](/examples/)
 
-## 2. Update the Changelog
+## 3. PR `dev` → `main`
 
-Update `CHANGELOG.md` with details about the new release. Include any new features, bug fixes, or breaking changes.
+Open a pull request (PR) from `dev` to `main`.
 
-## 3. Run Tests
-
-Ensure that all tests pass by running your test suite.
-
-To automate this, it's possible to set up a CI (Continuous Integration) pipeline to confirm everything works in multiple environments, e.g. with `GitHub Actions`.
+This also runs the automated tests.
 
 ## 4. Commit the Changes
 
@@ -33,15 +29,11 @@ git add .
 git commit -m "Release version X.Y.Z"
 ```
 
-## 5. Prepare for Merge
-
-Open a pull request (PR) from `dev` to `main`.
-
-## 6. Merge `dev` into `main`
+## 5. Merge `dev` into `main`
 
 Once everything is ready, and the PR is approved, merge `dev` into `main`. This officially brings all the changes in `dev` into the release-ready `main` branch.
 
-## 7. Tag the Release
+## 6. Tag the Release
 
 Create a Git tag for the new version:
 
@@ -51,13 +43,19 @@ git tag X.Y.Z
 git push origin X.Y.Z
 ```
 
-## 8. Build the Distribution
+## 7. Build the Distribution
 
 Create source and wheel distributions:
 
 ```bash
 uv build
 ```
+
+This creates a `bedrock_ge-X.Y.Z.tar.gz` file (source) and a `bedrock_ge-X.Y.Z-py3-none-any.whl` file (wheel) in the `/dist` folder.
+
+## 8. Remove the old distribution
+
+In order for the `uv publish` command to work properly, only one version of the distriution can be inside the `/dist` folder. Therefore delete the old source and wheel files.
 
 ## 9. Publish to PyPI
 
@@ -68,10 +66,6 @@ uv build
 set UV_PUBLISH_TOKEN=pypi-blablabla
 uv publish
 ```
-
-> ⚠️ **Attention:**
->
-> You might have to delete previous distributions of the Python package in `dist/*`
 
 ## 10. Verify the Release
 
