@@ -29,12 +29,10 @@ def _():
 
     import io
     import platform
-    import re
     import sys
     import zipfile
     from pathlib import Path
 
-    import chardet
     import folium
     import geopandas as gpd
     import mapclassify
@@ -60,7 +58,6 @@ def _():
         ags3_db_to_no_gis_brgi_db,
         ags_to_dfs,
         calculate_gis_geometry,
-        chardet,
         check_brgi_database,
         check_no_gis_brgi_database,
         concatenate_databases,
@@ -79,7 +76,6 @@ def _():
 def _(
     ags3_db_to_no_gis_brgi_db,
     ags_to_dfs,
-    chardet,
     check_no_gis_brgi_database,
     concatenate_databases,
     zipfile,
@@ -94,11 +90,8 @@ def _(
                 if file_name.lower().endswith(".ags"):
                     print(f"\n🖥️ Processing {file_name} ...")
                     with zip_ref.open(file_name) as ags3_file:
-                        ags3_data = ags3_file.read()
-                        detected_encoding = chardet.detect(ags3_data)["encoding"]
-                        ags3_data = ags3_data.decode(detected_encoding)
-                    # Convert content of a single AGS 3 file to a Dictionary of pandas dataframes (a database)
-                    ags3_db = ags_to_dfs(ags3_data)
+                        # Convert content of a single AGS 3 file to a Dictionary of pandas dataframes (a database)
+                        ags3_db = ags_to_dfs(ags3_file)
                     report_no = file_name.split("/")[0]
                     ags3_db["PROJ"]["REPORT_NO"] = int(report_no)
                     project_uid = f"{ags3_db['PROJ']['PROJ_ID'].iloc[0]}_{file_name}"

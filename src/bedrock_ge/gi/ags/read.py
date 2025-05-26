@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import codecs
 import io
-from contextlib import contextmanager
+from contextlib import contextmanager, nullcontext
 from pathlib import Path
 from typing import IO, Any, ContextManager, Dict, List
 
@@ -33,7 +33,7 @@ def detect_encoding(source: str | Path | IO[str] | IO[bytes] | bytes) -> str:
         FileNotFoundError: If a file path doesn't exist
     """
     # Set number of bytes to read for detection and required confidence
-    SAMPLE_SIZE = 10_000
+    SAMPLE_SIZE = 1_000_000
     REQUIRED_CONFIDENCE = 0.7
 
     def _detect_from_bytes(data: bytes) -> str:
@@ -45,6 +45,9 @@ def detect_encoding(source: str | Path | IO[str] | IO[bytes] | bytes) -> str:
 
         if not encoding or confidence < REQUIRED_CONFIDENCE:
             return DEFAULT_ENCODING
+
+        if encoding.lower() == "ascii":
+            return "utf-8"
 
         return encoding
 
@@ -89,7 +92,6 @@ def detect_encoding(source: str | Path | IO[str] | IO[bytes] | bytes) -> str:
             original_position = source.tell()
             source.seek(0)
             sample = source.read(SAMPLE_SIZE)
-            encoding = _detect_from_bytes(sample)
             if isinstance(sample, bytes):
                 encoding = _detect_from_bytes(sample)
             else:
@@ -104,9 +106,9 @@ def detect_encoding(source: str | Path | IO[str] | IO[bytes] | bytes) -> str:
     raise TypeError(f"Unsupported input type for encoding detection: {type(source)}")
 
 
-def read_ags_source(
+def open_ags_source(
     source: str | Path | IO[str] | IO[bytes] | bytes, encoding=None
-) -> ContextManager[TextIOBase]:
+) -> ContextManager[io.TextIOBase]:
     """Opens or wraps a given source for reading AGS (text-based) data.
 
     Args:
@@ -123,41 +125,42 @@ def read_ags_source(
     Raises:
         TypeError: If the source type is unsupported or binary streams are not decoded.
     """
+    try:
+        codecs.lookup(encoding)
+    except LookupError:
+        raise ValueError(f"Unsupported encoding: {encoding}")
 
     @contextmanager
-    def string_source(content: str):
-        string_io = io.StringIO(content)
+    def _bytes_source(bytes_content: bytes):
+        string_io = io.StringIO(bytes_content.decode(encoding))
         try:
             yield string_io
         finally:
             string_io.close()
 
-    if isinstance(source, str):
+    if isinstance(source, (str, Path)):
         path = Path(source)
         if path.exists() and path.is_file():
             return open(path, "r", encoding=encoding)
         raise FileNotFoundError(f"Path does not exist or is not a file: {source}")
 
-    elif isinstance(source, Path):
-        if source.exists() and source.is_file():
-            return open(source, "r", encoding=encoding)
-        raise FileNotFoundError(f"Path does not exist or is not a file: {source}")
-
-    elif isinstance(source, bytes):
-        return string_source(source.decode(encoding))
-
-    elif isinstance(source, io.BytesIO):
-        return string_source(source.getvalue().decode(encoding))
-
-    elif hasattr(source, "read"):
-        # reset the cursor to the beginning
-        try:
-            source.seek(0)
-        except (AttributeError, io.UnsupportedOperation):
-            pass
+    elif isinstance(source, io.TextIOBase):
+        source.seek(0)
         return nullcontext(source)
 
-    raise TypeError(f"Unsupported input type: {type(source)}")
+    elif isinstance(source, io.BufferedIOBase):
+        text_stream = io.TextIOWrapper(source, encoding=encoding)
+        text_stream.seek(0)
+        return nullcontext(text_stream)
+
+    elif isinstance(source, bytes):
+        return _bytes_source(source)
+
+    else:
+        raise TypeError(
+            f"Unsupported source type: {type(source)}. "
+            "Expected str, Path, IO[str], IO[bytes], or bytes."
+        )
 
 
 def ags_to_dfs(
@@ -182,7 +185,7 @@ def ags_to_dfs(
         encoding = detect_encoding(source)
 
     # Get first non-blank line, `None` if all lines are blank
-    with read_ags_source(source, encoding=encoding) as f:
+    with open_ags_source(source, encoding=encoding) as f:
         first_line = next((line.strip() for line in f if line.strip()), None)
 
     if first_line:
@@ -234,7 +237,7 @@ def ags3_to_dfs(
     headers: List[str] = ["", "", ""]
     group_data: List[List[Any]] = [[], [], []]
 
-    with read_ags_source(source, encoding=encoding) as file:
+    with open_ags_source(source, encoding=encoding) as file:
         for i, line in enumerate(file):
             line = line.strip()
             last_line_type = line_type
