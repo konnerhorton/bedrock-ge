@@ -1,8 +1,8 @@
 from __future__ import annotations
 
+import codecs
 import io
-from contextlib import contextmanager, nullcontext
-from io import TextIOBase
+from contextlib import contextmanager
 from pathlib import Path
 from typing import IO, Any, ContextManager, Dict, List
 
@@ -20,21 +20,20 @@ def detect_encoding(source: str | Path | IO[str] | IO[bytes] | bytes) -> str:
 
     Args:
         source (str | Path | IO[str] | IO[bytes] | bytes): The source to detect encoding from.
-            - str: Treated as a file path if it exists, otherwise as text (returns `DEFAULT_ENCODING`)
-            - Path: File path to read and detect encoding
+            - str or Path: File path.
             - IO[str]: Already decoded text stream (returns `DEFAULT_ENCODING`)
             - IO[bytes]: Binary stream to detect encoding from
             - bytes: Binary data to detect encoding from
 
     Returns:
-        str: The detected encoding name (e.g., 'utf-8', 'iso-8859-1', etc.)
+        str: The detected encoding name (e.g., 'utf-8', 'iso-8859-1', 'ascii', etc.)
 
     Raises:
         TypeError: If the source type is unsupported
         FileNotFoundError: If a file path doesn't exist
     """
     # Set number of bytes to read for detection and required confidence
-    SAMPLE_SIZE = 10000
+    SAMPLE_SIZE = 10_000
     REQUIRED_CONFIDENCE = 0.7
 
     def _detect_from_bytes(data: bytes) -> str:
@@ -79,15 +78,15 @@ def detect_encoding(source: str | Path | IO[str] | IO[bytes] | bytes) -> str:
     # IO[str] object
     if hasattr(source, "encoding"):
         if source.encoding:
-            # Could be `None`
+            # Could be `None`, e.g. io.StringIO has an encoding attribute which is None.
             return source.encoding
         else:
             return DEFAULT_ENCODING
 
     # IO[bytes]
-    if isinstance(source, io.BytesIO):
-        original_position = source.tell()
+    if isinstance(source, io.BufferedIOBase):
         try:
+            original_position = source.tell()
             source.seek(0)
             sample = source.read(SAMPLE_SIZE)
             encoding = _detect_from_bytes(sample)
@@ -179,10 +178,6 @@ def ags_to_dfs(
         Dict[str, pd.DataFrame]]: A dictionary where keys represent AGS group
             names with corresponding DataFrames for the corresponding group data.
     """
-    # if bytes are provided, convert to IO[bytes] to be file-like
-    if isinstance(source, bytes):
-        source = io.BytesIO(source)
-
     if not encoding:
         encoding = detect_encoding(source)
 
@@ -333,7 +328,7 @@ def ags4_to_dfs(
             object that represents and AGS4 file.
 
     Returns:
-        Dict[str, pd.DataFrame]: A dictionary of pandas DataFrames, where each key 
+        Dict[str, pd.DataFrame]: A dictionary of pandas DataFrames, where each key
             represents a group name from AGS 4 data, and the corresponding value is a
             pandas DataFrame containing the data for that group.
     """
