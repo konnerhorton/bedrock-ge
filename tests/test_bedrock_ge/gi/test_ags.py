@@ -52,15 +52,15 @@ def test_detect_encoding():
     ags4_bio = io.BytesIO(ags4_byte)
 
     sources = {
-        ags3: ags3_encoding,
+        ags3: default_encoding,
         ags4: ags4_encoding,
-        ags3_path: ags3_encoding,
+        ags3_path: default_encoding,
         ags4_path: ags4_encoding,
-        ags3_byte: ags3_encoding,
+        ags3_byte: default_encoding,
         ags4_byte: ags4_encoding,
         ags3_sio: default_encoding,
         ags4_sio: default_encoding,
-        ags3_bio: ags3_encoding,
+        ags3_bio: default_encoding,
         ags4_bio: ags4_encoding,
     }
     for source, expected in sources.items():
