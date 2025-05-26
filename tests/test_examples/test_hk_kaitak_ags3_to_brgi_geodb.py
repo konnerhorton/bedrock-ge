@@ -2,6 +2,7 @@ import os
 import shutil
 import sqlite3
 import subprocess
+import sys
 from pathlib import Path
 from tempfile import TemporaryDirectory
 
@@ -39,13 +40,16 @@ def test_kaitak_ags3_notebook_runs_and_creates_gpkg(examples_dir):
         # TODO: implement logging
         # NOTE: The env (environment variables) and encoding are required for running
         # the notebook as a script from both Windows and Linux. Without => UnicodeDecodeError
-        # NOTE: `uvx uv run` runs the marimo notebook as a script in a temporary environment,
+        # NOTE: `(uvx) uv run` runs the marimo notebook as a script in a temporary environment,
         # with the Python version and dependencies specified in the PEP 723 inline script metadata.
+        # The issue with this approach is that it uses the latest version of bedrock-ge,
+        # rather than the current code in this repo.
         env = os.environ.copy()
         env["PYTHONIOENCODING"] = "utf-8"
         result = subprocess.run(
             # ["uvx", "uv", "run", "--no-project", "--no-cache", str(notebook_path)],
-            ["uv", "run", str(notebook_path)],
+            # ["uv", "run", str(notebook_path)],
+            [sys.executable, str(notebook_path)],
             check=False,
             capture_output=True,
             text=True,
@@ -55,7 +59,7 @@ def test_kaitak_ags3_notebook_runs_and_creates_gpkg(examples_dir):
 
         # Check that the script ran successfully
         assert result.returncode == 0, (
-            f"📛 Running `uvx run marimo notebook.py` failed with code {result.returncode}\n"
+            f"📛 Running `python notebook.py` failed with code {result.returncode}\n"
             f"📄 STDOUT:\n{result.stdout}\n"
             f"⚠️ STDERR:\n{result.stderr}"
         )
