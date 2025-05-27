@@ -4,6 +4,15 @@ import pandas as pd
 import pyproj
 from pydantic import BaseModel, ConfigDict, Field
 
+from bedrock_ge.gi.schemas import (
+    BedrockGIDatabase,
+    InSituTestSchema,
+    LabTestSchema,
+    LocationSchema,
+    ProjectSchema,
+    SampleSchema,
+)
+
 
 class ProjectTableMapping(BaseModel):
     data: Optional[Union[dict, pd.DataFrame]] = None
@@ -31,7 +40,7 @@ class SampleTableMapping(BaseModel):
     location_id_column: str
     sample_id_column: Union[str, list[str]]
     depth_to_top_column: str
-    depth_to_base_column: Optional[str]
+    depth_to_base_column: Optional[str] = None
 
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
@@ -50,13 +59,16 @@ class InSituTestTableMapping(OtherTable):
 
 
 class LabTestTableMapping(OtherTable):
-    sample_id_column: Union[str, list[str]]
+    location_id_column: Optional[str] = None
+    sample_id_column: str
 
 
 class BedrockGIDatabaseMapping(BaseModel):
     Project: ProjectTableMapping
     Location: LocationTableMapping
-    Sample: Optional[SampleTableMapping]
     InSitu: list[InSituTestTableMapping]
+    Sample: Optional[SampleTableMapping] = None
+
+
     Lab: Optional[list[LabTestTableMapping]]
     Other: Optional[list[OtherTable]]

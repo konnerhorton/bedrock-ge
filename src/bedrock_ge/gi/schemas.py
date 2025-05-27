@@ -2,21 +2,26 @@
 
 from typing import Optional
 
+import pandas as pd
 import pandera.pandas as pa
-from pandera.typing import Series
-from pandera.typing.geopandas import GeoSeries
+from pandera.typing import DataFrame, Series
+from pydantic import BaseModel, ConfigDict
 
 
-class Project(pa.DataFrameModel):
+class ProjectSchema(pa.DataFrameModel):
     project_uid: Series[str] = pa.Field(
         # primary_key=True,
         unique=True,
     )
-    crs_wkt: Series[str] = pa.Field(description="Coordinate Reference System")
-    # datum: Series[str] = pa.Field(description="Datum used for measurement of the ground level elevation.")
+    horizontal_crs_wkt: Series[str] = pa.Field(
+        description="Horizontal Coordinate Reference System (CRS) in Well-known Text (WKT) format."
+    )
+    vertical_crs_wkt: Series[str] = pa.Field(
+        description="Vertical Coordinate Reference System (CRS) in Well-known Text (WKT) format."
+    )
 
 
-class BaseLocation(pa.DataFrameModel):
+class LocationSchema(pa.DataFrameModel):
     location_uid: Series[str] = pa.Field(
         # primary_key=True,
         unique=True,
@@ -25,7 +30,6 @@ class BaseLocation(pa.DataFrameModel):
         # foreign_key="project.project_uid"
     )
     location_source_id: Series[str]
-    location_type: Series[str]
     easting: Series[float] = pa.Field(coerce=True)
     northing: Series[float] = pa.Field(coerce=True)
     ground_level_elevation: Series[float] = pa.Field(
@@ -35,18 +39,23 @@ class BaseLocation(pa.DataFrameModel):
     depth_to_base: Series[float]
 
 
-class Location(BaseLocation):
-    elevation_at_base: Series[float]
+class LonLatHeightSchema(pa.DataFrameModel):
+    project_uid: Series[str] = pa.Field(
+        # foreign_key="project.project_uid"
+    )
+    location_uid: Series[str] = pa.Field(
+        # foreign_key="location.location_uid",
+        unique=True,
+    )
     longitude: Series[float]
     latitude: Series[float]
-    wgs84_ground_level_height: Series[float] = pa.Field(
-        description="Ground level height w.r.t. the WGS84 (World Geodetic System 1984) ellipsoid.",
+    egm2008_ground_level_height: Series[float] = pa.Field(
+        description="Ground level orthometric height w.r.t. the EGM2008 (Earth Gravitational Model 2008).",
         nullable=True,
     )
-    geometry: GeoSeries
 
 
-class BaseInSitu(pa.DataFrameModel):
+class InSituTestSchema(pa.DataFrameModel):
     project_uid: Series[str] = pa.Field(
         # foreign_key="project.project_uid"
     )
@@ -57,7 +66,7 @@ class BaseInSitu(pa.DataFrameModel):
     depth_to_base: Optional[Series[float]] = pa.Field(coerce=True, nullable=True)
 
 
-class BaseSample(BaseInSitu):
+class SampleSchema(InSituTestSchema):
     sample_uid: Series[str] = pa.Field(
         # primary_key=True,
         unique=True,
@@ -65,19 +74,7 @@ class BaseSample(BaseInSitu):
     sample_source_id: Series[str]
 
 
-class Sample(BaseSample):
-    elevation_at_top: Series[float]
-    elevation_at_base: Optional[Series[float]] = pa.Field(nullable=True)
-    geometry: GeoSeries
-
-
-class InSitu(BaseInSitu):
-    elevation_at_top: Series[float]
-    elevation_at_base: Optional[Series[float]] = pa.Field(nullable=True)
-    geometry: GeoSeries
-
-
-class BaseLab(pa.DataFrameModel):
+class LabTestSchema(pa.DataFrameModel):
     project_uid: Series[str] = pa.Field(
         # foreign_key="project.project_uid"
     )
@@ -89,7 +86,18 @@ class BaseLab(pa.DataFrameModel):
     )
 
 
-class Lab(BaseLab):
-    geometry: GeoSeries = pa.Field(
-        description="GIS geometry of the sample on which this lab test was performed."
-    )
+class BedrockGIDatabase(BaseModel):
+    Project: pd.DataFrame
+    Location: pd.DataFrame
+    InSituTests: list[pd.DataFrame]
+    Sample: Optional[pd.DataFrame] = None
+    LabTests: Optional[list[pd.DataFrame]] = None
+    Other: Optional[list[pd.DataFrame]] = None
+
+    model_config = ConfigDict(arbitrary_types_allowed=True)
+
+
+class BedrockGIGeospatialDatabase(BedrockGIDatabase):
+    LonLatHeight: pd.DataFrame
+
+    model_config = ConfigDict(arbitrary_types_allowed=True)
