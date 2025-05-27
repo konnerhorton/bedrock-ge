@@ -4,7 +4,7 @@ from typing import Optional
 
 import pandas as pd
 import pandera.pandas as pa
-from pandera.typing import DataFrame, Series
+from pandera.typing import Series
 from pydantic import BaseModel, ConfigDict
 
 
@@ -13,11 +13,17 @@ class ProjectSchema(pa.DataFrameModel):
         # primary_key=True,
         unique=True,
     )
+    horizontal_crs: Series[str] pa.Field(
+        description="Horizontal Coordinate Reference System (CRS)."
+    )
     horizontal_crs_wkt: Series[str] = pa.Field(
-        description="Horizontal Coordinate Reference System (CRS) in Well-known Text (WKT) format."
+        description="Horizontal CRS in Well-known Text (WKT) format."
+    )
+    vertical_crs: Series[str] = pa.Field(
+        description="Vertical Coordinate Reference System (CRS)."
     )
     vertical_crs_wkt: Series[str] = pa.Field(
-        description="Vertical Coordinate Reference System (CRS) in Well-known Text (WKT) format."
+        description="Vertical CRS in Well-known Text (WKT) format."
     )
 
 
@@ -89,10 +95,10 @@ class LabTestSchema(pa.DataFrameModel):
 class BedrockGIDatabase(BaseModel):
     Project: pd.DataFrame
     Location: pd.DataFrame
-    InSituTests: list[pd.DataFrame]
+    InSituTests: dict[str, pd.DataFrame]
     Sample: Optional[pd.DataFrame] = None
-    LabTests: Optional[list[pd.DataFrame]] = None
-    Other: Optional[list[pd.DataFrame]] = None
+    LabTests: Optional[dict[str, pd.DataFrame]] = None
+    Other: Optional[dict[str, pd.DataFrame]] = None
 
     model_config = ConfigDict(arbitrary_types_allowed=True)
 

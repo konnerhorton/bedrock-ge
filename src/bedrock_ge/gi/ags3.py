@@ -144,7 +144,7 @@ def ags3_to_brgi_db_mapping(
     """
     check_ags_proj_group(ags3_db["PROJ"])
     ags3_project = ProjectTableMapping(
-        data=ags3_db["PROJ"],
+        data=ags3_db["PROJ"].to_dict(orient="records")[0],
         project_uid=ags3_db["PROJ"]["PROJ_ID"][0],
         horizontal_crs=projected_crs,
         vertical_crs=vertical_crs,
@@ -185,7 +185,7 @@ def ags3_to_brgi_db_mapping(
             df = _add_sample_source_id(df)
             ags3_lab_tests.append(
                 LabTestTableMapping(
-                    table_name=f"Lab_{group}",
+                    table_name=group,
                     data=df,
                     location_id_column="HOLE_ID",
                     sample_id_column="sample_source_id",
@@ -195,7 +195,7 @@ def ags3_to_brgi_db_mapping(
             top_depth, base_depth = _get_depth_columns(group, list(df.columns))
             ags3_insitu_tests.append(
                 InSituTestTableMapping(
-                    table_name=f"InSitu_{group}",
+                    table_name=group,
                     data=df,
                     location_id_column="HOLE_ID",
                     depth_to_top_column=top_depth,
