@@ -153,9 +153,6 @@ def ags3_hole_to_brgi_location(
     brgi_location["northing"] = ags3_hole["HOLE_NATN"]
     brgi_location["ground_level_elevation"] = ags3_hole["HOLE_GL"]
     brgi_location["depth_to_base"] = ags3_hole["HOLE_FDEP"]
-    brgi_location["elevation_at_base"] = (
-        brgi_location["ground_level_elevation"] - brgi_location["depth_to_base"]
-    )
 
     return ags3_hole  # type: ignore
 
