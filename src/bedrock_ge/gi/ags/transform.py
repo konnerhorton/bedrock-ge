@@ -130,7 +130,9 @@ def ags_proj_to_brgi_project(
     if "project_uid" not in ags_proj.columns:
         ags_proj["project_uid"] = ags_proj["PROJ_ID"]
 
+    ags_proj["horizontal_crs"] = horizontal_crs.to_string()
     ags_proj["horizontal_crs_wkt"] = horizontal_crs.to_wkt()
+    ags_proj["vertical_crs"] = vertical_crs.to_string()
     ags_proj["vertical_crs_wkt"] = vertical_crs.to_wkt()
 
     return ags_proj  # type: ignore
