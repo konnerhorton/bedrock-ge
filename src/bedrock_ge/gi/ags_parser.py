@@ -7,8 +7,8 @@ import pandas as pd
 from pyproj import CRS
 
 from bedrock_ge.gi.ags3 import ags3_to_brgi_db_mapping
-from bedrock_ge.gi.brgi_db_mapping import BedrockGIDatabaseMapping
 from bedrock_ge.gi.io_utils import detect_encoding, open_text_data_source
+from bedrock_ge.gi.mapping_models import BedrockGIMapping
 
 
 def ags_to_brgi_db_mapping(
@@ -16,7 +16,7 @@ def ags_to_brgi_db_mapping(
     projected_crs: CRS,
     vertical_crs: CRS = CRS(3855),
     encoding: str | None = None,
-) -> BedrockGIDatabaseMapping:
+) -> BedrockGIMapping:
     """Map AGS 3 or AGS 4 data to the Bedrock GI data model.
 
     Args:

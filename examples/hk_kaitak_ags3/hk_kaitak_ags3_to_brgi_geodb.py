@@ -227,7 +227,10 @@ def _(mo):
 
 @app.cell
 def _(CRS, zip, zipfile):
+    from bedrock_ge.gi.ags3 import ags3_to_brgi_db_mapping
     from bedrock_ge.gi.ags_parser import ags_to_brgi_db_mapping
+    from bedrock_ge.gi.mapping_models import BedrockGIMapping
+    from bedrock_ge.gi.mapper import map_to_brgi_db
 
     projected_crs = CRS("EPSG:2326")
     vertrical_crs = CRS("EPSG:5738")
@@ -240,18 +243,23 @@ def _(CRS, zip, zipfile):
                 print(f"\n🖥️ Processing {file_name} ...")
                 with zip_ref.open(file_name) as ags3_file:
                     # Convert content of a single AGS 3 file to a Dictionary of pandas dataframes (a database)
-                    ags3_to_brgi_db_mapping = ags_to_brgi_db_mapping(
+                    ags3_mapping = ags_to_brgi_db_mapping(
                         ags3_file, projected_crs, vertrical_crs
                     )
+                    brgi_db_obj = map_to_brgi_db(ags3_mapping)
 
     # with zipfile.ZipFile(zip) as zip_ref:
-    #     file_name = "58358/GE201304.18A.ags"
+    #     file_name = "21659/9508008.AGS"
     #     print(f"\n🖥️ Processing {file_name} ...")
     #     with zip_ref.open(file_name) as ags3_file:
     #         # Convert content of a single AGS 3 file to a Dictionary of pandas dataframes (a database)
-    #         ags3_to_brgi_db_mapping = ags_to_brgi_db_mapping(
-    #             ags3_file, projected_crs, vertrical_crs
+    #         ags3_mapping_obj = ags3_to_brgi_db_mapping(
+    #             ags3_file, projected_crs, vertrical_crs, "utf-8"
     #         )
+
+    # brgi_db_obj = map_to_brgi_db(ags3_mapping_obj)
+
+    # brgi_db_obj
     return
 
 

@@ -7,8 +7,9 @@ import pandas as pd
 from pyproj import CRS
 
 from bedrock_ge.gi.ags_schemas import Ags3HOLE, Ags3SAMP, check_ags_proj_group
-from bedrock_ge.gi.brgi_db_mapping import (
-    BedrockGIDatabaseMapping,
+from bedrock_ge.gi.io_utils import coerce_string, open_text_data_source
+from bedrock_ge.gi.mapping_models import (
+    BedrockGIMapping,
     InSituTestTableMapping,
     LabTestTableMapping,
     LocationTableMapping,
@@ -16,13 +17,15 @@ from bedrock_ge.gi.brgi_db_mapping import (
     ProjectTableMapping,
     SampleTableMapping,
 )
-from bedrock_ge.gi.io_utils import coerce_string, open_text_data_source
 
 
 def ags3_to_dfs(
     source: str | Path | IO[str] | IO[bytes] | bytes, encoding: str
 ) -> dict[str, pd.DataFrame]:
     """Converts AGS 3 data to a dictionary of pandas DataFrames.
+
+    Also strips '?' from non-standard AGS 3 group and header names, in order to
+    make the rest of the code more generic.
 
     Args:
         source (str | Path | IO[str] | IO[bytes] | bytes): The AGS 3 file (str or Path)
@@ -52,14 +55,14 @@ def ags3_to_dfs(
                 if group:
                     ags3_dfs[group] = pd.DataFrame(group_data, columns=headers)
 
-                group = line.strip(' ,"*')
+                group = line.strip(' ,"*?')
                 group_data = []
 
             # In AGS 3 header names are prefixed with "*
             elif line.startswith('"*'):
                 line_type = "headers"
                 new_headers = line.split('","')
-                new_headers = [h.strip(' ,"*') for h in new_headers]
+                new_headers = [h.strip(' ,"*?') for h in new_headers]
 
                 # Some groups have so many headers that they span multiple lines.
                 # Therefore we need to check whether the new headers are
@@ -131,7 +134,7 @@ def ags3_to_brgi_db_mapping(
     projected_crs: CRS,
     vertical_crs: CRS,
     encoding: str,
-) -> BedrockGIDatabaseMapping:
+) -> BedrockGIMapping:
     """Map AGS 3 data to the Bedrock GI data model.
 
     Args:
@@ -180,7 +183,6 @@ def ags3_to_brgi_db_mapping(
         )
         del ags3_dfs["SAMP"]
     else:
-        print("Your AGS 3 data doesn't contain a SAMP group, i.e. samples.")
         ags3_sample = None
 
     ags3_lab_tests = []
@@ -190,7 +192,7 @@ def ags3_to_brgi_db_mapping(
     for group, df in ags3_dfs.items():
         # Non-standard group names contain the "?" prefix.
         # => checking that "SAMP_TOP" / "HOLE_ID" is in the columns is too restrictive.
-        if any("SAMP_TOP" in col for col in df.columns):
+        if "SAMP_TOP" in df.columns:
             df = _add_sample_source_id(df)
             ags3_lab_tests.append(
                 LabTestTableMapping(
@@ -200,7 +202,7 @@ def ags3_to_brgi_db_mapping(
                     sample_id_column="sample_source_id",
                 )
             )
-        elif any("HOLE_ID" in col for col in df.columns):
+        elif "HOLE_ID" in df.columns:
             top_depth, base_depth = _get_depth_columns(group, list(df.columns))
             ags3_insitu_tests.append(
                 InSituTestTableMapping(
@@ -214,7 +216,7 @@ def ags3_to_brgi_db_mapping(
         else:
             ags3_other_tables.append(OtherTable(table_name=group, data=df))
 
-    ags3_brgi_db_mapping = BedrockGIDatabaseMapping(
+    brgi_db_mapping = BedrockGIMapping(
         Project=ags3_project,
         Location=ags3_location,
         InSitu=ags3_insitu_tests,
@@ -222,16 +224,18 @@ def ags3_to_brgi_db_mapping(
         Lab=ags3_lab_tests,
         Other=ags3_other_tables,
     )
-    return ags3_brgi_db_mapping
+    return brgi_db_mapping
 
 
 def _add_sample_source_id(df: pd.DataFrame) -> pd.DataFrame:
     df["sample_source_id"] = (
         df["SAMP_REF"].astype(str)
-        + "_"
+        + "-"
         + df["SAMP_TYPE"].astype(str)
-        + "_"
+        + "-"
         + df["SAMP_TOP"].astype(str)
+        + "-"
+        + df["HOLE_ID"].astype(str)
     )
     return df
 
