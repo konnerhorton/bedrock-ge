@@ -13,7 +13,7 @@ class ProjectSchema(pa.DataFrameModel):
         # primary_key=True,
         unique=True,
     )
-    horizontal_crs: Series[str] pa.Field(
+    horizontal_crs: Series[str] = pa.Field(
         description="Horizontal Coordinate Reference System (CRS)."
     )
     horizontal_crs_wkt: Series[str] = pa.Field(
