@@ -16,38 +16,6 @@ def _():
 
 
 @app.cell
-def _(pyproj):
-    vert_crs_3855 = pyproj.CRS(3855)
-    crs_7415 = pyproj.CRS(7415)
-    crs_9518 = pyproj.CRS(9518)
-    crs_components = extract_crs_components(crs_9518)
-    crs_components
-    return
-
-
-@app.function
-def extract_crs_components(compound_crs):
-    """Extract horizontal and vertical CRS from a compound CRS"""
-    if not compound_crs.is_compound:
-        return compound_crs, None
-
-    horizontal_crs = None
-    vertical_crs = None
-
-    for sub_crs in compound_crs.sub_crs_list:
-        if sub_crs.is_projected or sub_crs.is_geographic:
-            print(f"Horizontal CRS {sub_crs.name} is a {sub_crs.type_name} and has EPSG:{sub_crs.to_epsg()}.")
-            horizontal_crs = sub_crs
-        elif sub_crs.is_vertical:
-            print(f"Vertical CRS {sub_crs.name} has EPSG:{sub_crs.to_epsg()}.")
-            vertical_crs = sub_crs
-        else:
-            print(f"This CRS is not horizontal (projected or geographic) nor vertical: {sub_crs.type_name}")
-
-    return horizontal_crs, vertical_crs
-
-
-@app.cell
 def _(BaseModel, ConfigDict, Field, Optional, Union, pd, pyproj):
     class ProjectTableMapping(BaseModel):
         data: Optional[Union[dict, pd.DataFrame]] = None
@@ -55,7 +23,7 @@ def _(BaseModel, ConfigDict, Field, Optional, Union, pd, pyproj):
         horizontal_crs: pyproj.CRS
         vertical_crs: pyproj.CRS = Field(default=pyproj.CRS(3855))
         # "compound_crs": Optional[CRS] = None # In case a
-    
+
         model_config = ConfigDict(arbitrary_types_allowed=True)
 
 
@@ -66,7 +34,7 @@ def _(BaseModel, ConfigDict, Field, Optional, Union, pd, pyproj):
         northing_column: str
         ground_level_elevation_column: str
         depth_to_base_column: str
-    
+
         model_config = ConfigDict(arbitrary_types_allowed=True)
 
 
@@ -83,7 +51,7 @@ def _(BaseModel, ConfigDict, Field, Optional, Union, pd, pyproj):
     class OtherTable(BaseModel):
         table_name: str
         data: pd.DataFrame
-    
+
         model_config = ConfigDict(arbitrary_types_allowed=True)
 
 

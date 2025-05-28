@@ -60,5 +60,41 @@ def _(
     return
 
 
+@app.cell
+def _(CRS):
+    uk_grid_27700 = CRS(27700)
+    uk_3d = uk_grid_27700.to_3d()
+    swiss_2056 = CRS("EPSG:2056")
+    swiss_3d = swiss_2056.to_3d()
+    egm2008_3855 = CRS(3855)
+    rdnew_nap_7415 = CRS(7415)
+    wgs84_egm2008_9518 = CRS(9518)
+    crs_components = extract_crs_components(swiss_3d)
+    crs_components
+    return
+
+
+@app.function
+def extract_crs_components(compound_crs):
+    """Extract horizontal and vertical CRS from a compound CRS"""
+    if not compound_crs.is_compound:
+        return compound_crs, None
+
+    horizontal_crs = None
+    vertical_crs = None
+
+    for sub_crs in compound_crs.sub_crs_list:
+        if sub_crs.is_projected or sub_crs.is_geographic:
+            print(f"Horizontal CRS {sub_crs.name} is a {sub_crs.type_name} and has EPSG:{sub_crs.to_epsg()}.")
+            horizontal_crs = sub_crs
+        elif sub_crs.is_vertical:
+            print(f"Vertical CRS {sub_crs.name} has EPSG:{sub_crs.to_epsg()}.")
+            vertical_crs = sub_crs
+        else:
+            print(f"This CRS is not horizontal (projected or geographic) nor vertical: {sub_crs.type_name}")
+
+    return horizontal_crs, vertical_crs
+
+
 if __name__ == "__main__":
     app.run()
