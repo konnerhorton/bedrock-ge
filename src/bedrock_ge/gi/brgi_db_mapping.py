@@ -68,8 +68,8 @@ class BedrockGIDatabaseMapping(BaseModel):
     Location: LocationTableMapping
     InSitu: list[InSituTestTableMapping]
     Sample: Optional[SampleTableMapping] = None
-    Lab: Optional[list[LabTestTableMapping]] = None
-    Other: Optional[list[OtherTable]] = None
+    Lab: Optional[list[LabTestTableMapping]] = []
+    Other: Optional[list[OtherTable]] = []
 
 
 def map_to_brgi_db(brgi_db_mapping: BedrockGIDatabaseMapping) -> BedrockGIDatabase:

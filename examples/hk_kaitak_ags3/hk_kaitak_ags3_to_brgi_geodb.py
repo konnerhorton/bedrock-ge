@@ -226,6 +226,36 @@ def _(mo):
 
 
 @app.cell
+def _(CRS, zip, zipfile):
+    from bedrock_ge.gi.ags_parser import ags_to_brgi_db_mapping
+
+    projected_crs = CRS("EPSG:2326")
+    vertrical_crs = CRS("EPSG:5738")
+
+    with zipfile.ZipFile(zip) as zip_ref:
+        # Iterate over files and directories in the .zip archive
+        for file_name in zip_ref.namelist():
+            # Only process files that have an .ags or .AGS extension
+            if file_name.lower().endswith(".ags"):
+                print(f"\n🖥️ Processing {file_name} ...")
+                with zip_ref.open(file_name) as ags3_file:
+                    # Convert content of a single AGS 3 file to a Dictionary of pandas dataframes (a database)
+                    ags3_to_brgi_db_mapping = ags_to_brgi_db_mapping(
+                        ags3_file, projected_crs, vertrical_crs
+                    )
+
+    # with zipfile.ZipFile(zip) as zip_ref:
+    #     file_name = "58358/GE201304.18A.ags"
+    #     print(f"\n🖥️ Processing {file_name} ...")
+    #     with zip_ref.open(file_name) as ags3_file:
+    #         # Convert content of a single AGS 3 file to a Dictionary of pandas dataframes (a database)
+    #         ags3_to_brgi_db_mapping = ags_to_brgi_db_mapping(
+    #             ags3_file, projected_crs, vertrical_crs
+    #         )
+    return
+
+
+@app.cell
 def _(CRS, pd, zip, zip_of_ags3s_to_bedrock_gi_database):
     brgi_db = zip_of_ags3s_to_bedrock_gi_database(zip, CRS("EPSG:2326"))
 

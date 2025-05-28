@@ -19,7 +19,7 @@ from bedrock_ge.gi.brgi_db_mapping import (
 from bedrock_ge.gi.io_utils import coerce_string, open_text_data_source
 
 
-def ags3_to_db(
+def ags3_to_dfs(
     source: str | Path | IO[str] | IO[bytes] | bytes, encoding: str
 ) -> dict[str, pd.DataFrame]:
     """Converts AGS 3 data to a dictionary of pandas DataFrames.
@@ -35,7 +35,7 @@ def ags3_to_db(
             a pandas DataFrame containing the data for that group.
     """
     # Initialize dictionary and variables used in the AGS 3 read loop
-    ags3_db = {}
+    ags3_dfs = {}
     line_type = "line_0"
     group = ""
     headers: list[str] = ["", "", ""]
@@ -50,7 +50,7 @@ def ags3_to_db(
             if line.startswith('"**'):
                 line_type = "group_name"
                 if group:
-                    ags3_db[group] = pd.DataFrame(group_data, columns=headers)
+                    ags3_dfs[group] = pd.DataFrame(group_data, columns=headers)
 
                 group = line.strip(' ,"*')
                 group_data = []
@@ -86,7 +86,7 @@ def ags3_to_db(
                     continue
                 elif len(data_row) != len(headers):
                     print(
-                        f"\n🚨 CAUTION: The number of columns on line {i + 1} ({len(data_row)}) doesn't match the number of columns of group {group} ({len(headers)})!",
+                        f"\n🚨 CAUTION: The number of columns ({len(data_row)}) on line {i + 1} doesn't match the number of columns ({len(headers)}) of group {group}!",
                         f"{group} headers: {headers}",
                         f"Line {i + 1}:      {data_row}",
                         sep="\n",
@@ -113,58 +113,64 @@ def ags3_to_db(
                     group_data.append(cleaned_data_row)
 
     # Also add the last group's df to the dictionary of AGS dfs
-    ags3_db[group] = pd.DataFrame(group_data, columns=headers).dropna(axis=1, how="all")
+    ags3_dfs[group] = pd.DataFrame(group_data, columns=headers).dropna(
+        axis=1, how="all"
+    )
 
     if not group:
         print(
             '🚨 ERROR: The provided AGS 3 data does not contain any groups, i.e. lines starting with "**'
         )
 
-    return ags3_db
+    return ags3_dfs
 
 
 # TODO: AGS 3 table validation based on the AGS 3 data dictionary.
 def ags3_to_brgi_db_mapping(
-    ags3_db: dict[str, pd.DataFrame],
+    source: str | Path | IO[str] | IO[bytes] | bytes,
     projected_crs: CRS,
-    vertical_crs: CRS = CRS(3855),
+    vertical_crs: CRS,
+    encoding: str,
 ) -> BedrockGIDatabaseMapping:
-    """Map AGS 3 data to Bedrock GI data model.
+    """Map AGS 3 data to the Bedrock GI data model.
 
     Args:
         ags3_db (dict[str, pd.DataFrame]): A dictionary of pandas DataFrames, i.e. database,
             where each key is an AGS 3 group, and the corresponding value is
             a pandas DataFrame containing the data for that group.
         projected_crs (CRS): Projected coordinate reference system (CRS).
-        vertical_crs (CRS, optional): Vertical CRS.
-            Defaults to the Earth Gravitational Model 2008.
+        vertical_crs (CRS, optional): Vertical CRS. Defaults to EGM2008 height, EPSG:3855
+            which measures the orthometric height w.r.t. the Earth Gravitational Model 2008.
+        encoding (str): Encoding of the text file or bytes stream.
 
     Returns:
         BedrockGIDatabaseMapping: Object that maps AGS 3 data to Bedrock GI data model.
     """
-    check_ags_proj_group(ags3_db["PROJ"])
+    ags3_dfs = ags3_to_dfs(source, encoding)
+
+    check_ags_proj_group(ags3_dfs["PROJ"])
     ags3_project = ProjectTableMapping(
-        data=ags3_db["PROJ"].to_dict(orient="records")[0],
-        project_uid=ags3_db["PROJ"]["PROJ_ID"][0],
+        data=ags3_dfs["PROJ"].to_dict(orient="records")[0],
+        project_uid=ags3_dfs["PROJ"]["PROJ_ID"].iloc[0],
         horizontal_crs=projected_crs,
         vertical_crs=vertical_crs,
     )
-    del ags3_db["PROJ"]
+    del ags3_dfs["PROJ"]
 
-    Ags3HOLE.validate(ags3_db["HOLE"])
+    Ags3HOLE.validate(ags3_dfs["HOLE"])
     ags3_location = LocationTableMapping(
-        data=ags3_db["HOLE"],
+        data=ags3_dfs["HOLE"],
         location_id_column="HOLE_ID",
         easting_column="HOLE_NATE",
         northing_column="HOLE_NATN",
         ground_level_elevation_column="HOLE_GL",
         depth_to_base_column="HOLE_FDEP",
     )
-    del ags3_db["HOLE"]
+    del ags3_dfs["HOLE"]
 
-    if "SAMP" in ags3_db.keys():
-        Ags3SAMP.validate(ags3_db["SAMP"])
-        samp_df = ags3_db["SAMP"]
+    if "SAMP" in ags3_dfs.keys():
+        Ags3SAMP.validate(ags3_dfs["SAMP"])
+        samp_df = ags3_dfs["SAMP"]
         samp_df = _add_sample_source_id(samp_df)
         ags3_sample = SampleTableMapping(
             data=samp_df,
@@ -172,16 +178,19 @@ def ags3_to_brgi_db_mapping(
             sample_id_column="sample_source_id",
             depth_to_top_column="SAMP_TOP",
         )
-        del ags3_db["SAMP"]
+        del ags3_dfs["SAMP"]
     else:
         print("Your AGS 3 data doesn't contain a SAMP group, i.e. samples.")
+        ags3_sample = None
 
     ags3_lab_tests = []
     ags3_insitu_tests = []
     ags3_other_tables = []
 
-    for group, df in ags3_db.items():
-        if "SAMP_TOP" in df.columns:
+    for group, df in ags3_dfs.items():
+        # Non-standard group names contain the "?" prefix.
+        # => checking that "SAMP_TOP" / "HOLE_ID" is in the columns is too restrictive.
+        if any("SAMP_TOP" in col for col in df.columns):
             df = _add_sample_source_id(df)
             ags3_lab_tests.append(
                 LabTestTableMapping(
@@ -191,7 +200,7 @@ def ags3_to_brgi_db_mapping(
                     sample_id_column="sample_source_id",
                 )
             )
-        elif "HOLE_ID" in df.columns:
+        elif any("HOLE_ID" in col for col in df.columns):
             top_depth, base_depth = _get_depth_columns(group, list(df.columns))
             ags3_insitu_tests.append(
                 InSituTestTableMapping(

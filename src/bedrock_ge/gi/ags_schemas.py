@@ -81,13 +81,6 @@ class BaseSAMP(pa.DataFrameModel):
 
 
 class Ags3SAMP(BaseSAMP):
-    sample_id: Series[str] = pa.Field(
-        # primary_key=True,
-        unique=True,
-        coerce=True,
-        description="Sample unique identifier",
-        # example="REF_TYPE_TOP_HOLE_ID",
-    )
     HOLE_ID: Series[str] = pa.Field(
         # foreign_key="Ags3HOLE.HOLE_ID",
         description="Exploratory hole or location equivalent",
