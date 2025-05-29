@@ -1,3 +1,5 @@
+from collections.abc import Iterable
+
 import pandas as pd
 
 from bedrock_ge.gi.schemas import (
@@ -11,8 +13,7 @@ from bedrock_ge.gi.validate import check_foreign_key
 
 
 def merge_databases(
-    target_db: BedrockGIDatabase,
-    incoming_db: BedrockGIDatabase,
+    brgi_databases: Iterable[BedrockGIDatabase],
 ) -> BedrockGIDatabase:
     """Merges the incoming Bedrock GI database into the target Bedrock GI database.
 
@@ -33,22 +34,36 @@ def merge_databases(
     # After merging tables validate them with the schemas from bedrock_ge.gi.schemas and check that foreign keys are correct.
     # In case the incoming_db contains tables that are not in the target_db, add them to the target_db.
     # The function must return a BedrockGIDatabase object.
-    merged_project = pd.concat(
-        [target_db.Project, incoming_db.Project], ignore_index=True
-    )
-    ProjectSchema.validate(merged_project)
 
-    merged_location = pd.concat(
-        [target_db.Location, incoming_db.Location], ignore_index=True
-    )
-    LocationSchema.validate(merged_location)
-    check_foreign_key("project_uid", merged_project, merged_location)
+    # merged_project = pd.concat(
+    #     [target_db.Project, incoming_db.Project], ignore_index=True
+    # )
+    # ProjectSchema.validate(merged_project)
 
-    merged_insitu = {}
+    # merged_location = pd.concat(
+    #     [target_db.Location, incoming_db.Location], ignore_index=True
+    # )
+    # LocationSchema.validate(merged_location)
+    # check_foreign_key("project_uid", merged_project, merged_location)
+
+    # merged_insitu = {}
+
+    # Draw inspiration from polars.concat
+    # https://github.com/pola-rs/polars/blob/py-1.30.0/py-polars/polars/functions/eager.py
+
+    dbs = list(brgi_databases)
+
+    if not dbs:
+        msg = "Cannot merge an empty list of Bedrock GI databases."
+        raise ValueError(msg)
+    elif len(dbs) == 1 and isinstance(dbs[0], BedrockGIDatabase):
+        return dbs[0]
+
+    target_db = dbs.pop(0)
 
     merged_db = {
-        "Project": merged_project,
-        "Location": merged_location,
+        "Project": "merged_project",
+        "Location": "merged_location",
     }
 
     # merged_db = BedrockGIDatabase(
