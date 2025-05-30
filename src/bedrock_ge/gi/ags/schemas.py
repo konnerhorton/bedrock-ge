@@ -1,3 +1,5 @@
+from typing import Optional
+
 import pandera.pandas as pa
 from pandera.typing import Series
 
@@ -23,6 +25,48 @@ class Ags3HOLE(pa.DataFrameModel):
         coerce=True,
         description="Final depth of hole",
         # example=32.60,
+        metadata={"unit": "m"},
+    )
+
+
+class Ags4LOCA(pa.DataFrameModel):
+
+    LOCA_ID: Series[str] = pa.Field(
+        # primary_key = True,
+        unique=True,
+        coerce=True,
+        description="Location identifier",
+        # example="327-16A",
+        metadata={"unit": None},
+    )
+    LOCA_TYPE: Series[str] = pa.Field(
+        coerce=True,
+        description="Type of activity",
+        # example="CP+RC",
+        metadata={"unit": None},
+    )
+    LOCA_NATE: Series[float] = pa.Field(
+        coerce=True,
+        description="National Grid Easting of location or start of traverse",
+        # example="523145.00",
+        metadata={"unit": "m"},
+    )
+    LOCA_NATN: Series[float] = pa.Field(
+        coerce=True,
+        description="National Grid Northing of location or start of traverse",
+        # example="178456.12",
+        metadata={"unit": "m"},
+    )
+    LOCA_GL: Optional[Series[float]] = pa.Field(
+        coerce=True,
+        description="Ground level relative to datum of location or start of traverse",
+        # example="16.23",
+        metadata={"unit": "m"},
+    )
+    LOCA_FDEP: Series[float] = pa.Field(
+        coerce=True,
+        description="Final depth",
+        # example="32.60",
         metadata={"unit": "m"},
     )
 
