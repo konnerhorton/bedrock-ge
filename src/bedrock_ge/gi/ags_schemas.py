@@ -55,6 +55,34 @@ class Ags3HOLE(pa.DataFrameModel):
     )
 
 
+class Ags4LOCA(pa.DataFrameModel):
+    LOCA_ID: Series[str] = pa.Field(
+        # primary_key=True,
+        unique=True,
+        coerce=True,
+        description="Location identifier",
+        # example="327-16A",
+    )
+    LOCA_TYPE: Series[str] = pa.Field(
+        coerce=True,
+        # isin=["CP", "TP", "TPS", "TPS2", "TPS3", "TPS4", "TPS5", "TPS6", "TPS7", "TPS8"],
+        description="Type of activity",
+        # example="CP+RC",
+    )
+    LOCA_NATE: Series[float] = pa.Field(coerce=True)
+    LOCA_NATN: Series[float] = pa.Field(coerce=True)
+    LOCA_GL: Series[float] = pa.Field(
+        coerce=True,
+        nullable=True,
+    )
+    LOCA_FDEP: Series[float] = pa.Field(
+        coerce=True,
+        description="Final depth",
+        # example=32.60,
+        metadata={"unit": "m"},
+    )
+
+
 class BaseSAMP(pa.DataFrameModel):
     SAMP_REF: Series[str] = pa.Field(
         coerce=True,
@@ -94,7 +122,9 @@ class Ags3SAMP(BaseSAMP):
 class Ags4SAMP(BaseSAMP):
     SAMP_ID: Series[str] = pa.Field(
         # primary_key=True,
-        unique=True,
+        # TODO: this should be `unique=True` and `nullable=False`, however the example .ags files contains many null SAMP_ID values (not allowed per the ags spec). Use `False` temporarily
+        unique=False,
+        nullable=True,
         coerce=True,
         description="Sample unique identifier",
         # example="ABC121415010",
